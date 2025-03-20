@@ -29,6 +29,8 @@ def main():
     light themes: cosmo, flatly, journal, litera, lumen, minty, pulse, sandstone, united, yeti, morph, simplex, cerculean,
     '''
 
+    #Trying to get Git working
+
     update_registry()
     root = ttk.Window(themename='journal', hdpi=False)
     root.option_add('*tearOff', 'false')

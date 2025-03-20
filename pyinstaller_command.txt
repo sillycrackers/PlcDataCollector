@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --add-data "data_icon.ico:." --add-data "data_icon.png:." gui.py

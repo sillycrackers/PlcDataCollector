@@ -251,13 +251,7 @@ class ManageConnectionsWindow(ttk.Toplevel):
                     ip_address=self.ip_address_entry_variable.get(),
                     trigger_tag=self.trigger_tag_entry_variable.get(),
                     ack_tag=self.ack_tag_entry_variable.get(),
-
-                    #TODO==========================
-                    #BUG FOUND should not be
-                    #tags=[self.tag_list_entry_variable.get()],
-                    #should be this instead:
                     tags=self.tag_list_entry_variable.get().strip().split(','),
-                    #TODO==========================
                     excel_file_name = self.excel_file_name_entry_variable.get(),
                     excel_file_location = self.excel_file_location_entry_variable.get()
                 )

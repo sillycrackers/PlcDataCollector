@@ -89,6 +89,9 @@ class MainFrame(ttk.Frame):
 
             time.sleep(0.1)
 
+    def add_plc_connection(self, plc_connection):
+        self.plc_data_connections[plc_connection.plc.name] = plc_connection
+
     # This method is being called by thread. It's checking the connection for all the plcs
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))
     # We copy the dictionary values to a list to avoid accessing data that we could change when editing connection

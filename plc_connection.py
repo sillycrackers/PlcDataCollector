@@ -22,7 +22,7 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                print("Error reading trigger signal")
+                print(f"Error reading trigger signal: {self.plc.trigger_tag}")
                 return None
 
             # Only log data when trigger is active
@@ -43,7 +43,7 @@ class PlcConnection:
                 return data_row
 
             else:
-                print("Trigger not active, no data logged.")
+                ...#print("Trigger not active, no data logged.")
 
             return None
 
@@ -73,7 +73,7 @@ class PlcConnection:
                 ws.append(data_row)
                 #Save and close excel file after logging the tag data
                 wb.save(self.plc.file_path)
-                print(f"Data logged: {data_row}")
+                print(f"Data logged: {data_row} to {self.plc.file_path}")
             except:
                 traceback.print_exc()
 

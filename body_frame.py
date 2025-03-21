@@ -49,10 +49,11 @@ class BodyFrame(ttk.Frame):
     def populate_indicators(self):
         x = 0
 
-        for indicator in self.indicators.values():
-            indicator.grid_forget()
+        if len(self.indicators) > 0:
+            for indicator in self.indicators.values():
+                indicator.grid_forget()
 
-        self.indicators.clear()
+            self.indicators.clear()
 
         for connection in list(self.parent.plc_data_connections.values()) :
             self.indicators[connection.plc.name] = Indicator(self, connection.plc.name, RED)

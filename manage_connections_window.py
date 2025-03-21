@@ -10,7 +10,6 @@ from fonts import *
 from utils import *
 
 
-
 class ManageConnectionsWindow(ttk.Toplevel):
     def __init__(self, root_window, plc_data_connections, parent):
         super().__init__(master=root_window)
@@ -267,6 +266,8 @@ class ManageConnectionsWindow(ttk.Toplevel):
 
             else:
 
+                #If we are editing an existing connection
+                #Create new plc object to replace the one we are editing
                 old_plc_name = self.option.get()
 
                 edit_plc = Plc(
@@ -274,7 +275,8 @@ class ManageConnectionsWindow(ttk.Toplevel):
                     ip_address=self.ip_address_entry_variable.get(),
                     trigger_tag=self.trigger_tag_entry_variable.get(),
                     ack_tag=self.ack_tag_entry_variable.get(),
-                    tags=[self.tag_list_entry_variable.get()],
+                    #Fixed bug here that was incorrectly converting string to list
+                    tags=self.tag_list_entry_variable.get().strip().split(','),
                     excel_file_name = self.excel_file_name_entry_variable.get(),
                     excel_file_location = self.excel_file_location_entry_variable.get()
                 )

@@ -42,9 +42,8 @@ class TextEntryWindow(ttk.Toplevel):
 
     def update_variable(self):
 
-        #TODO =============================================================================
         self.text_variable.set(self.text_input.get("1.0", 'end-1c').replace("\n",''))
-        #TODO =============================================================================
+
         self.close()
 
     def close(self):

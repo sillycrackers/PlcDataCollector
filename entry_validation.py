@@ -48,6 +48,8 @@ def check_valid_name(name):
         return False
     elif len(name) > 30:
         return False
+    elif name == "Add New PLC...":
+        return False
     else:
         return True
 

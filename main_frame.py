@@ -8,9 +8,9 @@ import threading
 from main_menu import MainMenu
 from title_frame import TitleFrame
 from body_frame import BodyFrame
-from manage_connections_window import ManageConnectionsWindow
-from colors import *
-from fonts import *
+from manage_connections_frame import ManageConnectionsFrame
+from manage_connections_toplevel import ManageConnectionsToplevel
+
 
 '''
 dark themes: solar, superhero, darkly, cyborg, vapor
@@ -42,12 +42,12 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
-        self.plc_data_connections = {}
         self.active_alarms = {}
         self.alarm_messages = []
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
         self.root_window = root_window
+        self.plc_data_connections = {}
 
         self.q = Queue()
 
@@ -62,15 +62,11 @@ class MainFrame(ttk.Frame):
 
     def open_manage_connections_window(self):
 
-        manage_connections = ManageConnectionsWindow(root_window=self.root_window, plc_data_connections=self.plc_data_connections, parent=self)
+        manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
 
-    def add_plc_connection(self, plc_connection):
-        self.plc_data_connections[plc_connection.plc.name] = plc_connection
+        manage_connections_frame = ManageConnectionsFrame(root_window=manage_connections_toplevel, connections=self.plc_data_connections)
 
-    def replace_plc_connection(self, new_plc_connection, old_plc_connection):
-
-        self.plc_data_connections.pop(old_plc_connection.plc.name)
-        self.plc_data_connections[new_plc_connection.plc.name]=new_plc_connection
+        manage_connections_frame.pack()
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self):
@@ -112,7 +108,6 @@ class MainFrame(ttk.Frame):
 
             time.sleep(0.1)
 
-
     def update_alarms(self, message, state):
         self.active_alarms[message] = state
 
@@ -135,14 +130,8 @@ class MainFrame(ttk.Frame):
     def run_app(self):
 
 
-        #flash_indicator_thread1 = threading.Thread(target=self.flash_indicator, args=(self.body_frame.indicators[0], 0.1), daemon=True)
-        #flash_indicator_thread2 = threading.Thread(target=self.flash_indicator, args=(self.body_frame.indicators[1], 0.1), daemon=True)
-
         self.read_plc_data_thread.start()
         self.check_connection_thread.start()
-        #flash_indicator_thread1.start()
-        #time.sleep(0.05)
-        #flash_indicator_thread2.start()
 
         self.after(50, self.process_queue)
         self.after(100, self.refresh_active_alarms)

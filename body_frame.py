@@ -1,6 +1,5 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from alarm_banner import AlarmBanner
 from output_display import OutputDisplay
 from indicator import Indicator
 from colors import *

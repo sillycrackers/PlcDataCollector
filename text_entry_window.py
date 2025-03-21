@@ -3,8 +3,6 @@ import ttkbootstrap as ttk
 from tkinter import filedialog
 import openpyxl
 import re
-
-
 import csv
 
 from utils import *

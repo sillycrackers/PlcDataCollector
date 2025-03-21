@@ -3,9 +3,7 @@ import ttkbootstrap as ttk
 import winreg
 
 
-from plc_connection import *
 from main_frame import MainFrame
-from plc import Plc
 from utils import *
 
 def update_registry():

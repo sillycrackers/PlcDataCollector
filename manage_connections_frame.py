@@ -110,8 +110,8 @@ class ManageConnectionsFrame(ttk.Frame):
 
         #TODO   Causing to not be able to pack this frame
 
-        #self.tag_list_entry = DataEntry(self, self.root_window, "Tag List:", self.tag_list_entry_variable,
-                                        #self.start_row + 9, True, "tag_entry")
+        self.tag_list_entry = DataEntry(self.root_window,self.inner_frame, "Tag List:", self.tag_list_entry_variable,
+                                        self.start_row + 9, True, "tag_entry")
 
         #TODO ===============================================
 

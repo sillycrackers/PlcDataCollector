@@ -27,7 +27,7 @@ class DataEntry:
     def open_popup(self):
 
         if self.popup_type == "tag_entry":
-            t = TextEntryWindow(self.text_variable, self.parent_window)
+            t = TextEntryWindow(self.text_variable,self.parent_window)
         elif self.popup_type == "file_dir":
             file_dir = filedialog.askdirectory()
             self.text_variable.set(file_dir)

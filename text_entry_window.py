@@ -9,7 +9,7 @@ from utils import *
 
 class TextEntryWindow(ttk.Toplevel):
     def __init__(self, text_variable, parent_window):
-        super().__init__()
+        super().__init__(master=parent_window)
         self.logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.title("Tag List")

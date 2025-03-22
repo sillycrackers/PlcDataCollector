@@ -1,24 +1,17 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 
-
 from main_frame import MainFrame
-from utils import *
+import utils
 
 def main():
-    '''
-    dark themes: solar, superhero, darkly, cyborg, vapor
-    light themes: cosmo, flatly, journal, litera, lumen, minty, pulse, sandstone, united, yeti, morph, simplex, cerculean,
-    '''
 
-    update_registry()
+    utils.update_registry()
     root = ttk.Window(themename='journal', hdpi=False)
     root.option_add('*tearOff', 'false')
     root.title("PLC Data Collector")
     logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
     root.iconphoto(False, logo_image)
-
-
     app = MainFrame(root)
     app.body_frame.populate_indicators()
 

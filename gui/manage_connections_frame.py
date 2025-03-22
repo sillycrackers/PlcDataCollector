@@ -1,12 +1,9 @@
 import tkinter as tk
 
-import ttkbootstrap as ttk
-
 import entry_validation
 from plc import Plc
 from data_entry import DataEntry
 from plc_connection import PlcConnection
-from fonts import *
 from utils import *
 
 

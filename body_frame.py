@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.scrolled import *
 from output_display import OutputDisplay
 from indicator import Indicator
 from colors import *
@@ -19,8 +20,8 @@ class BodyFrame(ttk.Frame):
         self.indicator_label_frame = ttk.LabelFrame(self,text="Connections")
         self.indicator_label_frame.pack(side="top",fill="x", pady=10)
 
-        self.inside_frame = ttk.Frame(self.indicator_label_frame)
-        self.inside_frame.pack(fill="both",expand=True, pady=(0,100))
+        self.inside_frame = ScrolledFrame(self.indicator_label_frame)
+        self.inside_frame.pack(fill="both",expand=True)
 
         self.inside_frame.columnconfigure(index=0,weight=1)
         self.inside_frame.columnconfigure(index=1, weight=1)
@@ -30,11 +31,10 @@ class BodyFrame(ttk.Frame):
         self.spacer_label1 = ttk.Label(self.inside_frame)
         self.spacer_label2 = ttk.Label(self.inside_frame)
 
-        self.spacer_label1.grid(row=0,rowspan=3, column=0, sticky='ew')
-        self.spacer_label2.grid(row=0, rowspan=3,column=2, sticky='ew')
+        self.spacer_label1.grid(row=0, column=0, sticky='ew')
+        self.spacer_label2.grid(row=0,column=2, sticky='ew')
 
         self.open_manage_connections_button = ttk.Button(self, text="Manage Connections", command=parent.open_manage_connections_window)
-
         self.open_manage_connections_button.pack(ipady=5, ipadx=5)
 
         self.alarm_title = ttk.Label(self, text="Active Alarms", font="calibri 16", foreground='red')

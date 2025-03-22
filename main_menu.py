@@ -8,8 +8,9 @@ import json
 from about_window import AboutWindow
 from plc import Plc
 from plc_connection import PlcConnection
+import utils
 
-class PlcConnectionEncoder(JSONEncoder):
+class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
         return o.__dict__
 
@@ -46,7 +47,7 @@ class MainMenu(ttk.Menu):
         about_window = AboutWindow(self.parent_window)
 
     def change_theme(self, theme):
-        self.parent.change_theme(theme)
+        utils.change_theme(theme)
 
     def decode_json_to_plc_objects(self, json_string):
 
@@ -69,7 +70,6 @@ class MainMenu(ttk.Menu):
             plcs.append(newPlc)
 
         return plcs
-
 
     def open_file(self):
 
@@ -97,12 +97,15 @@ class MainMenu(ttk.Menu):
         for item in list(self.parent.plc_data_connections.values()):
             plc_list.append(item.plc)
 
-        json_string = json.dumps(plc_list, cls=PlcConnectionEncoder)
+        json_string = json.dumps(plc_list, cls=PlcObjectEncoder)
 
 
-        files = [('All Files', '*.*'),("PLC Data Collector",'*.pdc')]
+        files = [("PLC Data Collector",'*.pdc')]
 
-        file_path = filedialog.asksaveasfilename(filetypes=files) + '.pdc'
+        file_path = filedialog.asksaveasfilename(filetypes=files)
+
+        if not file_path.endswith(".pdc"):
+            file_path += ".pdc"
 
         f = open(file_path, "w")
         f.write(json_string)

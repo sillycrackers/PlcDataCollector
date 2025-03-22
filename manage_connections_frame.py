@@ -104,17 +104,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
         self.tag_list_validation_label.grid(row=self.start_row + 8, column=0, columnspan=2, sticky='e')
         # Tag List
-
-
-        #TODO =============================================
-
-        #TODO   Causing to not be able to pack this frame
-
         self.tag_list_entry = DataEntry(self.root_window,self.inner_frame, "Tag List:", self.tag_list_entry_variable,
                                         self.start_row + 9, True, "tag_entry")
-
-        #TODO ===============================================
-
         # Excel File Name Validation
         self.excel_file_name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
         self.excel_file_name_validation_label.grid(row=self.start_row + 10, column=0, columnspan=2, sticky='e')
@@ -165,8 +156,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # Populate entries as soon as window opens with first selected option in list
         self.update_entries(self.option)
-
-
 
     def hide_validation_labels(self):
         for label in self.validation_labels:

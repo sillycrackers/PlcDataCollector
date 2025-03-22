@@ -4,18 +4,12 @@ from queue import Queue
 import time
 import threading
 
-
 from main_menu import MainMenu
 from title_frame import TitleFrame
 from body_frame import BodyFrame
 from manage_connections_frame import ManageConnectionsFrame
 from manage_connections_toplevel import ManageConnectionsToplevel
 
-
-'''
-dark themes: solar, superhero, darkly, cyborg, vapor
-light themes: cosmo, flatly, journal, litera, lumen, minty, pulse, sandstone, united, yeti, morph, simplex, cerculean, 
-'''
 
 # Main Frame
 class MainFrame(ttk.Frame):
@@ -27,9 +21,6 @@ class MainFrame(ttk.Frame):
         #Threads
         self.check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
         self.read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
-
-        #Thread list
-        self.threads = [self.check_connection_thread, self.read_plc_data_thread]
 
         #Global Styles
         ttk.Style().configure('TLabelframe.Label', font=('Calibri', 13,))
@@ -85,7 +76,16 @@ class MainFrame(ttk.Frame):
         while True:
             while len(list(self.plc_data_connections)) > 0:
                 for connection in list(self.plc_data_connections.values()):
-                    connection.collect_data()
+
+                    result = connection.collect_data()
+
+                    if result[0]:
+                        print("Collected Data")
+                        self.q.put(self.update_alarms(result[1], False))
+                    elif not result[0]:
+                        self.q.put(self.update_alarms(result[1], True))
+                    elif result is None:
+                        ...
 
             time.sleep(0.1)
 
@@ -107,7 +107,7 @@ class MainFrame(ttk.Frame):
                     else:
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",True))
                         self.q.put(self.body_frame.toggle_indicator(state=False, plc_name=connection.plc.name))
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
             time.sleep(0.1)
 
@@ -121,22 +121,16 @@ class MainFrame(ttk.Frame):
             if self.active_alarms[alarm]:
                 self.body_frame.output_message(message=alarm)
 
-        self.after(1000, self.refresh_active_alarms)
-
-    def change_theme(self, theme):
-
-        if theme == 'dark':
-            ttk.Style(theme='darkly')
-        elif theme == 'light':
-            ttk.Style(theme='flatly')
+        self.after(250, self.refresh_active_alarms)
 
     def run_app(self):
-
 
         self.read_plc_data_thread.start()
         self.check_connection_thread.start()
 
+        #Window thread that will process functions sent by background threads
         self.after(50, self.process_queue)
+        #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
 
         self.mainloop()

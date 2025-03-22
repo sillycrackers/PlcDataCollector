@@ -1,7 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.scrolled import *
 
-class OutputDisplay(ttk.Frame):
+class OutputDisplay(ScrolledFrame):
     def __init__(self, parent):
         super().__init__(master=parent)
 

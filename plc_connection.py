@@ -21,31 +21,34 @@ class PlcConnection:
             # Read trigger signal first
             trigger_response = comm.Read(self.plc.trigger_tag)
 
+            #If we cannot read trigger tag, something is wrong
             if trigger_response.Status != "Success":
-                print(f"Error reading trigger signal: {self.plc.trigger_tag}")
-                return None
+                return False, f"Error reading trigger signal, check correct tag name: {self.plc.trigger_tag}"
 
             # Only log data when trigger is active
             elif trigger_response.Value == 1:
 
-                # Timestamp
-                data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
-
-                for tag in self.plc.tags:
-
-                    response = comm.Read(tag)
-
-                    if response.Status == "Success":
-                        data_row.append(response.Value)
-                    else:
-                        data_row.append("Error")
-
-                return data_row
+                return True, self.get_tag_data(comm)
 
             else:
-                ...#print("Trigger not active, no data logged.")
+                return None
 
-            return None
+
+    def get_tag_data(self, comm):
+
+        # Timestamp
+        data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
+
+        for tag in self.plc.tags:
+
+            response = comm.Read(tag)
+
+            if response.Status == "Success":
+                data_row.append(response.Value)
+            else:
+                data_row.append("Error")
+
+        return data_row
 
     # Function to save data to Excel
     def save_to_excel(self, data_row):
@@ -91,17 +94,22 @@ class PlcConnection:
     def collect_data(self):
 
         data = self.read_plc_tags()
-        if data:
+
+        if data[0]:
             self.send_acknowledgment()
             self.save_to_excel(data)
+            return True
+        elif not data[0]:
+            return False, data[1]
         else:
             time.sleep(0.5)
+            return None
 
     # Verify connected to PLC
     def check_plc_connection(self):
         with logix.PLC() as comm:
-            comm.IPAddress = self.plc.ip_address
 
+            comm.IPAddress = self.plc.ip_address
             response = comm.GetPLCTime()
 
             if response.Status != "Success":

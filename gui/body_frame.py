@@ -1,9 +1,10 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
-from output_display import OutputDisplay
-from indicator import Indicator
-from colors import *
+
+from gui.output_display import OutputDisplay
+from gui.indicator import Indicator
+from gui.colors import *
 
 class BodyFrame(ttk.Frame):
     def __init__(self, parent):

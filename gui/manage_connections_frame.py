@@ -1,8 +1,8 @@
 import tkinter as tk
 
-import entry_validation
+import gui.entry_validation
 from plc import Plc
-from data_entry import DataEntry
+from gui.data_entry import DataEntry
 from plc_connection import PlcConnection
 from utils import *
 
@@ -32,7 +32,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
 
-        self.title_label = ttk.Label(self, text="Manage PLC Connections", font=f"{FONT} 28 ")
+        self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
         self.title_label.pack(fill="both", expand=True, padx=50, pady=20)
 
         self.main_label_frame = ttk.LabelFrame(self, text="PLC Connections")

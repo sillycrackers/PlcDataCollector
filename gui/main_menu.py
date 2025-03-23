@@ -1,11 +1,9 @@
-import os.path
 from json import JSONEncoder
-
 import ttkbootstrap as ttk
 from tkinter import filedialog
 import json
 
-from about_window import AboutWindow
+from gui.about_window import AboutWindow
 from plc import Plc
 from plc_connection import PlcConnection
 import utils

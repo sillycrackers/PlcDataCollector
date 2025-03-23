@@ -10,7 +10,7 @@ class PlcConnection:
     def __init__(self, plc):
         self.plc = plc
 
-        self.PLC = pylogix.PLC
+        self.PLC = pylogix.PLC()
 
 
     # Read the tags from the PLC and store in excel file

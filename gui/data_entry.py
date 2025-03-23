@@ -1,6 +1,8 @@
 import ttkbootstrap as ttk
-from text_entry_window import TextEntryWindow
 from tkinter import filedialog
+
+from gui.text_entry_window import TextEntryWindow
+
 
 class DataEntry:
     def __init__(self, parent_window, parent, label_text, text_variable, row, expand=False, popup_type=""):

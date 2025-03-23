@@ -4,11 +4,11 @@ from queue import Queue
 import time
 import threading
 
-from main_menu import MainMenu
-from title_frame import TitleFrame
-from body_frame import BodyFrame
-from manage_connections_frame import ManageConnectionsFrame
-from manage_connections_toplevel import ManageConnectionsToplevel
+from gui.main_menu import MainMenu
+from gui.title_frame import TitleFrame
+from gui.body_frame import BodyFrame
+from gui.manage_connections_frame import ManageConnectionsFrame
+from gui.manage_connections_toplevel import ManageConnectionsToplevel
 
 
 # Main Frame

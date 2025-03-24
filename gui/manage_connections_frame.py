@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import gui.entry_validation
+import entry_validation
 from plc import Plc
 from gui.data_entry import DataEntry
 from plc_connection import PlcConnection

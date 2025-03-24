@@ -20,7 +20,7 @@ class PlcConnection:
 
         if data[0]:
             self.send_acknowledgment()
-            utils.save_to_excel(data)
+            utils.save_to_excel(self.plc, data)
             return True
         elif not data[0]:
             return False, data[1]

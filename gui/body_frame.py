@@ -61,6 +61,7 @@ class BodyFrame(ttk.Frame):
 
         for indicator in self.indicators:
             self.indicators[indicator].grid(row=x, column=1, sticky='nse')
+            print(indicator)
             x += 1
 
     def toggle_indicator(self, state, plc_name):

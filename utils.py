@@ -1,8 +1,10 @@
 import os
 import sys
+import traceback
 import winreg
 import ttkbootstrap as ttk
 import openpyxl
+from openpyxl import Workbook, load_workbook
 
 
 def resource_path(relative_path):
@@ -37,17 +39,17 @@ def change_theme(theme):
         ttk.Style(theme='flatly')
 
 # Function to save data to Excel
-def save_to_excel(self, row):
+def save_to_excel(plc, row):
 
     #If folder doesn't exist, then create it
-    if not os.path.exists(self.plc.excel_file_location):
-        os.makedirs(self.plc.excel_file_location)
+    if not os.path.exists(plc.excel_file_location):
+        os.makedirs(plc.excel_file_location)
 
     if row:
         try:
             #If file already exists then open it
-            if os.path.exists(self.plc.file_path):
-                wb = load_workbook(self.plc.file_path)
+            if os.path.exists(plc.file_path):
+                wb = load_workbook(plc.file_path)
                 ws = wb.active
             #If Excel file doesn't exist then create it
             else:
@@ -56,13 +58,13 @@ def save_to_excel(self, row):
                 wb = Workbook()
                 ws = wb.active
                 ws.title = "PLC Data"
-                ws.append(["Timestamp"] + self.plc.tags)  # Header row
+                ws.append(["Timestamp"] + plc.tags)  # Header row
 
             #Add plc tag data as the next row in the sheet
             ws.append(row)
             #Save and close excel file after logging the tag data
-            wb.save(self.plc.file_path)
-            print(f"Data logged: {row} to {self.plc.file_path}")
+            wb.save(plc.file_path)
+            print(f"Data logged: {row} to {plc.file_path}")
         except:
             traceback.print_exc()
 

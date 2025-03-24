@@ -79,13 +79,14 @@ class MainFrame(ttk.Frame):
 
                     result = connection.collect_data()
 
-                    if result[0]:
+                    if result is None:
+                        break
+                    elif result[0]:
                         print("Collected Data")
                         self.q.put(self.update_alarms(result[1], False))
                     elif not result[0]:
                         self.q.put(self.update_alarms(result[1], True))
-                    elif result is None:
-                        ...
+
 
             time.sleep(0.1)
 

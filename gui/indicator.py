@@ -2,13 +2,11 @@ import tkinter as tk
 import ttkbootstrap as ttk
 
 
-class Indicator(ttk.Frame):
+class Indicator(tk.Frame):
     def __init__(self, parent, display_text, color):
         super().__init__(master=parent.inside_frame)
         self.color = color
-
         self.display_text = display_text
-
         self.display_label = ttk.Label(self, text=self.display_text, font=f"calibri 15", justify="right")
         self.canvas = tk.Canvas(self, height=0, width=40)
 

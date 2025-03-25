@@ -54,9 +54,14 @@ class ManageConnectionsFrame(ttk.Frame):
         except StopIteration:
             print("Stop Iteration, no items in dictionary")
 
-        # Option Menu
+        #self.combo_box = ttk.Combobox(self.main_label_frame,textvariable=self.option)
+        #self.combo_box.pack(pady=20, expand=True)
+        #self.combo_box["values"] = self.combo_list
+
+        #Option Menu
         self.option_menu = ttk.OptionMenu(self.main_label_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
+
         self.option_menu.configure(width=40)
         self.option_menu.pack(pady=20, expand=True)
 

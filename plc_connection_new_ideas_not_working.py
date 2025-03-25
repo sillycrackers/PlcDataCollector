@@ -10,8 +10,7 @@ class PlcConnection:
     def __init__(self, plc):
         self.plc = plc
 
-        self.PLC = pylogix.PLC()
-
+        self.PLC = pylogix.PLC(ip_address=self.plc.ip_address)
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):
@@ -31,8 +30,6 @@ class PlcConnection:
     def read_plc_tags(self):
 
         with self.PLC as comm:
-
-            comm.IPAddress = self.plc.ip_address
 
             # Read trigger signal first
             trigger_response = comm.Read(self.plc.trigger_tag)

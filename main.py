@@ -1,12 +1,14 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+import webbrowser
+new = 2 # open in a new tab, if possible
 
 from gui.main_frame import MainFrame
 import utils
 
 def main():
 
-    utils.update_registry()
+
     root = ttk.Window(themename='journal', hdpi=False)
     root.option_add('*tearOff', 'false')
     root.title("PLC Data Collector")
@@ -14,6 +16,11 @@ def main():
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     app.body_frame.populate_indicators()
+
+    #url = r"C:\Users\silly\PycharmProjects\PlcDataCollector\index.html"
+    #webbrowser.open(url,new=new)
+
+
 
     app.run_app()
 

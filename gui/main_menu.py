@@ -86,7 +86,10 @@ class MainMenu(ttk.Menu):
         for plc in self.decode_json_to_plc_objects(file_content):
             self.parent.add_plc_connection(PlcConnection(plc))
 
+        self.parent.active_alarms.clear()
+
         self.parent.body_frame.populate_indicators()
+
 
     def save_file(self):
 

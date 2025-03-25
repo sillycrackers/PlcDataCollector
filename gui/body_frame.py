@@ -41,8 +41,8 @@ class BodyFrame(ttk.Frame):
         self.alarm_title = ttk.Label(self, text="Active Alarms", font="calibri 16", foreground='red')
         self.alarm_title.pack(pady=(20,0))
 
-        self.output = OutputDisplay(self)
-        self.output.pack()
+        self.alarm_output = OutputDisplay(self,"red")
+        self.alarm_output.pack()
 
     #Create and display indicators the indicators for all connections
     #First we clear the current displayed indicators and make a new dictionary of the required indicators
@@ -62,19 +62,22 @@ class BodyFrame(ttk.Frame):
         for indicator in self.indicators:
             self.indicators[indicator].grid(row=x, column=1, sticky='nse')
 
+
             x += 1
 
     def toggle_indicator(self, state, plc_name):
 
-        if state:
-            self.indicators[plc_name].set_state(True)
-        else:
-            self.indicators[plc_name].set_state(False)
+        if len(self.indicators) < 0:
+            if state:
+                self.indicators[plc_name].set_state(True)
+            else:
+                self.indicators[plc_name].set_state(False)
 
-    def output_message(self, message):
-        self.output.add_message(message)
-        self.output.listbox.see(tk.END)  # Auto-scroll to the latest message
 
-    def clear_messages(self):
-        self.output.clear_messages()
+    def output_alarm_message(self, message):
+        self.alarm_output.add_message(message)
+        self.alarm_output.listbox.see(tk.END)  # Auto-scroll to the latest message
+
+    def clear_alarm_messages(self):
+        self.alarm_output.clear_messages()
 

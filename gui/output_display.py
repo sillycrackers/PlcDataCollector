@@ -1,12 +1,16 @@
 import tkinter as tk
+from idlelib.configdialog import font_sample_text
+
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
 class OutputDisplay(ScrolledFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, font_color):
         super().__init__(master=parent)
 
-        self.listbox = tk.Listbox(self, foreground="red", font='calibri 14')
+        self.font_color = font_color
+
+        self.listbox = tk.Listbox(self, foreground=self.font_color, font='calibri 14')
 
         self.listbox.pack(expand=True, fill="both")
 

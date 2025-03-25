@@ -34,7 +34,6 @@ class MainFrame(ttk.Frame):
 
         #Variables
         self.active_alarms = {}
-        self.alarm_messages = []
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
         self.root_window = root_window
@@ -45,10 +44,6 @@ class MainFrame(ttk.Frame):
         #Title
         self.title_frame = TitleFrame(self,text="PLC Data Collector",pady=50,padx=50)
 
-        self.toggle_button = ttk.Button(master=self, text="Toggle Indicators", command=self.toggle)
-        self.toggle_button.pack()
-
-        self.toggle_state = False
 
         #Pack Self
         self.pack(expand=True, fill="both")
@@ -57,10 +52,6 @@ class MainFrame(ttk.Frame):
         self.body_frame = BodyFrame(self)
 
 
-    def toggle(self):
-        self.body_frame.toggle_indicator(self.toggle_state, "Plc 1")
-        self.toggle_state = not self.toggle_state
-        print(self.toggle_state)
 
     def open_manage_connections_window(self):
 
@@ -93,7 +84,6 @@ class MainFrame(ttk.Frame):
                     if result is None:
                         break
                     elif result[0]:
-                        print("Collected Data")
                         self.q.put(self.update_alarms(result[1], False))
                     elif not result[0]:
                         self.q.put(self.update_alarms(result[1], True))
@@ -115,10 +105,12 @@ class MainFrame(ttk.Frame):
                     if connection.check_plc_connection():
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",False))
                         self.q.put(self.body_frame.toggle_indicator(state=True, plc_name=connection.plc.name))
+                        print(f"connection: {connection.plc.name}")
                         time.sleep(0.1)
                     else:
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",True))
                         self.q.put(self.body_frame.toggle_indicator(state=False, plc_name=connection.plc.name))
+                        print(f"connection: {connection.plc.name}")
                         time.sleep(0.1)
 
             time.sleep(0.1)
@@ -127,11 +119,11 @@ class MainFrame(ttk.Frame):
         self.active_alarms[message] = state
 
     def refresh_active_alarms(self):
-        self.body_frame.clear_messages()
-
+        self.body_frame.clear_alarm_messages()
         for alarm in self.active_alarms:
             if self.active_alarms[alarm]:
-                self.body_frame.output_message(message=alarm)
+                self.body_frame.output_alarm_message(message=alarm)
+
 
         self.after(250, self.refresh_active_alarms)
 

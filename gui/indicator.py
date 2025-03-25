@@ -1,22 +1,37 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 
+from utils import *
+
 
 class Indicator(tk.Frame):
     def __init__(self, parent, display_text, color):
         super().__init__(master=parent.inside_frame)
         self.color = color
+
         self.display_text = display_text
-        self.display_label = ttk.Label(self, text=self.display_text, font=f"calibri 15", justify="right")
-        self.canvas = tk.Canvas(self, height=0, width=40)
+        self.display_label = ttk.Label(self, text=self.display_text, font=f"calibri 16", justify="right")
 
-        self.oval = self.canvas.create_oval(2,2, 20, 20, outline="#3b3b3b", fill=self.color, width=1)
+        self.ind_icon_true = tk.PhotoImage(file=resource_path("green_check.png"))
+        self.ind_icon_true_label = ttk.Label(self, image=self.ind_icon_true)
 
-        self.display_label.grid(column=0, row=0, sticky='ew', padx=(0,10))
-        self.canvas.grid(column=1, row=0, sticky='nsew',pady=(3,0))
+        self.ind_icon_false = tk.PhotoImage(file=resource_path("mark.png"))
+        self.ind_icon_false_label = ttk.Label(self, image=self.ind_icon_false)
 
-    def set_color(self, color):
-        self.canvas.itemconfig(self.oval, fill=color)
+        self.current_icon_label = self.ind_icon_false_label
+
+        self.display_label.pack(side="left")
+        self.current_icon_label.pack(side="right")
+
+    def set_state(self, state):
+        if state:
+            self.current_icon_label.pack_forget()
+            self.current_icon_label = self.ind_icon_true_label
+            self.current_icon_label.pack(side="right")
+        else:
+            self.current_icon_label.pack_forget()
+            self.current_icon_label = self.ind_icon_false_label
+            self.current_icon_label.pack(side="right")
 
     def get_name(self):
 

@@ -3,7 +3,6 @@ import ttkbootstrap as ttk
 
 from utils import *
 
-
 class TitleFrame(ttk.Frame):
     def __init__(self, parent, text, padx, pady):
 

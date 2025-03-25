@@ -8,7 +8,6 @@ import utils
 
 def main():
 
-
     root = ttk.Window(themename='journal', hdpi=False)
     root.option_add('*tearOff', 'false')
     root.title("PLC Data Collector")

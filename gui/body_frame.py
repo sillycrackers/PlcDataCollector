@@ -61,15 +61,15 @@ class BodyFrame(ttk.Frame):
 
         for indicator in self.indicators:
             self.indicators[indicator].grid(row=x, column=1, sticky='nse')
-            print(indicator)
+
             x += 1
 
     def toggle_indicator(self, state, plc_name):
 
         if state:
-            self.indicators[plc_name].set_color(GREEN)
+            self.indicators[plc_name].set_state(True)
         else:
-            self.indicators[plc_name].set_color(RED)
+            self.indicators[plc_name].set_state(False)
 
     def output_message(self, message):
         self.output.add_message(message)

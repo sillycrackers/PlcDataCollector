@@ -45,11 +45,22 @@ class MainFrame(ttk.Frame):
         #Title
         self.title_frame = TitleFrame(self,text="PLC Data Collector",pady=50,padx=50)
 
-        #Body
-        self.body_frame = BodyFrame(self)
+        self.toggle_button = ttk.Button(master=self, text="Toggle Indicators", command=self.toggle)
+        self.toggle_button.pack()
+
+        self.toggle_state = False
 
         #Pack Self
         self.pack(expand=True, fill="both")
+
+        #Body
+        self.body_frame = BodyFrame(self)
+
+
+    def toggle(self):
+        self.body_frame.toggle_indicator(self.toggle_state, "Plc 1")
+        self.toggle_state = not self.toggle_state
+        print(self.toggle_state)
 
     def open_manage_connections_window(self):
 

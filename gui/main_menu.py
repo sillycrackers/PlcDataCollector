@@ -2,6 +2,7 @@ from json import JSONEncoder
 import ttkbootstrap as ttk
 from tkinter import filedialog
 import json
+import os
 
 from gui.about_window import AboutWindow
 from plc import Plc
@@ -71,24 +72,23 @@ class MainMenu(ttk.Menu):
 
     def open_file(self):
 
-        file_path = filedialog.askopenfilename(filetypes=[("PLC Data Collector",'*.pdc')])
+        file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
 
-        with open(file_path, 'r') as file:
-            file_content = file.read()
+        if os.path.exists(file_path):
 
-        plc_list = []
+            with open(file_path, 'r') as file:
+                file_content = file.read()
 
-        for item in list(self.parent.plc_data_connections.values()):
-            plc_list.append(item.plc)
+            self.parent.plc_data_connections.clear()
 
-        self.parent.plc_data_connections.clear()
+            for plc in self.decode_json_to_plc_objects(file_content):
+                self.parent.add_plc_connection(PlcConnection(plc))
 
-        for plc in self.decode_json_to_plc_objects(file_content):
-            self.parent.add_plc_connection(PlcConnection(plc))
+            print("NEW FILE!")
 
-        self.parent.active_alarms.clear()
+            self.parent.active_alarms.clear()
 
-        self.parent.body_frame.populate_indicators()
+            self.parent.body_frame.populate_indicators()
 
 
     def save_file(self):

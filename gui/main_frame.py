@@ -51,8 +51,6 @@ class MainFrame(ttk.Frame):
         #Body
         self.body_frame = BodyFrame(self)
 
-
-
     def open_manage_connections_window(self):
 
         manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
@@ -76,20 +74,12 @@ class MainFrame(ttk.Frame):
     def read_plc_data(self):
 
         while True:
-            while len(list(self.plc_data_connections)) > 0:
+            while len(self.plc_data_connections) > 0:
+
                 for connection in list(self.plc_data_connections.values()):
-
-                    result = connection.collect_data()
-
-                    if result is None:
-                        break
-                    elif result[0]:
-                        self.q.put(self.update_alarms(result[1], False))
-                    elif not result[0]:
-                        self.q.put(self.update_alarms(result[1], True))
-
-
+                    connection.collect_data()
             time.sleep(0.1)
+
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -100,30 +90,32 @@ class MainFrame(ttk.Frame):
     def check_connection(self):
 
         while True:
-            while len(list(self.plc_data_connections)) > 0:
+            while len(self.plc_data_connections) > 0:
                 for connection in list(self.plc_data_connections.values()):
                     if connection.check_plc_connection():
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",False))
                         self.q.put(self.body_frame.toggle_indicator(state=True, plc_name=connection.plc.name))
-                        print(f"connection: {connection.plc.name}")
                         time.sleep(0.1)
                     else:
+
+                        #print(f"Active alarms: {self.active_alarms}")
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",True))
                         self.q.put(self.body_frame.toggle_indicator(state=False, plc_name=connection.plc.name))
-                        print(f"connection: {connection.plc.name}")
                         time.sleep(0.1)
 
             time.sleep(0.1)
 
     def update_alarms(self, message, state):
+
         self.active_alarms[message] = state
 
     def refresh_active_alarms(self):
+
         self.body_frame.clear_alarm_messages()
+
         for alarm in self.active_alarms:
             if self.active_alarms[alarm]:
                 self.body_frame.output_alarm_message(message=alarm)
-
 
         self.after(250, self.refresh_active_alarms)
 

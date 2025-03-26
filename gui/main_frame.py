@@ -78,10 +78,17 @@ class MainFrame(ttk.Frame):
     def read_plc_data(self):
 
         while True:
-            while len(self.plc_data_connections) > 0:
+            while len(self.plc_data_connections) > 0 and not self.stop_threads:
 
                 for connection in list(self.plc_data_connections.values()):
                     connection.collect_data()
+                if self.stop_threads:
+                    print("stop Threads")
+                    break
+
+            if self.stop_threads:
+                self.thread_read_stopped_acknowledge = True
+
             time.sleep(0.1)
 
 
@@ -95,9 +102,10 @@ class MainFrame(ttk.Frame):
 
         while True:
             while len(self.plc_data_connections) > 0 and not self.stop_threads:
-                print("Checking comms")
+
                 for connection in list(self.plc_data_connections.values()):
                     if connection.check_plc_connection():
+
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",False))
                         self.q.put(self.body_frame.toggle_indicator(state=True, plc_name=connection.plc.name))
                         time.sleep(0.1)
@@ -111,8 +119,7 @@ class MainFrame(ttk.Frame):
                     if self.stop_threads:
                         print("stop Threads")
                         break
-                if self.stop_threads:
-                    self.thread_comm_stopped_acknowledge = True
+
             if self.stop_threads:
                 self.thread_comm_stopped_acknowledge = True
 

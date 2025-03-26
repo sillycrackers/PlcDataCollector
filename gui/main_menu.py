@@ -80,7 +80,7 @@ class MainMenu(ttk.Menu):
 
             self.parent.stop_threads = True
 
-            while not self.parent.thread_comm_stopped_acknowledge:
+            while not self.parent.thread_comm_stopped_acknowledge and not self.parent.thread_read_stopped_acknowledge:
                 ...
 
             with open(file_path, 'r') as file:

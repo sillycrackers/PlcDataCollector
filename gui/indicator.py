@@ -25,6 +25,7 @@ class Indicator(tk.Frame):
 
     def set_state(self, state):
         if state:
+
             self.current_icon_label.pack_forget()
             self.current_icon_label = self.ind_icon_true_label
             self.current_icon_label.pack(side="right")

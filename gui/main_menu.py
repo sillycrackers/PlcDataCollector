@@ -76,6 +76,13 @@ class MainMenu(ttk.Menu):
 
         if os.path.exists(file_path):
 
+            #Stop threads and wait for acknowledge
+
+            self.parent.stop_threads = True
+
+            while not self.parent.thread_comm_stopped_acknowledge:
+                ...
+
             with open(file_path, 'r') as file:
                 file_content = file.read()
 
@@ -89,6 +96,9 @@ class MainMenu(ttk.Menu):
             self.parent.active_alarms.clear()
 
             self.parent.body_frame.populate_indicators()
+
+            self.parent.stop_threads = False
+            self.parent.thread_comm_stopped_acknowledge = False
 
 
     def save_file(self):

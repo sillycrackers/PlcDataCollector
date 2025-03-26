@@ -22,6 +22,10 @@ class MainFrame(ttk.Frame):
         self.check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
         self.read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
 
+        self.stop_threads = False
+        self.thread_comm_stopped_acknowledge = False
+        self.thread_read_stopped_acknowledge = False
+
         #Global Styles
         ttk.Style().configure('TLabelframe.Label', font=('Calibri', 13,))
         ttk.Style().configure('TButton', font=('Calibri', 12,))
@@ -90,7 +94,8 @@ class MainFrame(ttk.Frame):
     def check_connection(self):
 
         while True:
-            while len(self.plc_data_connections) > 0:
+            while len(self.plc_data_connections) > 0 and not self.stop_threads:
+                print("Checking comms")
                 for connection in list(self.plc_data_connections.values()):
                     if connection.check_plc_connection():
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",False))
@@ -102,6 +107,15 @@ class MainFrame(ttk.Frame):
                         self.q.put(self.update_alarms(f"Lost connection to {connection.plc.name}",True))
                         self.q.put(self.body_frame.toggle_indicator(state=False, plc_name=connection.plc.name))
                         time.sleep(0.1)
+
+                    if self.stop_threads:
+                        print("stop Threads")
+                        break
+                if self.stop_threads:
+                    self.thread_comm_stopped_acknowledge = True
+            if self.stop_threads:
+                self.thread_comm_stopped_acknowledge = True
+
 
             time.sleep(0.1)
 

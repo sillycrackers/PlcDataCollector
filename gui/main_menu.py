@@ -1,4 +1,3 @@
-import time
 from json import JSONEncoder
 import ttkbootstrap as ttk
 from tkinter import filedialog
@@ -81,9 +80,8 @@ class MainMenu(ttk.Menu):
 
             self.parent.stop_threads = True
 
-            while not self.parent.thread_comm_stopped_acknowledge or not self.parent.thread_read_stopped_acknowledge:
-                print("waiting")
-                time.sleep(0.5)
+            while not self.parent.thread_comm_stopped_acknowledge:
+                ...
 
             with open(file_path, 'r') as file:
                 file_content = file.read()

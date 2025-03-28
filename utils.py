@@ -59,8 +59,6 @@ class TicketPurpose(Enum):
     UPDATE_ALARMS = auto()
     # (state:bool,"plc.name:str")
     TOGGLE_INDICATOR = auto()
-    #("thread name":str, state:bool)
-    THREAD_DONE = auto()
 
     POPULATE_INDICATORS = auto()
 

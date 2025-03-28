@@ -63,7 +63,7 @@ class MainFrame(ttk.Frame):
 
         manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
 
-        manage_connections_frame = ManageConnectionsFrame(root_window=manage_connections_toplevel, connections=self.plc_data_connections)
+        manage_connections_frame = ManageConnectionsFrame(root_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
 
         manage_connections_frame.pack()
 
@@ -117,14 +117,14 @@ class MainFrame(ttk.Frame):
 
     # This method is being called by thread. It's checking the connection for all the plcs
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))
-    # We copy the dictionary values to a list to avoid accessing data that we could change when editing connection
+
     def check_connection(self):
 
         if len(self.plc_data_connections) > 0:
 
             self.comm_lock.acquire()
             for connection in self.plc_data_connections.values():
-                #print("Checking comms")
+                print("Checking comms")
                 if connection.check_plc_connection():
 
                     alarm_ticket = Ticket(ticket_purpose=TicketPurpose.UPDATE_ALARMS,
@@ -154,10 +154,6 @@ class MainFrame(ttk.Frame):
 
     def refresh_active_alarms(self):
 
-        #Wait for threads to be done
-        #for thread in self.threads:
-            #thread.join()
-
         self.threads.clear()
 
         self.body_frame.clear_alarm_messages()
@@ -177,7 +173,7 @@ class MainFrame(ttk.Frame):
         if not self.halt_threads and len(self.plc_data_connections) > 0:
             #print(f"Thread Done Values, comm thread done: {self.comm_thread_done} read thread done: {self.read_thread_done} Halt threads: {self.halt_threads} File Loaded: {self.file_loaded}")
             if self.comm_thread_done and self.read_thread_done or self.file_loaded:
-                print("Starting Threads")
+                #print("Starting Threads")
                 for thread in self.threads:
                     thread.start()
                 self.file_loaded = False

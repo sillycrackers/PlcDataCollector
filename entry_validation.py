@@ -21,6 +21,7 @@ def check_valid_tag_list(tag_list):
 
 def check_valid_tag(tag):
 
+
     if len(tag) == 0:
         return False
 

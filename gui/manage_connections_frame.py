@@ -1,6 +1,8 @@
+import time
 import tkinter as tk
 
 import entry_validation
+import utils
 from plc import Plc
 from gui.data_entry import DataEntry
 from plc_connection import PlcConnection
@@ -9,10 +11,15 @@ from utils import *
 
 
 class ManageConnectionsFrame(ttk.Frame):
-    def __init__(self, root_window, connections):
+    def __init__(self, root_window, connections, main_root_window):
         super().__init__(master=root_window)
         self.root_window = root_window
         self.connections = connections
+        self.main_root_window = main_root_window
+
+
+        #Variables
+        self.applied = False
 
         # Entry Variables
         self.name_entry_variable = ttk.StringVar()
@@ -189,7 +196,8 @@ class ManageConnectionsFrame(ttk.Frame):
             self.validation_labels['ip'].config(text="")
 
         # Validate trigger tag entry
-        if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get()):
+        if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):
+
             self.validation_labels['trigger'].config(
                 text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
             flag = False
@@ -197,7 +205,7 @@ class ManageConnectionsFrame(ttk.Frame):
             self.validation_labels['trigger'].config(text="")
 
         # Validate ack tag entry
-        if not entry_validation.check_valid_tag(self.ack_tag_entry_variable.get()):
+        if not entry_validation.check_valid_tag(self.ack_tag_entry_variable.get().strip()):
             self.validation_labels['ack'].config(
                 text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
             flag = False
@@ -205,7 +213,17 @@ class ManageConnectionsFrame(ttk.Frame):
             self.validation_labels['ack'].config(text="")
 
         # Validate tag list
-        if not entry_validation.check_valid_tag_list(self.tag_list_entry_variable.get().strip().split(',')):
+
+        input_string_list = self.tag_list_entry_variable.get().split(',')
+        output_string_list = []
+
+        for string in input_string_list:
+            output_string_list.append(string.strip())
+
+        print(output_string_list)
+
+        if not entry_validation.check_valid_tag_list(output_string_list):
+            print(output_string_list)
             self.validation_labels['tag_list'].config(
                 text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
             flag = False
@@ -250,7 +268,21 @@ class ManageConnectionsFrame(ttk.Frame):
                     excel_file_location=self.excel_file_location_entry_variable.get()
                 )
 
-                self.add_plc_connection(PlcConnection(new_plc))
+                self.root_window.parent_frame.halt_threads = True
+
+                self.root_window.parent_frame.read_lock.acquire()
+                self.root_window.parent_frame.comm_lock.acquire()
+
+                self.add_plc_connection(PlcConnection(new_plc, self.root_window.parent_frame.halt_threads))
+
+                self.root_window.parent_frame.comm_lock.release()
+                self.root_window.parent_frame.read_lock.release()
+
+                print("Changes Applied!")
+
+                self.applied = True
+                self.root_window.parent_frame.file_loaded = True
+                self.root_window.parent_frame.halt_threads = False
 
                 self.combo_list.insert(-1, new_plc.name)
                 self.option.set(new_plc.name)
@@ -273,9 +305,21 @@ class ManageConnectionsFrame(ttk.Frame):
                     excel_file_location=self.excel_file_location_entry_variable.get()
                 )
 
-                edit_plc_connection = PlcConnection(edit_plc)
+                edit_plc_connection = PlcConnection(edit_plc, self.root_window.parent_frame.halt_threads)
+
+                self.root_window.parent_frame.read_lock.acquire()
+                self.root_window.parent_frame.comm_lock.acquire()
 
                 self.replace_plc_connection(edit_plc_connection, self.connections[old_plc_name])
+
+                self.root_window.parent_frame.comm_lock.release()
+                self.root_window.parent_frame.read_lock.release()
+
+                print("Changes Applied!")
+
+                self.applied = True
+
+                self.root_window.parent_frame.file_loaded = True
 
                 # Clear list and populate new list with newly added item to dictionary
                 self.populate_combo_list()
@@ -293,11 +337,15 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def ok(self):
 
-        if self.apply_changes():
+        if not self.applied:
+            if self.apply_changes():
+                self.root_window.close()
+        else:
             self.root_window.close()
 
     def callback(self, var, index, mode):
         self.apply_button.config(state="enabled")
+        self.applied = False
 
     def update_entries(self, option):
 

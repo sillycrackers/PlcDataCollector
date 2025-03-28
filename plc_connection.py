@@ -7,8 +7,10 @@ import time
 
 
 class PlcConnection:
-    def __init__(self, plc):
+    def __init__(self, plc, stop_threads: bool):
         self.plc = plc
+        self.stop_threads = stop_threads
+
 
     # Function to read PLC tags
     def read_plc_tags(self):
@@ -38,6 +40,8 @@ class PlcConnection:
                         data_row.append(response.Value)
                     else:
                         data_row.append("Error")
+                    if self.stop_threads:
+                        return False
 
                 return data_row
 

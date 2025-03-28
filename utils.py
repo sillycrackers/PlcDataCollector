@@ -8,6 +8,17 @@ from openpyxl import Workbook, load_workbook
 from enum import Enum, auto
 
 
+import contextlib
+
+@contextlib.contextmanager
+def wait_cursor(root):
+    root.config(cursor="watch")
+    root.update()
+    try:
+        yield root
+    finally:
+        root.config(cursor="")
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS

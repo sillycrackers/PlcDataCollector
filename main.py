@@ -4,6 +4,7 @@ import webbrowser
 new = 2 # open in a new tab, if possible
 
 from gui.main_frame import MainFrame
+
 import utils
 
 def main():

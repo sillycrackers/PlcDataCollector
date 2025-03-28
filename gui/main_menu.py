@@ -1,13 +1,15 @@
+import time
 from json import JSONEncoder
 import ttkbootstrap as ttk
 from tkinter import filedialog
 import json
 import os
+import threading
 
 from gui.about_window import AboutWindow
 from plc import Plc
 from plc_connection import PlcConnection
-import utils
+from utils import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
@@ -22,7 +24,7 @@ class MainMenu(ttk.Menu):
 
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
-        self.file_menu.add_command(label = "Open",command=self.open_file)
+        self.file_menu.add_command(label = "Open",command=self.create_open_file_thread)
         self.file_menu.add_command(label="Save", command=self.save_file)
         #self.file_menu.add_separator()
         self.add_cascade(label="File",menu= self.file_menu)
@@ -70,18 +72,22 @@ class MainMenu(ttk.Menu):
 
         return plcs
 
+    def create_open_file_thread(self):
+        open_file_thread = threading.Thread(target=self.open_file, daemon=True)
+
+        open_file_thread.start()
+
     def open_file(self):
+
 
         file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
 
         if os.path.exists(file_path):
 
-            #Stop threads and wait for acknowledge
+            self.parent.halt_threads = True
 
-            self.parent.stop_threads = True
-
-            while not self.parent.thread_comm_stopped_acknowledge:
-                ...
+            while self.parent.comm_thread_done == False or self.parent.read_thread_done == False:
+                print("waiting")
 
             with open(file_path, 'r') as file:
                 file_content = file.read()
@@ -93,12 +99,16 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
-            self.parent.active_alarms.clear()
+            active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR,ticket_value=None)
+            populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
 
-            self.parent.body_frame.populate_indicators()
+            self.parent.q.put(active_alarm_clear_ticket)
+            self.event_generate("<<CheckQueue>>")
+            self.parent.q.put(populate_indicators_ticket)
+            self.event_generate("<<CheckQueue>>")
 
-            self.parent.stop_threads = False
-            self.parent.thread_comm_stopped_acknowledge = False
+            self.parent.halt_threads = False
+
 
 
     def save_file(self):

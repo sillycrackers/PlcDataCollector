@@ -9,16 +9,13 @@ import utils
 def main():
 
     root = ttk.Window(themename='journal', hdpi=False)
+
     root.option_add('*tearOff', 'false')
     root.title("PLC Data Collector")
     logo_image = tk.PhotoImage(file=utils.resource_path("data_icon.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     app.body_frame.populate_indicators()
-
-    #url = r"C:\Users\silly\PycharmProjects\PlcDataCollector\index.html"
-    #webbrowser.open(url,new=new)
-
 
 
     app.run_app()

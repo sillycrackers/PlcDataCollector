@@ -5,6 +5,7 @@ import winreg
 import ttkbootstrap as ttk
 import openpyxl
 from openpyxl import Workbook, load_workbook
+from enum import Enum, auto
 
 
 def resource_path(relative_path):
@@ -16,15 +17,12 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-
-
 def change_theme(theme):
     if theme == 'dark':
         ttk.Style(theme='darkly')
 
     elif theme == 'light':
         ttk.Style(theme='flatly')
-
 # Function to save data to Excel
 def save_to_excel(plc, row):
 
@@ -54,4 +52,23 @@ def save_to_excel(plc, row):
             print(f"Data logged: {row} to {plc.file_path}")
         except:
             traceback.print_exc()
+
+class TicketPurpose(Enum):
+
+    # ("message":str, Alarm active:bool)
+    UPDATE_ALARMS = auto()
+    # (state:bool,"plc.name:str")
+    TOGGLE_INDICATOR = auto()
+    #("thread name":str, state:bool)
+    THREAD_DONE = auto()
+
+    POPULATE_INDICATORS = auto()
+
+    ACTIVE_ALARMS_CLEAR = auto()
+
+class Ticket:
+    def __init__(self, ticket_purpose: TicketPurpose, ticket_value):
+        self.ticket_purpose = ticket_purpose
+        self.ticket_value = ticket_value
+
 

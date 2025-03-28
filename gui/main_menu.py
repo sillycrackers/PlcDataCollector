@@ -48,7 +48,7 @@ class MainMenu(ttk.Menu):
         about_window = AboutWindow(self.parent_window)
 
     def change_theme(self, theme):
-        utils.change_theme(theme)
+        change_theme(theme)
 
     def decode_json_to_plc_objects(self, json_string):
 

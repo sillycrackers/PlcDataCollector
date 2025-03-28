@@ -73,6 +73,7 @@ class MainFrame(ttk.Frame):
         msg: Ticket
         msg = self.q.get()
 
+
         # ("message":str, Alarm active:bool)
         if msg.ticket_purpose == TicketPurpose.UPDATE_ALARMS:
             self.active_alarms[msg.ticket_value[0]] = msg.ticket_value[1]
@@ -90,6 +91,7 @@ class MainFrame(ttk.Frame):
                 self.read_thread_done = msg.ticket_value[1]
                 print(f"READ THREAD: {self.read_thread_done} ")
 
+        # Don't need argument passed for msg.value
         if msg.ticket_purpose == TicketPurpose.ACTIVE_ALARMS_CLEAR:
             self.active_alarms.clear()
             print("CLEAR")

@@ -41,6 +41,8 @@ class MainFrame(ttk.Frame):
         self.comm_thread_done = False
         self.read_thread_done = False
 
+        self.file_loaded = False
+
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
 
@@ -85,11 +87,11 @@ class MainFrame(ttk.Frame):
         # ("thread name":str, state:bool)
         if msg.ticket_purpose == TicketPurpose.THREAD_DONE:
             if msg.ticket_value[0] == "comm_thread":
-                #print(f"COMM THREAD: {msg.ticket_value[1]} ")
+
                 self.comm_thread_done = msg.ticket_value[1]
             elif msg.ticket_value[0] == "read_thread":
                 self.read_thread_done = msg.ticket_value[1]
-                print(f"READ THREAD: {self.read_thread_done} ")
+
 
         # Don't need argument passed for sg.value
         if msg.ticket_purpose == TicketPurpose.ACTIVE_ALARMS_CLEAR:
@@ -115,9 +117,11 @@ class MainFrame(ttk.Frame):
                     break
 
             self.read_lock.release()
-            self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("read_thread", True)))
-            self.event_generate("<<CheckQueue>>")
-        time.sleep(1)
+
+            self.read_thread_done = True
+            #self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("read_thread", True)))
+            #self.event_generate("<<CheckQueue>>")
+
 
 
     def add_plc_connection(self, plc_connection):
@@ -159,7 +163,6 @@ class MainFrame(ttk.Frame):
             self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("comm_thread", True)))
             self.event_generate("<<CheckQueue>>")
 
-        time.sleep(5)
 
 
 
@@ -185,10 +188,15 @@ class MainFrame(ttk.Frame):
         self.threads.append(read_plc_data_thread)
 
         #Start the threads
-        if not self.halt_threads:
-            print("Starting Threads")
-            for thread in self.threads:
-                thread.start()
+        if not self.halt_threads and len(self.plc_data_connections) > 0:
+            print(f"Thread Done Values, comm thread done: {self.comm_thread_done} read thread done: {self.read_thread_done} Halt threads: {self.halt_threads} File Loaded: {self.file_loaded}")
+            if self.comm_thread_done and self.read_thread_done or self.file_loaded:
+                print("Starting Threads")
+                for thread in self.threads:
+                    thread.start()
+                self.file_loaded = False
+                self.read_thread_done = False
+                self.comm_thread_done = False
 
         self.after(250, self.refresh_active_alarms)
 

@@ -117,6 +117,8 @@ class MainMenu(ttk.Menu):
             self.parent.q.put(populate_indicators_ticket)
             self.parent.event_generate("<<CheckQueue>>")
 
+            self.parent.file_loaded = True
+
             self.parent.halt_threads = False
 
 

@@ -91,7 +91,7 @@ class MainFrame(ttk.Frame):
                 self.read_thread_done = msg.ticket_value[1]
                 print(f"READ THREAD: {self.read_thread_done} ")
 
-        # Don't need argument passed for msg.value
+        # Don't need argument passed for sg.value
         if msg.ticket_purpose == TicketPurpose.ACTIVE_ALARMS_CLEAR:
             self.active_alarms.clear()
             print("CLEAR")

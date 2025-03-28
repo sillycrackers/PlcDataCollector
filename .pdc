@@ -1,1 +1,0 @@
-[{"name": "plc1", "ip_address": "1.1.1.1", "trigger_tag": "trigger", "ack_tag": "ack", "tags": ["tag1", "tag2", "tag3"], "excel_file_name": "output", "excel_file_location": "C:/Users/silly/OneDrive/Documents/Python", "file_path": "C:/Users/silly/OneDrive/Documents/Python\\output.xlsx"}]

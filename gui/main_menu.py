@@ -86,16 +86,26 @@ class MainMenu(ttk.Menu):
 
             self.parent.halt_threads = True
 
-            while self.parent.comm_thread_done == False or self.parent.read_thread_done == False:
-                print("waiting")
+            if len(self.parent.plc_data_connections) > 0:
+                while self.parent.comm_thread_done == False or self.parent.read_thread_done == False:
+                    print("waiting")
+                    print(f"comm thread done: {self.parent.comm_thread_done} read thread done: {self.parent.read_thread_done }")
+                    time.sleep(0.5)
 
             with open(file_path, 'r') as file:
                 file_content = file.read()
+
+            self.parent.read_lock.acquire()
+            print("Did we get here?")
+            self.parent.comm_lock.acquire()
 
             self.parent.plc_data_connections.clear()
 
             for plc in self.decode_json_to_plc_objects(file_content):
                 self.parent.add_plc_connection(PlcConnection(plc))
+
+            self.parent.comm_lock.release()
+            self.parent.read_lock.release()
 
             print("NEW FILE!")
 
@@ -103,9 +113,9 @@ class MainMenu(ttk.Menu):
             populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
 
             self.parent.q.put(active_alarm_clear_ticket)
-            self.event_generate("<<CheckQueue>>")
+            self.parent.event_generate("<<CheckQueue>>")
             self.parent.q.put(populate_indicators_ticket)
-            self.event_generate("<<CheckQueue>>")
+            self.parent.event_generate("<<CheckQueue>>")
 
             self.parent.halt_threads = False
 

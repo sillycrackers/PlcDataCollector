@@ -41,6 +41,9 @@ class MainFrame(ttk.Frame):
         self.comm_thread_done = False
         self.read_thread_done = False
 
+        self.comm_lock = threading.Lock()
+        self.read_lock = threading.Lock()
+
         self.threads = []
         self.q = Queue()
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
@@ -81,15 +84,19 @@ class MainFrame(ttk.Frame):
         # ("thread name":str, state:bool)
         if msg.ticket_purpose == TicketPurpose.THREAD_DONE:
             if msg.ticket_value[0] == "comm_thread":
+                #print(f"COMM THREAD: {msg.ticket_value[1]} ")
                 self.comm_thread_done = msg.ticket_value[1]
-            if msg.ticket_value[0] == "read_thread":
+            elif msg.ticket_value[0] == "read_thread":
                 self.read_thread_done = msg.ticket_value[1]
+                print(f"READ THREAD: {self.read_thread_done} ")
 
         if msg.ticket_purpose == TicketPurpose.ACTIVE_ALARMS_CLEAR:
             self.active_alarms.clear()
+            print("CLEAR")
 
         if msg.ticket_purpose == TicketPurpose.POPULATE_INDICATORS:
             self.body_frame.populate_indicators()
+            print("POPULATE")
 
         self.q.task_done()
 
@@ -97,12 +104,19 @@ class MainFrame(ttk.Frame):
 
     #This method is being called by thread.
     def read_plc_data(self):
-
+        print("reading tags")
         if len(self.plc_data_connections) > 0:
+            self.read_lock.acquire()
             for connection in list(self.plc_data_connections.values()):
                 connection.collect_data()
-        time.sleep(0.1)
-        self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("read_thread", True)))
+                if self.halt_threads:
+                    break
+
+            self.read_lock.release()
+            self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("read_thread", True)))
+            self.event_generate("<<CheckQueue>>")
+        time.sleep(1)
+
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -113,8 +127,10 @@ class MainFrame(ttk.Frame):
     def check_connection(self):
 
         if len(self.plc_data_connections) > 0:
+
+            self.comm_lock.acquire()
             for connection in self.plc_data_connections.values():
-                print("Checking comms")
+                #print("Checking comms")
                 if connection.check_plc_connection():
 
                     alarm_ticket = Ticket(ticket_purpose=TicketPurpose.UPDATE_ALARMS,
@@ -136,8 +152,13 @@ class MainFrame(ttk.Frame):
                     self.event_generate("<<CheckQueue>>")
                     self.q.put(indicator_ticket)
                     self.event_generate("<<CheckQueue>>")
-        time.sleep(0.1)
-        self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE,ticket_value=("comm_thread",True)))
+
+            self.comm_lock.release()
+            self.q.put(Ticket(ticket_purpose=TicketPurpose.THREAD_DONE, ticket_value=("comm_thread", True)))
+            self.event_generate("<<CheckQueue>>")
+
+        time.sleep(5)
+
 
 
     def refresh_active_alarms(self):
@@ -163,6 +184,7 @@ class MainFrame(ttk.Frame):
 
         #Start the threads
         if not self.halt_threads:
+            print("Starting Threads")
             for thread in self.threads:
                 thread.start()
 

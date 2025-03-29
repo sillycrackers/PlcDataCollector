@@ -14,9 +14,6 @@ class BodyFrame(ttk.Frame):
 
         self.indicators = {}
 
-        #Body
-        self.pack(side="top", fill="x", pady=(0, 10), padx=10)
-
         #PLC Indicator List
         self.indicator_label_frame = ttk.LabelFrame(self,text="Connections")
         self.indicator_label_frame.pack(side="top",fill="x", pady=10)

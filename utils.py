@@ -8,17 +8,6 @@ from openpyxl import Workbook, load_workbook
 from enum import Enum, auto
 
 
-import contextlib
-
-@contextlib.contextmanager
-def wait_cursor(root):
-    root.config(cursor="watch")
-    root.update()
-    try:
-        yield root
-    finally:
-        root.config(cursor="")
-
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -74,6 +63,10 @@ class TicketPurpose(Enum):
     POPULATE_INDICATORS = auto()
 
     ACTIVE_ALARMS_CLEAR = auto()
+
+    SHOW_WAIT_CURSOR = auto()
+
+    SHOW_NORMAL_CURSOR = auto()
 
 class Ticket:
     def __init__(self, ticket_purpose: TicketPurpose, ticket_value):

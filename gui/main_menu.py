@@ -86,6 +86,10 @@ class MainMenu(ttk.Menu):
 
             self.parent.halt_threads = True
 
+            wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
+            self.parent.q.put(wait_cursor_ticket)
+            self.parent.event_generate("<<CheckQueue>>")
+
             if len(self.parent.plc_data_connections) > 0:
                 while self.parent.comm_thread_done == False or self.parent.read_thread_done == False:
                     print("waiting")
@@ -96,7 +100,6 @@ class MainMenu(ttk.Menu):
                 file_content = file.read()
 
             self.parent.read_lock.acquire()
-            print("Did we get here?")
             self.parent.comm_lock.acquire()
 
             self.parent.plc_data_connections.clear()
@@ -109,13 +112,20 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
+
             active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR,ticket_value=None)
             populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
+            normal_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_NORMAL_CURSOR, ticket_value=None)
 
             self.parent.q.put(active_alarm_clear_ticket)
             self.parent.event_generate("<<CheckQueue>>")
             self.parent.q.put(populate_indicators_ticket)
             self.parent.event_generate("<<CheckQueue>>")
+            self.parent.q.put(normal_cursor_ticket)
+            self.parent.event_generate("<<CheckQueue>>")
+
+
+
 
             self.parent.file_loaded = True
 

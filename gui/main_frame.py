@@ -10,6 +10,7 @@ from gui.body_frame import BodyFrame
 from gui.manage_connections_frame import ManageConnectionsFrame
 from gui.manage_connections_toplevel import ManageConnectionsToplevel
 from utils import *
+from gui.loading_label import LoadingLabel
 
 
 # Main Frame
@@ -18,6 +19,10 @@ class MainFrame(ttk.Frame):
         super().__init__(master=root_window)
 
         self.root_window = root_window
+
+        #Pack Self
+        self.pack(expand=True, fill="both")
+
 
         #Global Styles
         ttk.Style().configure('TLabelframe.Label', font=('Calibri', 13,))
@@ -35,6 +40,8 @@ class MainFrame(ttk.Frame):
         self.alarm_active.set(False)
         self.root_window = root_window
         self.plc_data_connections = {}
+        self.dot_count = 1
+        self.show_loading_animation = False
 
         self.halt_threads = False
         self.halt_threads_ack = False
@@ -50,14 +57,28 @@ class MainFrame(ttk.Frame):
         self.q = Queue()
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
 
+        #Grid setup
+
+        self.grid_columnconfigure(index=0)
+
+        #Title
+        self.grid_rowconfigure(index=0)
+        #Loading Label
+        self.grid_rowconfigure(index=1)
+        #Body
+        self.grid_rowconfigure(index=2)
+
+
         #Title
         self.title_frame = TitleFrame(self,text="PLC Data Collector",pady=50,padx=50)
-
-        #Pack Self
-        self.pack(expand=True, fill="both")
-
+        #Loading Label
+        self.loading_label = LoadingLabel(self)
         #Body
         self.body_frame = BodyFrame(self)
+
+        self.title_frame.grid(column=0,row=0,sticky="ew")
+
+        self.body_frame.grid(column=0,row=2,sticky="ew")
 
     def open_manage_connections_window(self):
 
@@ -93,9 +114,19 @@ class MainFrame(ttk.Frame):
             self.body_frame.populate_indicators()
             print("POPULATE")
 
+        if msg.ticket_purpose == TicketPurpose.SHOW_WAIT_CURSOR:
+            self.config(cursor="watch")
+            self.show_loading_animation = True
+            self.loading_label.grid(column=0, row=1, sticky="ew")
+            self.update_idletasks()
+
+        if msg.ticket_purpose == TicketPurpose.SHOW_NORMAL_CURSOR:
+            self.config(cursor="")
+            self.show_loading_animation = False
+            self.loading_label.grid_forget()
+            self.update_idletasks()
+
         self.q.task_done()
-
-
 
     #This method is being called by thread.
     def read_plc_data(self):
@@ -111,6 +142,20 @@ class MainFrame(ttk.Frame):
 
             self.read_thread_done = True
 
+    def loading_animation(self):
+
+        if self.show_loading_animation:
+
+            print(f"Adjust dots: {self.dot_count}")
+            self.loading_label.adjust_dots(self.dot_count)
+
+            if self.dot_count >= 6:
+                self.dot_count = 1
+            else:
+                self.dot_count += 1
+
+
+        self.after(500, self.loading_animation)
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -151,7 +196,6 @@ class MainFrame(ttk.Frame):
 
             self.comm_thread_done = True
 
-
     def refresh_active_alarms(self):
 
         self.threads.clear()
@@ -186,6 +230,8 @@ class MainFrame(ttk.Frame):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
+
+        self.after(100, self.loading_animation)
 
         self.mainloop()
 

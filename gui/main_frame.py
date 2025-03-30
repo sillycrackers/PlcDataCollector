@@ -77,7 +77,7 @@ class MainFrame(ttk.Frame):
 
         self.title_frame.grid(column=0,row=0,sticky="ew",pady=(20,20), padx=(30,30))
 
-        self.body_frame.grid(column=0,row=2,sticky="ew",pady=(10,10), padx=(10,10))
+        self.body_frame.grid(column=0,row=2,sticky="ew",pady=(10,20), padx=(10,10))
 
     def open_manage_connections_window(self):
 
@@ -230,8 +230,6 @@ class MainFrame(ttk.Frame):
 
     def freeze_window(self):
         self.root_window.attributes('-disabled', 1)
-
-
 
     def unfreeze_window(self):
         self.root_window.attributes('-disabled', 0)

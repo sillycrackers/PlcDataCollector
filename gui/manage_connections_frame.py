@@ -1,3 +1,4 @@
+import threading
 import time
 import tkinter as tk
 
@@ -141,7 +142,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # ================Buttons================#
 
         # Apply Button
-        self.apply_button = ttk.Button(self.main_label_frame, text="Apply Changes", command=self.apply_changes)
+        self.apply_button = ttk.Button(self.main_label_frame, text="Apply Changes", command=self.create_apply_thread)
         self.apply_button.pack(side='right', pady=20, padx=5)
         self.apply_button.config(state="disabled")
 
@@ -176,7 +177,7 @@ class ManageConnectionsFrame(ttk.Frame):
     def validate_entries(self):
         flag = True
 
-        # Validate mame entry
+        # Validate name entry
         if not entry_validation.check_valid_name(self.name_entry_variable.get()):
             self.validation_labels['name'].config(text="Invalid name, char limit is 30, cannot be empty")
             flag = False
@@ -246,95 +247,126 @@ class ManageConnectionsFrame(ttk.Frame):
         else:
             return True
 
-    def apply_changes(self):
+    def create_apply_thread(self, ok=False):
+
+        apply_thread = threading.Thread(target=self.apply_changes,args=(ok,) ,daemon=True)
+        apply_thread.start()
+
+    def obtain_data_control(self):
+        self.root_window.parent_frame.halt_threads = True
+        wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
+        self.root_window.parent_frame.q.put(wait_cursor_ticket)
+        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+        self.root_window.parent_frame.read_lock.acquire()
+        self.root_window.parent_frame.comm_lock.acquire()
+
+    def release_data_control(self):
+        self.root_window.parent_frame.comm_lock.release()
+        self.root_window.parent_frame.read_lock.release()
+        self.applied = True
+        self.root_window.parent_frame.file_loaded = True
+        self.root_window.parent_frame.halt_threads = False
+        active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, ticket_value=None)
+        populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
+        normal_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_NORMAL_CURSOR, ticket_value=None)
+
+        self.root_window.parent_frame.q.put(active_alarm_clear_ticket)
+        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+        self.root_window.parent_frame.q.put(populate_indicators_ticket)
+        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+        self.root_window.parent_frame.q.put(normal_cursor_ticket)
+        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+
+    def apply_changes(self, ok=False):
+
+        print(f"ok status: {ok}")
 
         if self.validate_entries():
 
-            # Create completely new plc connection if "Add New PLC..." is selected
-
             if self.option.get() == "Add New PLC...":
-                new_plc = Plc(
-                    name=self.name_entry_variable.get(),
-                    ip_address=self.ip_address_entry_variable.get(),
-                    trigger_tag=self.trigger_tag_entry_variable.get(),
-                    ack_tag=self.ack_tag_entry_variable.get(),
-                    tags=self.tag_list_entry_variable.get().strip().split(','),
-                    excel_file_name=self.excel_file_name_entry_variable.get(),
-                    excel_file_location=self.excel_file_location_entry_variable.get()
-                )
 
-                self.root_window.parent_frame.halt_threads = True
-
-                self.root_window.parent_frame.read_lock.acquire()
-                self.root_window.parent_frame.comm_lock.acquire()
-
-                self.add_plc_connection(PlcConnection(new_plc, self.root_window.parent_frame.halt_threads))
-
-                self.root_window.parent_frame.comm_lock.release()
-                self.root_window.parent_frame.read_lock.release()
-
-                print("Changes Applied!")
-
-                self.applied = True
-                self.root_window.parent_frame.file_loaded = True
-                self.root_window.parent_frame.halt_threads = False
-
-                self.combo_list.insert(-1, new_plc.name)
-                self.option.set(new_plc.name)
-                self.option_menu.set_menu(new_plc.name, *self.combo_list)
-
+                # Create completely new plc connection if "Add New PLC..." is selected
+                self.add_new_connection()
             else:
 
                 # If we are editing an existing connection
                 # Create new plc object to replace the one we are editing
-                old_plc_name = self.option.get()
-
-                edit_plc = Plc(
-                    name=self.name_entry_variable.get(),
-                    ip_address=self.ip_address_entry_variable.get(),
-                    trigger_tag=self.trigger_tag_entry_variable.get(),
-                    ack_tag=self.ack_tag_entry_variable.get(),
-                    # Fixed bug here that was incorrectly converting string to list
-                    tags=self.tag_list_entry_variable.get().strip().split(','),
-                    excel_file_name=self.excel_file_name_entry_variable.get(),
-                    excel_file_location=self.excel_file_location_entry_variable.get()
-                )
-
-                edit_plc_connection = PlcConnection(edit_plc, self.root_window.parent_frame.halt_threads)
-
-                self.root_window.parent_frame.read_lock.acquire()
-                self.root_window.parent_frame.comm_lock.acquire()
-
-                self.replace_plc_connection(edit_plc_connection, self.connections[old_plc_name])
-
-                self.root_window.parent_frame.comm_lock.release()
-                self.root_window.parent_frame.read_lock.release()
-
-                print("Changes Applied!")
-
-                self.applied = True
-
-                self.root_window.parent_frame.file_loaded = True
-
-                # Clear list and populate new list with newly added item to dictionary
-                self.populate_combo_list()
-
-                # Set the selected option for the OptionMenu
-                self.option.set(self.name_entry_variable.get())
-
-                # Setup the Option Menu again with new list
-                self.option_menu.set_menu(self.option.get(), *self.combo_list)
+               self.edit_existing_connection()
 
             self.apply_button.config(state="disabled")
-            return True
-        else:
-            return False
+
+            if ok:
+                self.root_window.close()
+            else:
+                ...
+
+
+    def add_new_connection(self):
+
+        new_plc = Plc(
+            name=self.name_entry_variable.get(),
+            ip_address=self.ip_address_entry_variable.get(),
+            trigger_tag=self.trigger_tag_entry_variable.get(),
+            ack_tag=self.ack_tag_entry_variable.get(),
+            tags=self.tag_list_entry_variable.get().strip().split(','),
+            excel_file_name=self.excel_file_name_entry_variable.get(),
+            excel_file_location=self.excel_file_location_entry_variable.get()
+        )
+
+        # Stop threads accessing data so we can edit it
+        self.obtain_data_control()
+
+        # Add new connection to dict
+        self.add_plc_connection(PlcConnection(new_plc, self.root_window.parent_frame.halt_threads))
+
+        # Release locks and update flags for controlling threads, so they can start again
+        self.release_data_control()
+
+        print("Changes Applied!")
+
+        self.combo_list.insert(-1, new_plc.name)
+        self.option.set(new_plc.name)
+        self.option_menu.set_menu(new_plc.name, *self.combo_list)
+
+    def edit_existing_connection(self):
+        old_plc_name = self.option.get()
+
+        edit_plc = Plc(
+            name=self.name_entry_variable.get(),
+            ip_address=self.ip_address_entry_variable.get(),
+            trigger_tag=self.trigger_tag_entry_variable.get(),
+            ack_tag=self.ack_tag_entry_variable.get(),
+            # Fixed bug here that was incorrectly converting string to list
+            tags=self.tag_list_entry_variable.get().strip().split(','),
+            excel_file_name=self.excel_file_name_entry_variable.get(),
+            excel_file_location=self.excel_file_location_entry_variable.get()
+        )
+
+        edit_plc_connection = PlcConnection(edit_plc, self.root_window.parent_frame.halt_threads)
+
+        # Stop threads accessing data so we can edit it
+        self.obtain_data_control()
+
+        self.replace_plc_connection(edit_plc_connection, self.connections[old_plc_name])
+
+        # Release locks and update flags for controlling threads, so they can start again
+        self.release_data_control()
+
+        print("Changes Applied!")
+
+        # Clear list and populate new list with newly added item to dictionary
+        self.populate_combo_list()
+
+        # Set the selected option for the OptionMenu
+        self.option.set(self.name_entry_variable.get())
+
+        # Setup the Option Menu again with new list
+        self.option_menu.set_menu(self.option.get(), *self.combo_list)
 
     def ok(self):
 
         if not self.applied:
-            if self.apply_changes():
-                self.root_window.close()
+            self.create_apply_thread(ok=True)
         else:
             self.root_window.close()
 

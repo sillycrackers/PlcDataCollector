@@ -77,7 +77,6 @@ class MainMenu(ttk.Menu):
 
         open_file_thread.start()
 
-
     def open_file(self):
 
         file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
@@ -85,7 +84,6 @@ class MainMenu(ttk.Menu):
         if os.path.exists(file_path):
 
             self.parent.halt_threads = True
-
 
             wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
             self.parent.q.put(wait_cursor_ticket)
@@ -113,7 +111,6 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
-
             active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR,ticket_value=None)
             populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
             normal_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_NORMAL_CURSOR, ticket_value=None)
@@ -125,10 +122,8 @@ class MainMenu(ttk.Menu):
             self.parent.q.put(normal_cursor_ticket)
             self.parent.event_generate("<<CheckQueue>>")
 
-
             self.parent.file_loaded = True
             self.parent.halt_threads = False
-
 
     def save_file(self):
 

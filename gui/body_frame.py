@@ -6,6 +6,7 @@ from gui.output_display import OutputDisplay
 from gui.indicator import Indicator
 from gui.colors import *
 
+
 class BodyFrame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(master=parent)

@@ -155,7 +155,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # ========================================#
 
-
         # hide validation labels initially
         self.hide_validation_labels()
 

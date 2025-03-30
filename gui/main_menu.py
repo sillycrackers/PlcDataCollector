@@ -77,14 +77,15 @@ class MainMenu(ttk.Menu):
 
         open_file_thread.start()
 
-    def open_file(self):
 
+    def open_file(self):
 
         file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
 
         if os.path.exists(file_path):
 
             self.parent.halt_threads = True
+
 
             wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
             self.parent.q.put(wait_cursor_ticket)
@@ -125,12 +126,8 @@ class MainMenu(ttk.Menu):
             self.parent.event_generate("<<CheckQueue>>")
 
 
-
-
             self.parent.file_loaded = True
-
             self.parent.halt_threads = False
-
 
 
     def save_file(self):

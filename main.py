@@ -18,7 +18,6 @@ def main():
     app = MainFrame(root)
     app.body_frame.populate_indicators()
 
-
     app.run_app()
 
 if __name__ == "__main__":

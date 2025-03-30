@@ -17,8 +17,6 @@ class ManageConnectionsToplevel(ttk.Toplevel):
         self.root_window = root_window
         self.parent_frame = parent_frame
 
-
-
         # Make parent window disabled and make sure to run close method when closing this window
         self.transient(root_window)
         self.protocol('WM_DELETE_WINDOW', self.close)

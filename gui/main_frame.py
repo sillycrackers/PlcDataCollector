@@ -23,7 +23,6 @@ class MainFrame(ttk.Frame):
         #Pack Self
         self.pack(expand=True, fill="both")
 
-
         #Global Styles
         ttk.Style().configure('TLabelframe.Label', font=('Calibri', 13,))
         ttk.Style().configure('TButton', font=('Calibri', 12,))
@@ -64,7 +63,7 @@ class MainFrame(ttk.Frame):
         #Title
         self.grid_rowconfigure(index=0)
         #Loading Label
-        self.grid_rowconfigure(index=1)
+        self.grid_rowconfigure(index=1,minsize="35")
         #Body
         self.grid_rowconfigure(index=2)
 
@@ -76,9 +75,9 @@ class MainFrame(ttk.Frame):
         #Body
         self.body_frame = BodyFrame(self)
 
-        self.title_frame.grid(column=0,row=0,sticky="ew")
+        self.title_frame.grid(column=0,row=0,sticky="ew",pady=(20,20), padx=(30,30))
 
-        self.body_frame.grid(column=0,row=2,sticky="ew")
+        self.body_frame.grid(column=0,row=2,sticky="ew",pady=(10,10), padx=(10,10))
 
     def open_manage_connections_window(self):
 
@@ -96,35 +95,38 @@ class MainFrame(ttk.Frame):
         msg: Ticket
         msg = self.q.get()
 
+        match msg.ticket_purpose:
 
-        # ("message":str, Alarm active:bool)
-        if msg.ticket_purpose == TicketPurpose.UPDATE_ALARMS:
-            self.active_alarms[msg.ticket_value[0]] = msg.ticket_value[1]
+            case TicketPurpose.UPDATE_ALARMS:
+                # ("message":str, Alarm active:bool)
+                self.active_alarms[msg.ticket_value[0]] = msg.ticket_value[1]
 
-        # (state:bool,"plc.name:str")
-        if msg.ticket_purpose == TicketPurpose.TOGGLE_INDICATOR:
-            self.body_frame.toggle_indicator(msg.ticket_value[0],msg.ticket_value[1])
+            case TicketPurpose.TOGGLE_INDICATOR:
+                # (state:bool,"plc.name:str")
+                self.body_frame.toggle_indicator(msg.ticket_value[0],msg.ticket_value[1])
 
-        # Don't need argument passed for sg.value
-        if msg.ticket_purpose == TicketPurpose.ACTIVE_ALARMS_CLEAR:
-            self.active_alarms.clear()
-            print("CLEAR")
+            case TicketPurpose.ACTIVE_ALARMS_CLEAR:
+                self.active_alarms.clear()
+                print("CLEAR")
 
-        if msg.ticket_purpose == TicketPurpose.POPULATE_INDICATORS:
-            self.body_frame.populate_indicators()
-            print("POPULATE")
+            case TicketPurpose.POPULATE_INDICATORS:
+                self.body_frame.populate_indicators()
+                print("POPULATE")
 
-        if msg.ticket_purpose == TicketPurpose.SHOW_WAIT_CURSOR:
-            self.config(cursor="watch")
-            self.show_loading_animation = True
-            self.loading_label.grid(column=0, row=1, sticky="ew")
-            self.update_idletasks()
+            case TicketPurpose.SHOW_WAIT_CURSOR:
+                self.config(cursor="watch")
+                self.show_loading_animation = True
+                self.loading_label.grid(column=0, row=1, sticky="ew")
+                self.root_window.update_idletasks()
+                self.freeze_window()
 
-        if msg.ticket_purpose == TicketPurpose.SHOW_NORMAL_CURSOR:
-            self.config(cursor="")
-            self.show_loading_animation = False
-            self.loading_label.grid_forget()
-            self.update_idletasks()
+            case TicketPurpose.SHOW_NORMAL_CURSOR:
+                self.config(cursor="")
+                self.show_loading_animation = False
+                self.loading_label.grid_forget()
+                self.root_window.update_idletasks()
+                self.unfreeze_window()
+
 
         self.q.task_done()
 
@@ -225,6 +227,14 @@ class MainFrame(ttk.Frame):
                 self.comm_thread_done = False
 
         self.after(250, self.refresh_active_alarms)
+
+    def freeze_window(self):
+        self.root_window.attributes('-disabled', 1)
+
+
+
+    def unfreeze_window(self):
+        self.root_window.attributes('-disabled', 0)
 
     def run_app(self):
 

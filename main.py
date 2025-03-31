@@ -15,7 +15,7 @@ def main():
     logo_image = tk.PhotoImage(file=utils.resource_path("data_icon.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
-    app.body_frame.populate_indicators()
+    app.left_body_frame.populate_indicators()
 
     app.run_app()
 

@@ -26,4 +26,4 @@ class ManageConnectionsToplevel(ttk.Toplevel):
     def close(self):
         self.root_window.attributes('-disabled', 0)
         self.destroy()
-        self.parent_frame.body_frame.populate_indicators()
+        self.parent_frame.left_body_frame.populate_indicators()

@@ -1,5 +1,6 @@
 import tkinter as tk
 from idlelib.configdialog import font_sample_text
+from tkinter import ttk as oldttk
 
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *

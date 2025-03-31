@@ -51,7 +51,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.grid_columnconfigure(1)
 
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
-        self.title_label.grid(row=0, column=0)
+        self.title_label.grid(row=0, column=0, pady=(20,0))
 
         self.loading_label = AnimatedLabel(self, text="Loading")
 

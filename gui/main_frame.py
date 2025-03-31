@@ -6,11 +6,12 @@ import threading
 
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
-from gui.body_frame import BodyFrame
+from gui.left_body_frame import LeftBodyFrame
 from gui.manage_connections_frame import ManageConnectionsFrame
 from gui.manage_connections_toplevel import ManageConnectionsToplevel
 from utils import *
 from gui.animated_label import AnimatedLabel
+from gui.right_body_frame import RightBodyFrame
 
 
 # Main Frame
@@ -24,10 +25,12 @@ class MainFrame(ttk.Frame):
         self.pack(expand=True, fill="both")
 
         #Global Styles
-        ttk.Style().configure('TLabelframe.Label', font=('Calibri', 13,))
-        ttk.Style().configure('TButton', font=('Calibri', 12,))
 
-        ttk.Style(theme='flatly')
+        self.my_style = ttk.Style(theme='flatly')
+
+        self.my_style.configure('TLabelframe.Label', font=('Calibri', 13,))
+        self.my_style.configure('custom.TButton', font=('Calibri', 12,))
+
 
         #Main Menu
         self.main_menu = MainMenu(root_window, self)
@@ -56,9 +59,12 @@ class MainFrame(ttk.Frame):
         self.q = Queue()
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
 
-        #Grid setup
+        #=============Grid setup================#
+
+
 
         self.grid_columnconfigure(index=0)
+        self.grid_columnconfigure(index=1, minsize=400)
 
         #Title
         self.grid_rowconfigure(index=0)
@@ -68,16 +74,20 @@ class MainFrame(ttk.Frame):
         self.grid_rowconfigure(index=2)
 
 
-        #Title
+        #Title Frame
         self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
         #Loading Label
         self.loading_label = AnimatedLabel(self, text="Loading")
-        #Body
-        self.body_frame = BodyFrame(self)
+        #Left Body Frame
+        self.left_body_frame = LeftBodyFrame(self)
+        #Right Body Frame
+        self.right_body_frame = RightBodyFrame(self)
 
-        self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
+        self.title_frame.grid(column=0, row=0,columnspan=2, sticky="ew",pady=(20,20), padx=(30,30))
 
-        self.body_frame.grid(column=0, row=2, sticky="ew", pady=(10,20), padx=(10,10))
+        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10))
+
+        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10))
 
     def open_manage_connections_window(self):
 
@@ -103,14 +113,14 @@ class MainFrame(ttk.Frame):
 
             case TicketPurpose.TOGGLE_INDICATOR:
                 # (state:bool,"plc.name:str")
-                self.body_frame.toggle_indicator(msg.value[0], msg.value[1])
+                self.left_body_frame.toggle_indicator(msg.value[0], msg.value[1])
 
             case TicketPurpose.ACTIVE_ALARMS_CLEAR:
                 self.active_alarms.clear()
                 print("CLEAR")
 
             case TicketPurpose.POPULATE_INDICATORS:
-                self.body_frame.populate_indicators()
+                self.left_body_frame.populate_indicators()
                 print("POPULATE")
 
             case TicketPurpose.SHOW_WAIT_CURSOR:
@@ -127,7 +137,7 @@ class MainFrame(ttk.Frame):
 
             case TicketPurpose.SHOW_ANIMATED_LABEL:
                 # (AnimatedLabel: object,column : int, row : int)
-                msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew")
+                msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew", columnspan=2)
                 self.show_loading_animation = True
                 self.after(100, self.label_animation, msg.value[0])
 
@@ -198,11 +208,11 @@ class MainFrame(ttk.Frame):
 
         self.threads.clear()
 
-        self.body_frame.clear_alarm_messages()
+        self.left_body_frame.clear_alarm_messages()
 
         for alarm in self.active_alarms:
             if self.active_alarms[alarm]:
-                self.body_frame.output_alarm_message(message=alarm)
+                self.left_body_frame.output_alarm_message(message=alarm)
 
         #Threads
         check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)

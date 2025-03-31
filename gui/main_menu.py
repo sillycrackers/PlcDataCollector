@@ -35,7 +35,7 @@ class MainMenu(ttk.Menu):
         #Theme Sub Menu
         self.theme_menu = ttk.Menu(self.view_menu, font="calibri 12")
         self.theme_menu.add_command(label="Dark Theme", command=lambda : self.change_theme('dark'))
-        self.theme_menu.add_command(label="Light Theme", command=lambda: self.change_theme('light'))
+        self.theme_menu.add_command(label="Light Theme", command=lambda : self.change_theme('light'))
         self.view_menu.add_cascade(label="  Theme  ", menu=self.theme_menu)
 
         #Help Menu

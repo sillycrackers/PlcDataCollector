@@ -1,7 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 import webbrowser
-new = 2 # open in a new tab, if possible
 
 from gui.main_frame import MainFrame
 
@@ -22,12 +21,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-

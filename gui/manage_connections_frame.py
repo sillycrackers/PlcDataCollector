@@ -12,9 +12,9 @@ from gui.animated_label import AnimatedLabel
 
 
 class ManageConnectionsFrame(ttk.Frame):
-    def __init__(self, root_window, connections, main_root_window):
-        super().__init__(master=root_window)
-        self.root_window = root_window
+    def __init__(self, parent_window, connections, main_root_window):
+        super().__init__(master=parent_window)
+        self.parent_window = parent_window
         self.connections = connections
         self.main_root_window = main_root_window
 
@@ -56,7 +56,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.loading_label = AnimatedLabel(self, text="Loading")
 
         self.main_label_frame = ttk.LabelFrame(self, text="PLC Connections")
-        self.main_label_frame.grid(row=2, column=0)
+        self.main_label_frame.grid(row=2, column=0, pady=(0,20))
 
         self.combo_list = []
 
@@ -85,14 +85,16 @@ class ManageConnectionsFrame(ttk.Frame):
         self.inner_frame = ttk.Frame(self.main_label_frame)
         self.inner_frame.pack(padx=20, pady=20)
 
-        #variable used to locate data entries on grid relative to the first one placed
 
-        self.start_row = 0
 
         #===========Data Entries=============#
 
+        #startrow used to locate data entries on grid relative to the first one placed
+        self.start_row = 0
+
+
         # Name Validation
-        self.name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red")
+        self.name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
         self.name_validation_label.grid(row=self.start_row, column=0, columnspan=2, sticky='e')
         # PLC Name
         self.name_entry = DataEntry(self, self.inner_frame, "Plc Name:", self.name_entry_variable, self.start_row + 1)
@@ -123,7 +125,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
         self.tag_list_validation_label.grid(row=self.start_row + 8, column=0, columnspan=2, sticky='e')
         # Tag List
-        self.tag_list_entry = DataEntry(self.root_window,self.inner_frame, "Tag List:", self.tag_list_entry_variable,
+        self.tag_list_entry = DataEntry(self.parent_window, self.inner_frame, "Tag List:", self.tag_list_entry_variable,
                                         self.start_row + 9, True, "tag_entry")
         # Excel File Name Validation
         self.excel_file_name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
@@ -163,7 +165,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.ok_button.pack(side='right', pady=20, padx=5)
 
         # Cancel Button
-        self.cancel_button = ttk.Button(self.main_label_frame, text="Cancel", command=root_window.close)
+        self.cancel_button = ttk.Button(self.main_label_frame, text="Cancel", command=parent_window.close)
         self.cancel_button.pack(side='right', pady=20, padx=5)
 
         # ========================================#
@@ -263,33 +265,33 @@ class ManageConnectionsFrame(ttk.Frame):
         apply_thread.start()
 
     def obtain_data_control(self):
-        self.root_window.parent_frame.halt_threads = True
-        wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.root_window,
-                                    parent_frame=self.root_window.parent_frame)
+        self.parent_window.parent_frame.halt_threads = True
+        wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window,
+                                    main_frame=self.parent_window.parent_frame)
         wait_cursor_ticket.transmit()
 
         loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
-                                    parent_frame=self.root_window.parent_frame)
+                                      main_frame=self.parent_window.parent_frame)
         loading_label_ticket.transmit()
 
-        self.root_window.parent_frame.read_lock.acquire()
-        self.root_window.parent_frame.comm_lock.acquire()
+        self.parent_window.parent_frame.read_lock.acquire()
+        self.parent_window.parent_frame.comm_lock.acquire()
 
     def release_data_control(self):
-        self.root_window.parent_frame.comm_lock.release()
-        self.root_window.parent_frame.read_lock.release()
+        self.parent_window.parent_frame.comm_lock.release()
+        self.parent_window.parent_frame.read_lock.release()
         self.applied = True
-        self.root_window.parent_frame.file_loaded = True
-        self.root_window.parent_frame.halt_threads = False
+        self.parent_window.parent_frame.file_loaded = True
+        self.parent_window.parent_frame.halt_threads = False
 
         active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None,
-                                           parent_frame=self.root_window.parent_frame)
+                                           main_frame=self.parent_window.parent_frame)
         populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None,
-                                           parent_frame=self.root_window.parent_frame)
-        normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.root_window,
-                                           parent_frame=self.root_window.parent_frame)
+                                            main_frame=self.parent_window.parent_frame)
+        normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window,
+                                      main_frame=self.parent_window.parent_frame)
         loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
-                                           parent_frame=self.root_window.parent_frame)
+                                      main_frame=self.parent_window.parent_frame)
 
         active_alarm_clear_ticket.transmit()
         populate_indicators_ticket.transmit()
@@ -313,7 +315,7 @@ class ManageConnectionsFrame(ttk.Frame):
             self.apply_button.config(state="disabled")
 
             if ok:
-                self.root_window.close()
+                self.parent_window.close()
             else:
                 ...
 
@@ -333,7 +335,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.obtain_data_control()
 
         # Add new connection to dict
-        self.add_plc_connection(PlcConnection(new_plc, self.root_window.parent_frame.halt_threads))
+        self.add_plc_connection(PlcConnection(new_plc, self.parent_window.parent_frame.halt_threads))
 
         # Release locks and update flags for controlling threads, so they can start again
         self.release_data_control()
@@ -358,7 +360,7 @@ class ManageConnectionsFrame(ttk.Frame):
             excel_file_location=self.excel_file_location_entry_variable.get()
         )
 
-        edit_plc_connection = PlcConnection(edit_plc, self.root_window.parent_frame.halt_threads)
+        edit_plc_connection = PlcConnection(edit_plc, self.parent_window.parent_frame.halt_threads)
 
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
@@ -373,6 +375,8 @@ class ManageConnectionsFrame(ttk.Frame):
         # Clear list and populate new list with newly added item to dictionary
         self.populate_combo_list()
 
+        self.combo_list.append("Add New PLC...")
+
         # Set the selected option for the OptionMenu
         self.option.set(self.name_entry_variable.get())
 
@@ -384,7 +388,7 @@ class ManageConnectionsFrame(ttk.Frame):
         if not self.applied:
             self.run_apply_thread(ok=True)
         else:
-            self.root_window.close()
+            self.parent_window.close()
 
     def callback(self, var, index, mode):
 

@@ -83,7 +83,7 @@ class MainFrame(ttk.Frame):
 
         manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
 
-        manage_connections_frame = ManageConnectionsFrame(root_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
+        manage_connections_frame = ManageConnectionsFrame(parent_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
 
         manage_connections_frame.pack()
 
@@ -175,18 +175,18 @@ class MainFrame(ttk.Frame):
                 if connection.check_plc_connection():
 
                     alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
-                                          value=(f"Lost Connection to {connection.plc.name}", False),parent_frame=self)
+                                          value=(f"Lost Connection to {connection.plc.name}", False), main_frame=self)
                     indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              value=(True, connection.plc.name),parent_frame=self)
+                                              value=(True, connection.plc.name), main_frame=self)
                     alarm_ticket.transmit()
                     indicator_ticket.transmit()
 
                 else:
 
                     alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
-                                          value=(f"Lost Connection to {connection.plc.name}", True),parent_frame=self)
+                                          value=(f"Lost Connection to {connection.plc.name}", True), main_frame=self)
                     indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              value=(False, connection.plc.name),parent_frame=self)
+                                              value=(False, connection.plc.name), main_frame=self)
                     alarm_ticket.transmit()
                     indicator_ticket.transmit()
 

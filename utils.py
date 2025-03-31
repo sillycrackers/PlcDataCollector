@@ -74,13 +74,13 @@ class TicketPurpose(Enum):
     HIDE_ANIMATED_LABEL = auto()
 
 class Ticket:
-    def __init__(self, purpose: TicketPurpose, value, parent_frame):
+    def __init__(self, purpose: TicketPurpose, value, main_frame):
         self.purpose = purpose
         self.value = value
-        self.parent_frame = parent_frame
+        self.main_frame = main_frame
 
     def transmit(self):
 
-        self.parent_frame.q.put(self)
-        self.parent_frame.event_generate("<<CheckQueue>>")
+        self.main_frame.q.put(self)
+        self.main_frame.event_generate("<<CheckQueue>>")
 

@@ -283,6 +283,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.root_window.parent_frame.file_loaded = True
         self.root_window.parent_frame.halt_threads = False
 
+        #change
+
         active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None,
                                            parent_frame=self.root_window.parent_frame)
         populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None,

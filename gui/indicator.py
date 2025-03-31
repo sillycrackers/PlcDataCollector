@@ -5,8 +5,8 @@ from utils import *
 
 
 class Indicator(tk.Frame):
-    def __init__(self, parent, display_text, color):
-        super().__init__(master=parent.inside_frame)
+    def __init__(self, indicator_frame, display_text, color):
+        super().__init__(master=indicator_frame)
         self.color = color
 
         self.display_text = display_text

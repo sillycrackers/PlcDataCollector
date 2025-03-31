@@ -19,10 +19,21 @@ def resource_path(relative_path):
 
 def change_theme(theme):
     if theme == 'dark':
-        ttk.Style(theme='darkly')
+
+        style_object = ttk.Style(theme='darkly')
+
+        style_object.configure('TLabelframe.Label', font=('Calibri', 12,))
+        style_object.configure('custom.TButton', font=('Calibri', 12,))
+        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
 
     elif theme == 'light':
-        ttk.Style(theme='flatly')
+
+        style_object = ttk.Style(theme='flatly')
+
+        style_object.configure('TLabelframe.Label', font=('Calibri', 12,))
+        style_object.configure('custom.TButton', font=('Calibri', 12,))
+        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
+
 # Function to save data to Excel
 def save_to_excel(plc, row):
 

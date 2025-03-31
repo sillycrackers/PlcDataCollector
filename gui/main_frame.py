@@ -28,8 +28,9 @@ class MainFrame(ttk.Frame):
 
         self.my_style = ttk.Style(theme='flatly')
 
-        self.my_style.configure('TLabelframe.Label', font=('Calibri', 13,))
+        self.my_style.configure('TLabelframe.Label', font=('Calibri', 12,))
         self.my_style.configure('custom.TButton', font=('Calibri', 12,))
+        self.my_style.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
 
 
         #Main Menu
@@ -52,16 +53,20 @@ class MainFrame(ttk.Frame):
 
         self.file_loaded = False
 
+        self.click_count = 0
+
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
 
         self.threads = []
         self.q = Queue()
+
+        #========== Window Events ==============#
+
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
+        self.root_window.bind("<Button>", self.on_click)
 
         #=============Grid setup================#
-
-
 
         self.grid_columnconfigure(index=0)
         self.grid_columnconfigure(index=1, minsize=400)
@@ -85,17 +90,20 @@ class MainFrame(ttk.Frame):
 
         self.title_frame.grid(column=0, row=0,columnspan=2, sticky="ew",pady=(20,20), padx=(30,30))
 
-        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10))
+        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
 
-        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10))
+        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
 
-    def open_manage_connections_window(self):
+        #Treeview objects
 
-        manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
+        self.message_treeview = self.right_body_frame.output.listbox
 
-        manage_connections_frame = ManageConnectionsFrame(parent_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
+    def on_click(self, var):
 
-        manage_connections_frame.pack()
+        #Remove selection from treeviews
+
+        if len(self.message_treeview.selection()) > 0:
+            self.message_treeview.selection_remove(self.message_treeview.selection()[0])
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
@@ -168,6 +176,14 @@ class MainFrame(ttk.Frame):
             label.adjust_dots()
 
             self.after(400, self.label_animation, label)
+
+    def open_manage_connections_window(self):
+
+        manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
+
+        manage_connections_frame = ManageConnectionsFrame(parent_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
+
+        manage_connections_frame.pack()
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -244,8 +260,6 @@ class MainFrame(ttk.Frame):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
-
-
 
         self.mainloop()
 

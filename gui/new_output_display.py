@@ -6,23 +6,36 @@ import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
 class NewOutputDisplay(ttk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, style = None):
         super().__init__(master=parent)
+
+        self.iid_count = 0
 
         self.scrollbar = ttk.Scrollbar(self)
         self.listbox = ttk.Treeview(self, yscrollcommand=self.scrollbar.set, show="tree")
         self.scrollbar.configure(command=self.listbox.yview)
+        self.style = style
+
+        if self.style is not None:
+            self.listbox.configure(style=self.style)
 
         self.scrollbar.pack(side="right", fill="y")
         self.listbox.pack(side="left", expand=True, fill="both")
 
         self.pack(expand=True, fill="both")
 
-        for x in range(10):
-            self.add_message("Hello", x)
+    def add_message(self, message):
+        self.iid_count += 1
+        self.listbox.insert(parent='',index="end",text=message,iid=self.iid_count)
 
-    def add_message(self, message, iid):
-        self.listbox.insert(parent='',index="end",text=message,iid=iid)
+        #if self.iid_count > 0:
+            #self.listbox.see(tk.END)  # Auto-scroll to the latest message
 
     def clear_messages(self):
-        self.listbox.delete('0','end')
+
+        if self.iid_count > 1:
+            self.iid_count -= 1
+
+        if self.iid_count > 0:
+            for item in self.listbox.get_children():
+                self.listbox.delete(item)

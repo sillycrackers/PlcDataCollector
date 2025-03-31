@@ -1,6 +1,5 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-import webbrowser
 
 from gui.main_frame import MainFrame
 
@@ -16,6 +15,8 @@ def main():
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     app.left_body_frame.populate_indicators()
+
+    root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
 
     app.run_app()
 

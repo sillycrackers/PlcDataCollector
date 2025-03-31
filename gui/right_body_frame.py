@@ -1,5 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from PIL.ImageOps import expand
+from openpyxl.styles.fills import fills
 from ttkbootstrap.scrolled import *
 
 from gui.new_output_display import NewOutputDisplay
@@ -14,8 +16,11 @@ class RightBodyFrame(ttk.Frame):
 
         self.main_frame = main_frame
 
-        self.label_frame = ttk.LabelFrame(master=self,text="Message Output")
-        self.label_frame.pack(expand=True, fill="both")
+        self.title_label = ttk.Label(master=self, text="Output Messages",font="calibri 14",justify="left")
+        self.title_label.pack(fill="x")
 
-        self.output = NewOutputDisplay(self.label_frame)
-        self.output.pack()
+        self.output = NewOutputDisplay(parent=self)
+        self.output.pack(expand=True, fill="both")
+
+        for x in range(10):
+            self.output.add_message("Hello World")

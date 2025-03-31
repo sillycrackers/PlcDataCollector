@@ -11,7 +11,7 @@ class OutputDisplay(ScrolledFrame):
 
         self.font_color = font_color
 
-        self.listbox = tk.Listbox(self, foreground=self.font_color, font='calibri 14')
+        self.listbox = tk.Listbox(self, font='calibri 14')
 
         self.listbox.pack(expand=True, fill="both")
 
@@ -19,7 +19,7 @@ class OutputDisplay(ScrolledFrame):
 
     def add_message(self, message):
         self.listbox.insert("end",message)
-        self.listbox.itemconfig("end", {'fg': 'red'})
+        self.listbox.itemconfig("end", {'fg': self.font_color})
 
     def clear_messages(self):
         self.listbox.delete('0','end')

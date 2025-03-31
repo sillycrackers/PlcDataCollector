@@ -2,6 +2,7 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
+from gui.new_output_display import NewOutputDisplay
 from gui.output_display import OutputDisplay
 from gui.indicator import Indicator
 from gui.colors import *
@@ -13,22 +14,26 @@ class LeftBodyFrame(ttk.Frame):
 
         self.main_frame = main_frame
 
+
+
         self.indicators = {}
 
-        #PLC Indicator List
-        self.indicator_label_frame = ttk.LabelFrame(self,text="Connections")
-        self.indicator_label_frame.pack(expand=True,fill="both")
+        self.title_label = ttk.Label(self, text="PLC Connections", font="calibri 14", justify="left")
+        self.title_label.pack(fill='x')
 
-        self.inside_frame = ScrolledFrame(self.indicator_label_frame)
-        self.inside_frame.pack(fill="both",expand=True)
+        self.border_frame = ttk.Frame(self, borderwidth=1, relief=tk.RIDGE)
+        self.border_frame.pack(fill="both", expand=True)
 
-        self.inside_frame.columnconfigure(index=0,weight=1)
-        self.inside_frame.columnconfigure(index=1, weight=1)
-        self.inside_frame.columnconfigure(index=2, weight=2)
-        self.inside_frame.rowconfigure(index=(0,1,2), weight=1)
+        self.indicator_frame = ScrolledFrame(self.border_frame)
+        self.indicator_frame.pack(fill="both", expand=True)
 
-        self.spacer_label1 = ttk.Label(self.inside_frame)
-        self.spacer_label2 = ttk.Label(self.inside_frame)
+        self.indicator_frame.columnconfigure(index=0, weight=1)
+        self.indicator_frame.columnconfigure(index=1, weight=1)
+        self.indicator_frame.columnconfigure(index=2, weight=2)
+        self.indicator_frame.rowconfigure(index=(0, 1, 2), weight=1)
+
+        self.spacer_label1 = ttk.Label(self.indicator_frame)
+        self.spacer_label2 = ttk.Label(self.indicator_frame)
 
         self.spacer_label1.grid(row=0, column=0, sticky='ew')
         self.spacer_label2.grid(row=0,column=2, sticky='ew')
@@ -36,10 +41,10 @@ class LeftBodyFrame(ttk.Frame):
         self.open_manage_connections_button = ttk.Button(self,style='custom.TButton', text="Manage Connections", command=self.main_frame.open_manage_connections_window)
         self.open_manage_connections_button.pack(ipady=5, ipadx=5)
 
-        self.alarm_title = ttk.Label(self, text="Active Alarms", font="calibri 16", foreground='red')
-        self.alarm_title.pack()
+        self.alarm_title = ttk.Label(self, text="Active Alarms", font="calibri 14", foreground='red', justify="left")
+        self.alarm_title.pack(fill="x")
 
-        self.alarm_output = OutputDisplay(self,"red")
+        self.alarm_output = NewOutputDisplay(self, style='alarm.Treeview')
         self.alarm_output.pack()
 
     #Create and display indicators the indicators for all connections
@@ -55,7 +60,7 @@ class LeftBodyFrame(ttk.Frame):
             self.indicators.clear()
 
         for connection in list(self.main_frame.plc_data_connections.values()) :
-            self.indicators[connection.plc.name] = Indicator(self, connection.plc.name, RED)
+            self.indicators[connection.plc.name] = Indicator(self.indicator_frame, connection.plc.name, RED)
 
         for indicator in self.indicators:
             self.indicators[indicator].grid(row=x, column=1, sticky='nse')
@@ -72,7 +77,7 @@ class LeftBodyFrame(ttk.Frame):
 
     def output_alarm_message(self, message):
         self.alarm_output.add_message(message)
-        self.alarm_output.listbox.see(tk.END)  # Auto-scroll to the latest message
+
 
     def clear_alarm_messages(self):
         self.alarm_output.clear_messages()

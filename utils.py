@@ -68,9 +68,19 @@ class TicketPurpose(Enum):
 
     SHOW_NORMAL_CURSOR = auto()
 
-class Ticket:
-    def __init__(self, ticket_purpose: TicketPurpose, ticket_value):
-        self.ticket_purpose = ticket_purpose
-        self.ticket_value = ticket_value
+    # (AnimatedLabel: object,column : int, row : int)
+    SHOW_ANIMATED_LABEL = auto()
+    # (AnimatedLabel: object,column : int, row : int)
+    HIDE_ANIMATED_LABEL = auto()
 
+class Ticket:
+    def __init__(self, purpose: TicketPurpose, value, parent_frame):
+        self.purpose = purpose
+        self.value = value
+        self.parent_frame = parent_frame
+
+    def transmit(self):
+
+        self.parent_frame.q.put(self)
+        self.parent_frame.event_generate("<<CheckQueue>>")
 

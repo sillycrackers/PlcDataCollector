@@ -85,9 +85,10 @@ class MainMenu(ttk.Menu):
 
             self.parent.halt_threads = True
 
-            wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
-            self.parent.q.put(wait_cursor_ticket)
-            self.parent.event_generate("<<CheckQueue>>")
+            wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window, parent_frame=self.parent)
+            wait_cursor_ticket.transmit()
+            loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.parent.loading_label, 0, 1), parent_frame=self.parent)
+            loading_label_ticket.transmit()
 
             if len(self.parent.plc_data_connections) > 0:
                 while self.parent.comm_thread_done == False or self.parent.read_thread_done == False:
@@ -111,16 +112,16 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
-            active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR,ticket_value=None)
-            populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
-            normal_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_NORMAL_CURSOR, ticket_value=None)
+            active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None, parent_frame=self.parent)
+            populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None, parent_frame=self.parent)
+            normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window, parent_frame=self.parent)
+            loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
+                                          value=(self.parent.loading_label, 0, 1), parent_frame=self.parent)
 
-            self.parent.q.put(active_alarm_clear_ticket)
-            self.parent.event_generate("<<CheckQueue>>")
-            self.parent.q.put(populate_indicators_ticket)
-            self.parent.event_generate("<<CheckQueue>>")
-            self.parent.q.put(normal_cursor_ticket)
-            self.parent.event_generate("<<CheckQueue>>")
+            active_alarm_clear_ticket.transmit()
+            populate_indicators_ticket.transmit()
+            normal_cursor_ticket.transmit()
+            loading_label_ticket.transmit()
 
             self.parent.file_loaded = True
             self.parent.halt_threads = False

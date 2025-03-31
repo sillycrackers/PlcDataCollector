@@ -8,6 +8,7 @@ from plc import Plc
 from gui.data_entry import DataEntry
 from plc_connection import PlcConnection
 from utils import *
+from gui.animated_label import AnimatedLabel
 
 
 
@@ -17,7 +18,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.root_window = root_window
         self.connections = connections
         self.main_root_window = main_root_window
-
 
         #Variables
         self.applied = False
@@ -40,11 +40,24 @@ class ManageConnectionsFrame(ttk.Frame):
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
 
+        #Grid configure
+
+        #Title Label
+        self.grid_rowconfigure(0)
+        #Loading Label
+        self.grid_rowconfigure(1, minsize=35)
+        #Main Label Frame
+        self.grid_rowconfigure(2)
+
+        self.grid_columnconfigure(1)
+
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
-        self.title_label.pack(fill="both", expand=True, padx=50, pady=20)
+        self.title_label.grid(row=0, column=0)
+
+        self.loading_label = AnimatedLabel(self, text="Loading")
 
         self.main_label_frame = ttk.LabelFrame(self, text="PLC Connections")
-        self.main_label_frame.pack(side="top", fill="x", pady=10, padx=10)
+        self.main_label_frame.grid(row=2, column=0)
 
         self.combo_list = []
 
@@ -73,10 +86,11 @@ class ManageConnectionsFrame(ttk.Frame):
         self.inner_frame = ttk.Frame(self.main_label_frame)
         self.inner_frame.pack(padx=20, pady=20)
 
-        # variable used to locate data entries on grid relative to the first one placed
+        #variable used to locate data entries on grid relative to the first one placed
+
         self.start_row = 0
 
-        # ===========Data Entries=============#
+        #===========Data Entries=============#
 
         # Name Validation
         self.name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red")
@@ -140,9 +154,8 @@ class ManageConnectionsFrame(ttk.Frame):
         }
 
         # ================Buttons================#
-
         # Apply Button
-        self.apply_button = ttk.Button(self.main_label_frame, text="Apply Changes", command=self.create_apply_thread)
+        self.apply_button = ttk.Button(self.main_label_frame, text="Apply Changes", command=self.run_apply_thread)
         self.apply_button.pack(side='right', pady=20, padx=5)
         self.apply_button.config(state="disabled")
 
@@ -216,10 +229,8 @@ class ManageConnectionsFrame(ttk.Frame):
         for string in input_string_list:
             output_string_list.append(string.strip())
 
-        print(output_string_list)
 
         if not entry_validation.check_valid_tag_list(output_string_list):
-            print(output_string_list)
             self.validation_labels['tag_list'].config(
                 text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
             flag = False
@@ -247,16 +258,21 @@ class ManageConnectionsFrame(ttk.Frame):
         else:
             return True
 
-    def create_apply_thread(self, ok=False):
+    def run_apply_thread(self, ok=False):
 
         apply_thread = threading.Thread(target=self.apply_changes,args=(ok,) ,daemon=True)
         apply_thread.start()
 
     def obtain_data_control(self):
         self.root_window.parent_frame.halt_threads = True
-        wait_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_WAIT_CURSOR, ticket_value=None)
-        self.root_window.parent_frame.q.put(wait_cursor_ticket)
-        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+        wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.root_window,
+                                    parent_frame=self.root_window.parent_frame)
+        wait_cursor_ticket.transmit()
+
+        loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
+                                    parent_frame=self.root_window.parent_frame)
+        loading_label_ticket.transmit()
+
         self.root_window.parent_frame.read_lock.acquire()
         self.root_window.parent_frame.comm_lock.acquire()
 
@@ -266,20 +282,22 @@ class ManageConnectionsFrame(ttk.Frame):
         self.applied = True
         self.root_window.parent_frame.file_loaded = True
         self.root_window.parent_frame.halt_threads = False
-        active_alarm_clear_ticket = Ticket(ticket_purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, ticket_value=None)
-        populate_indicators_ticket = Ticket(ticket_purpose=TicketPurpose.POPULATE_INDICATORS, ticket_value=None)
-        normal_cursor_ticket = Ticket(ticket_purpose=TicketPurpose.SHOW_NORMAL_CURSOR, ticket_value=None)
 
-        self.root_window.parent_frame.q.put(active_alarm_clear_ticket)
-        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
-        self.root_window.parent_frame.q.put(populate_indicators_ticket)
-        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
-        self.root_window.parent_frame.q.put(normal_cursor_ticket)
-        self.root_window.parent_frame.event_generate("<<CheckQueue>>")
+        active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None,
+                                           parent_frame=self.root_window.parent_frame)
+        populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None,
+                                           parent_frame=self.root_window.parent_frame)
+        normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.root_window,
+                                           parent_frame=self.root_window.parent_frame)
+        loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
+                                           parent_frame=self.root_window.parent_frame)
+
+        active_alarm_clear_ticket.transmit()
+        populate_indicators_ticket.transmit()
+        normal_cursor_ticket.transmit()
+        loading_label_ticket.transmit()
 
     def apply_changes(self, ok=False):
-
-        print(f"ok status: {ok}")
 
         if self.validate_entries():
 
@@ -299,7 +317,6 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.root_window.close()
             else:
                 ...
-
 
     def add_new_connection(self):
 
@@ -366,11 +383,12 @@ class ManageConnectionsFrame(ttk.Frame):
     def ok(self):
 
         if not self.applied:
-            self.create_apply_thread(ok=True)
+            self.run_apply_thread(ok=True)
         else:
             self.root_window.close()
 
     def callback(self, var, index, mode):
+
         self.apply_button.config(state="enabled")
         self.applied = False
 

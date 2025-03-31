@@ -10,7 +10,7 @@ from gui.body_frame import BodyFrame
 from gui.manage_connections_frame import ManageConnectionsFrame
 from gui.manage_connections_toplevel import ManageConnectionsToplevel
 from utils import *
-from gui.loading_label import LoadingLabel
+from gui.animated_label import AnimatedLabel
 
 
 # Main Frame
@@ -69,15 +69,15 @@ class MainFrame(ttk.Frame):
 
 
         #Title
-        self.title_frame = TitleFrame(self,text="PLC Data Collector",pady=50,padx=50)
+        self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
         #Loading Label
-        self.loading_label = LoadingLabel(self)
+        self.loading_label = AnimatedLabel(self, text="Loading")
         #Body
         self.body_frame = BodyFrame(self)
 
-        self.title_frame.grid(column=0,row=0,sticky="ew",pady=(20,20), padx=(30,30))
+        self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
 
-        self.body_frame.grid(column=0,row=2,sticky="ew",pady=(10,20), padx=(10,10))
+        self.body_frame.grid(column=0, row=2, sticky="ew", pady=(10,20), padx=(10,10))
 
     def open_manage_connections_window(self):
 
@@ -95,15 +95,15 @@ class MainFrame(ttk.Frame):
         msg: Ticket
         msg = self.q.get()
 
-        match msg.ticket_purpose:
+        match msg.purpose:
 
             case TicketPurpose.UPDATE_ALARMS:
                 # ("message":str, Alarm active:bool)
-                self.active_alarms[msg.ticket_value[0]] = msg.ticket_value[1]
+                self.active_alarms[msg.value[0]] = msg.value[1]
 
             case TicketPurpose.TOGGLE_INDICATOR:
                 # (state:bool,"plc.name:str")
-                self.body_frame.toggle_indicator(msg.ticket_value[0],msg.ticket_value[1])
+                self.body_frame.toggle_indicator(msg.value[0], msg.value[1])
 
             case TicketPurpose.ACTIVE_ALARMS_CLEAR:
                 self.active_alarms.clear()
@@ -114,28 +114,35 @@ class MainFrame(ttk.Frame):
                 print("POPULATE")
 
             case TicketPurpose.SHOW_WAIT_CURSOR:
-                self.config(cursor="watch")
-                self.show_loading_animation = True
-                self.loading_label.grid(column=0, row=1, sticky="ew")
-                self.root_window.update_idletasks()
-                self.freeze_window()
+                # (window:ttk.Window)
+                msg.value.config(cursor="watch")
+                msg.value.update_idletasks()
+                self.freeze_window(msg.value)
 
             case TicketPurpose.SHOW_NORMAL_CURSOR:
-                self.config(cursor="")
-                self.show_loading_animation = False
-                self.loading_label.grid_forget()
-                self.root_window.update_idletasks()
-                self.unfreeze_window()
+                # window:ttk.Window
+                msg.value.config(cursor="")
+                msg.value.update_idletasks()
+                self.unfreeze_window(msg.value)
 
+            case TicketPurpose.SHOW_ANIMATED_LABEL:
+                # (AnimatedLabel: object,column : int, row : int)
+                msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew")
+                self.show_loading_animation = True
+                self.after(100, self.label_animation, msg.value[0])
+
+            case TicketPurpose.HIDE_ANIMATED_LABEL:
+                print("HIDE LABEL")
+                self.show_loading_animation = False
+                msg.value[0].grid_forget()
 
         self.q.task_done()
-
     #This method is being called by thread.
     def read_plc_data(self):
         print("reading tags")
         if len(self.plc_data_connections) > 0:
             self.read_lock.acquire()
-            for connection in list(self.plc_data_connections.values()):
+            for connection in self.plc_data_connections.values():
                 connection.collect_data()
                 if self.halt_threads:
                     break
@@ -144,20 +151,13 @@ class MainFrame(ttk.Frame):
 
             self.read_thread_done = True
 
-    def loading_animation(self):
+    def label_animation(self, label):
 
         if self.show_loading_animation:
 
-            print(f"Adjust dots: {self.dot_count}")
-            self.loading_label.adjust_dots(self.dot_count)
+            label.adjust_dots()
 
-            if self.dot_count >= 6:
-                self.dot_count = 1
-            else:
-                self.dot_count += 1
-
-
-        self.after(500, self.loading_animation)
+            self.after(400, self.label_animation, label)
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -174,25 +174,21 @@ class MainFrame(ttk.Frame):
                 print("Checking comms")
                 if connection.check_plc_connection():
 
-                    alarm_ticket = Ticket(ticket_purpose=TicketPurpose.UPDATE_ALARMS,
-                                          ticket_value=(f"Lost Connection to {connection.plc.name}",False))
-                    indicator_ticket = Ticket(ticket_purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              ticket_value=(True, connection.plc.name))
-                    self.q.put(alarm_ticket)
-                    self.event_generate("<<CheckQueue>>")
-                    self.q.put(indicator_ticket)
-                    self.event_generate("<<CheckQueue>>")
+                    alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
+                                          value=(f"Lost Connection to {connection.plc.name}", False),parent_frame=self)
+                    indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
+                                              value=(True, connection.plc.name),parent_frame=self)
+                    alarm_ticket.transmit()
+                    indicator_ticket.transmit()
 
                 else:
 
-                    alarm_ticket = Ticket(ticket_purpose=TicketPurpose.UPDATE_ALARMS,
-                                          ticket_value=(f"Lost Connection to {connection.plc.name}",True))
-                    indicator_ticket = Ticket(ticket_purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              ticket_value=(False, connection.plc.name))
-                    self.q.put(alarm_ticket)
-                    self.event_generate("<<CheckQueue>>")
-                    self.q.put(indicator_ticket)
-                    self.event_generate("<<CheckQueue>>")
+                    alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
+                                          value=(f"Lost Connection to {connection.plc.name}", True),parent_frame=self)
+                    indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
+                                              value=(False, connection.plc.name),parent_frame=self)
+                    alarm_ticket.transmit()
+                    indicator_ticket.transmit()
 
             self.comm_lock.release()
 
@@ -228,18 +224,18 @@ class MainFrame(ttk.Frame):
 
         self.after(250, self.refresh_active_alarms)
 
-    def freeze_window(self):
-        self.root_window.attributes('-disabled', 1)
+    def freeze_window(self, window):
+        window.attributes('-disabled', 1)
 
-    def unfreeze_window(self):
-        self.root_window.attributes('-disabled', 0)
+    def unfreeze_window(self, window):
+        window.attributes('-disabled', 0)
 
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
 
-        self.after(100, self.loading_animation)
+
 
         self.mainloop()
 

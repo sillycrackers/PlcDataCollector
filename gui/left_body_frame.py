@@ -3,7 +3,6 @@ import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
 from gui.new_output_display import NewOutputDisplay
-from gui.output_display import OutputDisplay
 from gui.indicator import Indicator
 from gui.colors import *
 
@@ -39,7 +38,7 @@ class LeftBodyFrame(ttk.Frame):
         self.spacer_label2.grid(row=0,column=2, sticky='ew')
 
         self.open_manage_connections_button = ttk.Button(self,style='custom.TButton', text="Manage Connections", command=self.main_frame.open_manage_connections_window)
-        self.open_manage_connections_button.pack(ipady=5, ipadx=5)
+        self.open_manage_connections_button.pack(pady=(10,10))
 
         self.alarm_title = ttk.Label(self, text="Active Alarms", font="calibri 14", foreground='red', justify="left")
         self.alarm_title.pack(fill="x")

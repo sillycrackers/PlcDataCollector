@@ -84,6 +84,8 @@ class TicketPurpose(Enum):
     # (AnimatedLabel: object,column : int, row : int)
     HIDE_ANIMATED_LABEL = auto()
 
+    OUTPUT_MESSAGE = auto()
+
 class Ticket:
     def __init__(self, purpose: TicketPurpose, value, main_frame):
         self.purpose = purpose

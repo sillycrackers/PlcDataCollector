@@ -13,7 +13,7 @@ class NewOutputDisplay(ttk.Frame):
 
         self.scrollbar = ttk.Scrollbar(self)
         self.listbox = ttk.Treeview(self, yscrollcommand=self.scrollbar.set, show="tree")
-        self.scrollbar.configure(command=self.listbox.yview)
+        self.scrollbar.configure(command=self.call_back)
         self.style = style
 
         if self.style is not None:
@@ -24,12 +24,20 @@ class NewOutputDisplay(ttk.Frame):
 
         self.pack(expand=True, fill="both")
 
+    def call_back(self, *args):
+
+        self.listbox.yview(*args)
+
+
+
     def add_message(self, message):
         self.iid_count += 1
         self.listbox.insert(parent='',index="end",text=message,iid=self.iid_count)
 
-        #if self.iid_count > 0:
-            #self.listbox.see(tk.END)  # Auto-scroll to the latest message
+        x = self.listbox.yview()
+
+        #if x[1] == 1.0:
+        self.listbox.yview_moveto(1)
 
     def clear_messages(self):
 

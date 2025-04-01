@@ -69,7 +69,7 @@ class MainFrame(ttk.Frame):
         #=============Grid setup================#
 
         self.grid_columnconfigure(index=0)
-        self.grid_columnconfigure(index=1, minsize=400)
+        self.grid_columnconfigure(index=1, minsize=800)
 
         #Title
         self.grid_rowconfigure(index=0)
@@ -125,11 +125,9 @@ class MainFrame(ttk.Frame):
 
             case TicketPurpose.ACTIVE_ALARMS_CLEAR:
                 self.active_alarms.clear()
-                print("CLEAR")
 
             case TicketPurpose.POPULATE_INDICATORS:
                 self.left_body_frame.populate_indicators()
-                print("POPULATE")
 
             case TicketPurpose.SHOW_WAIT_CURSOR:
                 # (window:ttk.Window)
@@ -150,14 +148,16 @@ class MainFrame(ttk.Frame):
                 self.after(100, self.label_animation, msg.value[0])
 
             case TicketPurpose.HIDE_ANIMATED_LABEL:
-                print("HIDE LABEL")
                 self.show_loading_animation = False
                 msg.value[0].grid_forget()
+
+                # message : str
+            case TicketPurpose.OUTPUT_MESSAGE:
+                self.output_message(msg.value)
 
         self.q.task_done()
     #This method is being called by thread.
     def read_plc_data(self):
-        print("reading tags")
         if len(self.plc_data_connections) > 0:
             self.read_lock.acquire()
             for connection in self.plc_data_connections.values():
@@ -256,10 +256,20 @@ class MainFrame(ttk.Frame):
     def unfreeze_window(self, window):
         window.attributes('-disabled', 0)
 
+    def output_message(self, message):
+
+
+        self.right_body_frame.output.add_message(message)
+
+
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
+
+        #self.after(200, self.output_message)
+
+
 
         self.mainloop()
 

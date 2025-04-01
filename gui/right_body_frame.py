@@ -5,7 +5,6 @@ from openpyxl.styles.fills import fills
 from ttkbootstrap.scrolled import *
 
 from gui.new_output_display import NewOutputDisplay
-from gui.output_display import OutputDisplay
 from gui.indicator import Indicator
 from gui.colors import *
 
@@ -22,5 +21,4 @@ class RightBodyFrame(ttk.Frame):
         self.output = NewOutputDisplay(parent=self)
         self.output.pack(expand=True, fill="both")
 
-        for x in range(10):
-            self.output.add_message("Hello World")
+

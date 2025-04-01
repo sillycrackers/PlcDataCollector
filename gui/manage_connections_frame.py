@@ -20,6 +20,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
         #Variables
         self.applied = False
+        self.data_did_not_change = True
 
         # Entry Variables
         self.name_entry_variable = ttk.StringVar()
@@ -55,8 +56,11 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.loading_label = AnimatedLabel(self, text="Loading")
 
-        self.main_label_frame = ttk.LabelFrame(self, text="PLC Connections")
-        self.main_label_frame.grid(row=2, column=0, pady=(0,20))
+        self.header_label = ttk.Label(self, text="Manage Connections",font="calibri 14", justify="left")
+        self.header_label.grid(row=2, column=0, sticky="w")
+
+        self.base_frame = ttk.Frame(self, borderwidth=1, relief=tk.RIDGE)
+        self.base_frame.grid(row=3, column=0, pady=(0, 50))
 
         self.combo_list = []
 
@@ -75,14 +79,14 @@ class ManageConnectionsFrame(ttk.Frame):
             print("Stop Iteration, no items in dictionary")
 
         #Option Menu
-        self.option_menu = ttk.OptionMenu(self.main_label_frame, self.option, self.option.get(), *self.combo_list,
+        self.option_menu = ttk.OptionMenu(self.base_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
 
         self.option_menu.configure(width=40)
         self.option_menu.pack(pady=20, expand=True)
 
         # Inner Frame used for data entries
-        self.inner_frame = ttk.Frame(self.main_label_frame)
+        self.inner_frame = ttk.Frame(self.base_frame)
         self.inner_frame.pack(padx=20, pady=20)
 
 
@@ -156,16 +160,16 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # ================Buttons================#
         # Apply Button
-        self.apply_button = ttk.Button(self.main_label_frame, text="Apply Changes", command=self.run_apply_thread)
-        self.apply_button.pack(side='right', pady=20, padx=5)
+        self.apply_button = ttk.Button(self.base_frame, style='custom.TButton', text="Apply Changes", command=self.run_apply_thread)
+        self.apply_button.pack(side='right', pady=20, padx=(5,20))
         self.apply_button.config(state="disabled")
 
         # Ok Button
-        self.ok_button = ttk.Button(self.main_label_frame, text="Ok", command=self.ok)
+        self.ok_button = ttk.Button(self.base_frame, text="Ok", style='custom.TButton', command=self.ok)
         self.ok_button.pack(side='right', pady=20, padx=5)
 
         # Cancel Button
-        self.cancel_button = ttk.Button(self.main_label_frame, text="Cancel", command=parent_window.close)
+        self.cancel_button = ttk.Button(self.base_frame, text="Cancel", style='custom.TButton', command=parent_window.close)
         self.cancel_button.pack(side='right', pady=20, padx=5)
 
         # ========================================#
@@ -281,6 +285,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.parent_window.parent_frame.comm_lock.release()
         self.parent_window.parent_frame.read_lock.release()
         self.applied = True
+        self.data_did_not_change = True
         self.parent_window.parent_frame.file_loaded = True
         self.parent_window.parent_frame.halt_threads = False
 
@@ -335,7 +340,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.obtain_data_control()
 
         # Add new connection to dict
-        self.add_plc_connection(PlcConnection(new_plc, self.parent_window.parent_frame.halt_threads))
+        self.add_plc_connection(PlcConnection(new_plc, self.parent_window.parent_frame))
 
         # Release locks and update flags for controlling threads, so they can start again
         self.release_data_control()
@@ -360,7 +365,7 @@ class ManageConnectionsFrame(ttk.Frame):
             excel_file_location=self.excel_file_location_entry_variable.get()
         )
 
-        edit_plc_connection = PlcConnection(edit_plc, self.parent_window.parent_frame.halt_threads)
+        edit_plc_connection = PlcConnection(edit_plc, self.parent_window.parent_frame)
 
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
@@ -385,13 +390,15 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def ok(self):
 
-        if not self.applied:
-            self.run_apply_thread(ok=True)
-        else:
+        if self.applied or self.data_did_not_change:
             self.parent_window.close()
+        else:
+            self.run_apply_thread(ok=True)
+
 
     def callback(self, var, index, mode):
 
+        self.data_did_not_change = False
         self.apply_button.config(state="enabled")
         self.applied = False
 

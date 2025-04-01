@@ -105,7 +105,7 @@ class MainMenu(ttk.Menu):
             self.main_frame.plc_data_connections.clear()
 
             for plc in self.decode_json_to_plc_objects(file_content):
-                self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame.halt_threads))
+                self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
 
             self.main_frame.comm_lock.release()
             self.main_frame.read_lock.release()

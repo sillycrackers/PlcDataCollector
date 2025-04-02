@@ -3,6 +3,7 @@ import ttkbootstrap as ttk
 from queue import Queue
 import time
 import threading
+from PIL import Image, ImageTk
 
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
@@ -26,12 +27,13 @@ class MainFrame(ttk.Frame):
 
         #Global Styles
 
+        self.alarm_font = tk.font.Font(family="calibri", size=12, weight="normal")
         self.my_style = ttk.Style(theme='flatly')
-
         self.my_style.configure('TLabelframe.Label', font=('Calibri', 12,))
         self.my_style.configure('custom.TButton', font=('Calibri', 12,))
-        self.my_style.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
-
+        self.my_style.configure(style='alarm.Treeview', font=self.alarm_font, foreground="red",
+                                rowheight=self.alarm_font.metrics("linespace") + 2
+                                )
 
         #Main Menu
         self.main_menu = MainMenu(root_window, self)
@@ -45,26 +47,47 @@ class MainFrame(ttk.Frame):
         self.plc_data_connections = {}
         self.dot_count = 1
         self.show_loading_animation = False
-
         self.halt_threads = False
         self.halt_threads_ack = False
         self.comm_thread_done = False
         self.read_thread_done = False
-
         self.file_loaded = False
-
         self.click_count = 0
-
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
-
         self.threads = []
         self.q = Queue()
+        self.theta = 0
 
         #========== Window Events ==============#
 
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
         self.root_window.bind("<Button>", self.on_click)
+
+        #=============Widgets================#
+
+        #Title Frame
+        self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
+        #Loading Label Column 1 Row 1
+        self.loading_label = AnimatedLabel(self, text="Loading")
+        #Left Body Frame
+        self.left_body_frame = LeftBodyFrame(self)
+        #Right Body Frame
+        self.right_body_frame = RightBodyFrame(self)
+        #loading Image
+
+        # Images
+
+        img = Image.open(resource_path("loading.png"))
+
+        self.new_img = img.resize(size=(64,64),resample=Image.Resampling.LANCZOS)
+
+        img.close()
+
+        self.loading_image = ImageTk.PhotoImage(self.new_img)
+
+        self.loading_image_label = ttk.Label(self, image=self.loading_image, text="Image:")
+
 
         #=============Grid setup================#
 
@@ -73,37 +96,43 @@ class MainFrame(ttk.Frame):
 
         #Title
         self.grid_rowconfigure(index=0)
-        #Loading Label
+        #Loading Label and loading image wheel
         self.grid_rowconfigure(index=1,minsize="35")
-        #Body
+        #Left and right bodies
         self.grid_rowconfigure(index=2)
 
+        #===============Place Widgets on Grid================#
 
-        #Title Frame
-        self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
-        #Loading Label
-        self.loading_label = AnimatedLabel(self, text="Loading")
-        #Left Body Frame
-        self.left_body_frame = LeftBodyFrame(self)
-        #Right Body Frame
-        self.right_body_frame = RightBodyFrame(self)
-
-        self.title_frame.grid(column=0, row=0,columnspan=2, sticky="ew",pady=(20,20), padx=(30,30))
-
+        #Loading Image (Spinning wheel)
+        self.loading_image_label.grid(column = 0, row=1, sticky="w", padx=20, pady=10)
+        #Title (Title and Logo Image)
+        self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
+        #Left Body (Connections and alarms)
         self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
-
+        #Right Body (Output)
         self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
 
-        #Treeview objects
+    def after_rotate_image(self):
 
-        self.message_treeview = self.right_body_frame.output.listbox
+        if self.theta >= 360:
+            self.theta = 0
 
+        rotated_image = self.new_img.rotate(self.theta)
+
+        self.loading_image = ImageTk.PhotoImage(rotated_image)
+
+        self.theta += 1
+
+        self.loading_image_label.configure(image=self.loading_image)
+
+        self.after(5, self.after_rotate_image)
+
+    #Function called when mouse is clicked anywhere
     def on_click(self, var):
 
-        #Remove selection from treeviews
-
-        if len(self.message_treeview.selection()) > 0:
-            self.message_treeview.selection_remove(self.message_treeview.selection()[0])
+        #Unselect item in treeview
+        if len(self.right_body_frame.output.listbox.selection()) > 0:
+            self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
@@ -266,6 +295,8 @@ class MainFrame(ttk.Frame):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.refresh_active_alarms)
+
+        self.after(1000, self.after_rotate_image)
 
         #self.after(200, self.output_message)
 

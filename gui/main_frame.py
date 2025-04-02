@@ -4,6 +4,7 @@ from queue import Queue
 import time
 import threading
 from PIL import Image, ImageTk
+from PIL.Image import Resampling
 
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
@@ -104,7 +105,7 @@ class MainFrame(ttk.Frame):
         #===============Place Widgets on Grid================#
 
         #Loading Image (Spinning wheel)
-        self.loading_image_label.grid(column = 0, row=1, sticky="w", padx=20, pady=10)
+        self.loading_image_label.grid(column = 0, row=1, sticky="w", padx=20, pady=20, ipadx=10, ipady=10)
         #Title (Title and Logo Image)
         self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
         #Left Body (Connections and alarms)
@@ -117,15 +118,15 @@ class MainFrame(ttk.Frame):
         if self.theta >= 360:
             self.theta = 0
 
-        rotated_image = self.new_img.rotate(self.theta)
+        rotated_image = self.new_img.rotate(self.theta,Resampling.BICUBIC)
 
         self.loading_image = ImageTk.PhotoImage(rotated_image)
 
-        self.theta += 1
+        self.theta += 2
 
         self.loading_image_label.configure(image=self.loading_image)
 
-        self.after(5, self.after_rotate_image)
+        self.after(10, self.after_rotate_image)
 
     #Function called when mouse is clicked anywhere
     def on_click(self, var):

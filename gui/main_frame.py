@@ -14,6 +14,7 @@ from gui.manage_connections_toplevel import ManageConnectionsToplevel
 from utils import *
 from gui.animated_label import AnimatedLabel
 from gui.right_body_frame import RightBodyFrame
+from gui.collecting_data_frame import CollectingDataFrame
 
 
 # Main Frame
@@ -58,7 +59,6 @@ class MainFrame(ttk.Frame):
         self.read_lock = threading.Lock()
         self.threads = []
         self.q = Queue()
-        self.theta = 0
 
         #========== Window Events ==============#
 
@@ -69,6 +69,8 @@ class MainFrame(ttk.Frame):
 
         #Title Frame
         self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
+        #Collecting data frame
+        self.collecting_data_frame = CollectingDataFrame(self)
         #Loading Label Column 1 Row 1
         self.loading_label = AnimatedLabel(self, text="Loading")
         #Left Body Frame
@@ -77,19 +79,6 @@ class MainFrame(ttk.Frame):
         self.right_body_frame = RightBodyFrame(self)
         #loading Image
 
-        # Images
-
-        img = Image.open(resource_path("loading.png"))
-
-        self.new_img = img.resize(size=(64,64),resample=Image.Resampling.LANCZOS)
-
-        img.close()
-
-        self.loading_image = ImageTk.PhotoImage(self.new_img)
-
-        self.loading_image_label = ttk.Label(self, image=self.loading_image, text="Image:")
-
-
         #=============Grid setup================#
 
         self.grid_columnconfigure(index=0)
@@ -97,6 +86,7 @@ class MainFrame(ttk.Frame):
 
         #Title
         self.grid_rowconfigure(index=0)
+
         #Loading Label and loading image wheel
         self.grid_rowconfigure(index=1,minsize="35")
         #Left and right bodies
@@ -104,27 +94,19 @@ class MainFrame(ttk.Frame):
 
         #===============Place Widgets on Grid================#
 
-        #Loading Image (Spinning wheel)
-        self.loading_image_label.grid(column = 0, row=1, sticky="w", padx=20, pady=20, ipadx=10, ipady=10)
         #Title (Title and Logo Image)
         self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
         #Left Body (Connections and alarms)
         self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
         #Right Body (Output)
         self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
+        #Collecting Data Frame
+        self.collecting_data_frame.grid(column=0, row=1, sticky='nsew', pady=20, padx=20)
 
     def after_rotate_image(self):
 
-        if self.theta >= 360:
-            self.theta = 0
-
-        rotated_image = self.new_img.rotate(self.theta,Resampling.BICUBIC)
-
-        self.loading_image = ImageTk.PhotoImage(rotated_image)
-
-        self.theta += 2
-
-        self.loading_image_label.configure(image=self.loading_image)
+        if not self.halt_threads:
+            self.collecting_data_frame.rotate()
 
         self.after(10, self.after_rotate_image)
 

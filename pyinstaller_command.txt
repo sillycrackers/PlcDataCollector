@@ -1,2 +1,4 @@
-pyinstaller --onefile --windowed --add-data "data_icon.ico:." --add-data "data_icon.png:." --paths \gui --icon data_icon.ico  main.py
+pyinstaller --onefile --windowed --add-data "data_icon.ico:." --add-data "data_icon.png:." --add-data "loading.png:." --paths \gui --icon data_icon.ico  main.py
 
+With console
+pyinstaller --onefile --add-data "data_icon.ico:." --add-data "data_icon.png:." --add-data "loading.png:." --paths \gui --icon data_icon.ico  main.py

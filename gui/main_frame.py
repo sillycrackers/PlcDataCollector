@@ -51,8 +51,8 @@ class MainFrame(ttk.Frame):
         self.show_loading_animation = False
         self.halt_threads = False
         self.halt_threads_ack = False
-        self.comm_thread_done = False
-        self.read_thread_done = False
+        self.comm_thread_done = True
+        self.read_thread_done = True
         self.file_loaded = False
         self.click_count = 0
         self.comm_lock = threading.Lock()
@@ -179,7 +179,7 @@ class MainFrame(ttk.Frame):
 
             self.read_lock.release()
 
-            self.read_thread_done = True
+        self.read_thread_done = True
 
     def label_animation(self, label):
 
@@ -230,7 +230,7 @@ class MainFrame(ttk.Frame):
 
             self.comm_lock.release()
 
-            self.comm_thread_done = True
+        self.comm_thread_done = True
 
     def refresh_active_alarms(self):
 
@@ -242,12 +242,12 @@ class MainFrame(ttk.Frame):
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
 
-        #Threads
-        check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
-        read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
-
-        self.threads.append(check_connection_thread)
-        self.threads.append(read_plc_data_thread)
+        #Thread
+        if self.comm_thread_done and self.read_thread_done or self.file_loaded:
+            check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
+            read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
+            self.threads.append(check_connection_thread)
+            self.threads.append(read_plc_data_thread)
 
         #Start the threads
         if not self.halt_threads and len(self.plc_data_connections) > 0:

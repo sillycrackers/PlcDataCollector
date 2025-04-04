@@ -24,9 +24,6 @@ class NewOutputDisplay(ttk.Frame):
         self.scrollbar.pack(side="right", fill="y")
         self.listbox.pack(side="left", expand=True, fill="both")
 
-        for x in range(2000):
-            self.add_message("Hello World")
-
 
     def call_back(self, *args):
 

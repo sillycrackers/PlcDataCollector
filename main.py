@@ -16,7 +16,7 @@ def main():
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
-    # Disable the Close Window Control Icon
+    # Disable the Close Window Control
     #root.protocol("WM_DELETE_WINDOW", disable_event)
 
     app.run_app()

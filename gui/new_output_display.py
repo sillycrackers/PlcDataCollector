@@ -22,13 +22,11 @@ class NewOutputDisplay(ttk.Frame):
         self.scrollbar.pack(side="right", fill="y")
         self.listbox.pack(side="left", expand=True, fill="both")
 
-        self.pack(expand=True, fill="both")
+
 
     def call_back(self, *args):
 
         self.listbox.yview(*args)
-
-
 
     def add_message(self, message):
         self.iid_count += 1

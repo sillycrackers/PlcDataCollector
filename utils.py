@@ -17,6 +17,33 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+def store_file_path_winreg(file_path):
+
+    try:
+        software = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER,r"SOFTWARE\\")
+        key = winreg.CreateKeyEx(software, "Plc Data Collector")
+        winreg.SetValueEx(key, "last_file_path",0, winreg.REG_SZ, file_path)
+        key.Close()
+    except Exception:
+        print("ERROR: Couldn't change Windows Registry")
+
+def get_file_path_winreg():
+
+    pdc = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER,r"SOFTWARE\\Plc Data Collector\\")
+
+    try:
+        fp = winreg.QueryValueEx(pdc,"last_file_path")
+        if fp:
+            print(f"File Path: {fp[0]}")
+            pdc.Close()
+            return fp[0]
+    except FileNotFoundError:
+        print("Couldn't find 'last_file_path' in registry")
+        return False
+
+
+
+
 def change_theme(theme):
     if theme == 'dark':
 

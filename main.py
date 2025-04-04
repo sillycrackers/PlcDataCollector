@@ -3,20 +3,25 @@ import ttkbootstrap as ttk
 
 from gui.main_frame import MainFrame
 
-import utils
+from utils import *
 
 def main():
 
     root = ttk.Window(themename='journal', hdpi=False)
 
     root.option_add('*tearOff', 'false')
+    root.minsize(width=800,height=600)
     root.title("PLC Data Collector")
-    logo_image = tk.PhotoImage(file=utils.resource_path("data_icon.png"))
+    logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     app.left_body_frame.populate_indicators()
 
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
+
+
+
+    get_file_path_winreg()
 
     app.run_app()
 

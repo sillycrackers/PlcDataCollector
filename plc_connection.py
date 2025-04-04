@@ -25,7 +25,7 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                error_trigger_active_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error reading trigger signal",
+                error_trigger_active_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Error reading trigger signal from {self.plc.name}",
                                             main_frame=self.main_frame)
                 error_trigger_active_message_ticket.transmit()
                 return False
@@ -81,7 +81,7 @@ class PlcConnection:
                 ws.append(data_row)
                 wb.save(self.plc.file_path)
 
-                data_collected_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected: {data_row}",
+                data_collected_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {self.plc.name}: {data_row}",
                                             main_frame=self.main_frame)
                 data_collected_message_ticket.transmit()
 
@@ -93,17 +93,13 @@ class PlcConnection:
         with logix.PLC() as comm:
             comm.IPAddress = self.plc.ip_address
             ack_response = comm.Write(self.plc.ack_tag, 1)  # Send acknowledgment signal
-            if ack_response.Status == "Success":
-
-                ack_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Acknowledgment signal sent to PLC.",
-                                            main_frame=self.main_frame)
-                ack_message_ticket.transmit()
-
-            else:
-
+            if not ack_response.Status == "Success":
                 error_ack_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal.",
                                             main_frame=self.main_frame)
                 error_ack_message_ticket.transmit()
+
+
+
 
 
     # Read the tags from the PLC and store in excel file

@@ -6,6 +6,7 @@ import json
 import os
 import threading
 
+import utils
 from gui.about_window import AboutWindow
 from plc import Plc
 from plc_connection import PlcConnection
@@ -22,9 +23,10 @@ class MainMenu(ttk.Menu):
         self.parent_window = parent_window
         self.main_frame = main_frame
 
+
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
-        self.file_menu.add_command(label = "Open    ",command=self.create_open_file_thread)
+        self.file_menu.add_command(label = "Open    ", command=lambda :self.create_open_file_thread("",False))
         self.file_menu.add_command(label="Save    ", command=self.save_file)
         #self.file_menu.add_separator()
         self.add_cascade(label="  File  ",menu= self.file_menu)
@@ -72,14 +74,15 @@ class MainMenu(ttk.Menu):
 
         return plcs
 
-    def create_open_file_thread(self):
-        open_file_thread = threading.Thread(target=self.open_file, daemon=True)
+    def create_open_file_thread(self, file_path, booting):
+        open_file_thread = threading.Thread(daemon=True, target=self.open_file,args=(file_path, booting) )
 
         open_file_thread.start()
 
-    def open_file(self):
+    def open_file(self,file_path="", booting=False):
 
-        file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
+        if not booting:
+            file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
 
         if os.path.exists(file_path):
 
@@ -126,6 +129,8 @@ class MainMenu(ttk.Menu):
             self.main_frame.file_loaded = True
             self.main_frame.halt_threads = False
 
+            store_file_path_winreg(file_path)
+
     def save_file(self):
 
         plc_list = []
@@ -135,15 +140,21 @@ class MainMenu(ttk.Menu):
 
         json_string = json.dumps(plc_list, cls=PlcObjectEncoder)
 
-
         files = [("PLC Data Collector",'*.pdc')]
 
-        file_path = filedialog.asksaveasfilename(filetypes=files)
+        try:
 
-        if not file_path.endswith(".pdc"):
-            file_path += ".pdc"
+            file_path = filedialog.asksaveasfilename(filetypes=files)
 
-        f = open(file_path, "w")
-        f.write(json_string)
-        f.close()
+            if not file_path.endswith(".pdc"):
+                file_path += ".pdc"
 
+            f = open(file_path, "w")
+            f.write(json_string)
+            f.close()
+
+            store_file_path_winreg(file_path)
+
+        except Exception:
+
+            print("Error while saving file")

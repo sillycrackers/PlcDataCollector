@@ -46,7 +46,7 @@ class CollectingDataFrame(ttk.Frame):
         self.label = ttk.Label(master=self, text="Running:", font="Calibri 18")
 
         #===============Place Widgets on Grid================#
-        self.label.grid(row=0, column=0, sticky="ew", padx=(0,5))
+        self.label.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=(0,5))
         self.loading_image_label.grid(row=0, column=1, sticky ="nsew")
 
 

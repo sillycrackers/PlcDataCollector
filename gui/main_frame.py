@@ -6,6 +6,7 @@ import threading
 from PIL import Image, ImageTk
 from PIL.Image import Resampling
 
+import utils
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
 from gui.left_body_frame import LeftBodyFrame
@@ -68,7 +69,7 @@ class MainFrame(ttk.Frame):
         #=============Widgets================#
 
         #Title Frame
-        self.title_frame = TitleFrame(self, text="PLC Data Collector", pady=50, padx=50)
+        self.title_frame = TitleFrame(self, text="PLC Data Collector")
         #Collecting data frame
         self.collecting_data_frame = CollectingDataFrame(self)
         #Loading Label Column 1 Row 1
@@ -81,27 +82,30 @@ class MainFrame(ttk.Frame):
 
         #=============Grid setup================#
 
-        self.grid_columnconfigure(index=0)
-        self.grid_columnconfigure(index=1, minsize=800)
 
+        #=========Columns=========#
+        self.grid_columnconfigure(index=0, weight=1, minsize = 500)
+        self.grid_columnconfigure(index=1, minsize=800, weight=3)
+
+
+        #=========Rows=============#
         #Title
-        self.grid_rowconfigure(index=0)
-
+        self.grid_rowconfigure(index=0, minsize=200)
         #Loading Label and loading image wheel
-        self.grid_rowconfigure(index=1,minsize="35")
+        self.grid_rowconfigure(index=1,minsize=35, weight = 2)
         #Left and right bodies
-        self.grid_rowconfigure(index=2)
+        self.grid_rowconfigure(index=2, weight=8)
 
         #===============Place Widgets on Grid================#
 
         #Title (Title and Logo Image)
-        self.title_frame.grid(column=0, row=0, sticky="ew",pady=(20,20), padx=(30,30))
+        self.title_frame.grid(column=0, row=0, sticky="nsew")
         #Left Body (Connections and alarms)
-        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
+        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(20, 10), pady=(0,20))
         #Right Body (Output)
-        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(10, 10), pady=(0,20))
+        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(20, 10), pady=(0,20))
         #Collecting Data Frame
-        self.collecting_data_frame.grid(column=0, row=1, sticky='nsew', pady=20, padx=20)
+        self.collecting_data_frame.grid(column=0, row=1, sticky='nsew', padx=(20, 20))
 
     def after_rotate_image(self):
 
@@ -234,6 +238,7 @@ class MainFrame(ttk.Frame):
 
     def refresh_active_alarms(self):
 
+
         self.threads.clear()
 
         self.left_body_frame.clear_alarm_messages()
@@ -281,9 +286,13 @@ class MainFrame(ttk.Frame):
 
         self.after(1000, self.after_rotate_image)
 
-        #self.after(200, self.output_message)
+        fp = get_file_path_winreg()
 
-
+        try:
+            if fp:
+                self.main_menu.create_open_file_thread(fp,True)
+        except Exception:
+            print("Error, Didn't load file, cannot find last file loaded")
 
         self.mainloop()
 

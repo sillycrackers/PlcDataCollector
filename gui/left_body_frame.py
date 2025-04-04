@@ -14,7 +14,6 @@ class LeftBodyFrame(ttk.Frame):
         self.main_frame = main_frame
 
 
-
         self.indicators = {}
 
         self.title_label = ttk.Label(self, text="PLC Connections", font="calibri 14", justify="left")
@@ -44,7 +43,7 @@ class LeftBodyFrame(ttk.Frame):
         self.alarm_title.pack(fill="x")
 
         self.alarm_output = NewOutputDisplay(self, style='alarm.Treeview')
-        self.alarm_output.pack()
+        self.alarm_output.pack(expand=True, fill="both")
 
     #Create and display indicators the indicators for all connections
     #First we clear the current displayed indicators and make a new dictionary of the required indicators

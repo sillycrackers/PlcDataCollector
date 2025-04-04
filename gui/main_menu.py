@@ -129,7 +129,7 @@ class MainMenu(ttk.Menu):
             self.main_frame.file_loaded = True
             self.main_frame.halt_threads = False
 
-            store_file_path_winreg(file_path)
+            set_reg(file_path)
 
     def save_file(self):
 
@@ -153,7 +153,7 @@ class MainMenu(ttk.Menu):
             f.write(json_string)
             f.close()
 
-            store_file_path_winreg(file_path)
+            set_reg(file_path)
 
         except Exception:
 

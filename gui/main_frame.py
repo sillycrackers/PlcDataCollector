@@ -84,8 +84,8 @@ class MainFrame(ttk.Frame):
 
 
         #=========Columns=========#
-        self.grid_columnconfigure(index=0, weight=1, minsize = 500)
-        self.grid_columnconfigure(index=1, minsize=800, weight=3)
+        self.grid_columnconfigure(index=0, weight=1)
+        self.grid_columnconfigure(index=1, weight=4)
 
 
         #=========Rows=============#
@@ -286,13 +286,15 @@ class MainFrame(ttk.Frame):
 
         self.after(1000, self.after_rotate_image)
 
-        fp = get_file_path_winreg()
+        fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
 
         try:
             if fp:
                 self.main_menu.create_open_file_thread(fp,True)
         except Exception:
             print("Error, Didn't load file, cannot find last file loaded")
+
+        self.left_body_frame.populate_indicators()
 
         self.mainloop()
 

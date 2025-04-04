@@ -17,7 +17,7 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-def store_file_path_winreg(file_path):
+def set_reg(file_path):
 
     try:
         software = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER,r"SOFTWARE\\")
@@ -27,18 +27,18 @@ def store_file_path_winreg(file_path):
     except Exception:
         print("ERROR: Couldn't change Windows Registry")
 
-def get_file_path_winreg():
-
-    pdc = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER,r"SOFTWARE\\Plc Data Collector\\")
+def get_reg(reg_path):
 
     try:
-        fp = winreg.QueryValueEx(pdc,"last_file_path")
-        if fp:
-            print(f"File Path: {fp[0]}")
+        pdc = winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_path)
+        file_path_regval = winreg.QueryValueEx(pdc,"last_file_path")
+
+        if file_path_regval:
             pdc.Close()
-            return fp[0]
-    except FileNotFoundError:
-        print("Couldn't find 'last_file_path' in registry")
+            return file_path_regval[0]
+
+    except (FileNotFoundError, WindowsError):
+        print("Couldn't find 'SOFTWARE\\Plc Data Collector\\last_file_path' in registry")
         return False
 
 
@@ -124,3 +124,5 @@ class Ticket:
         self.main_frame.q.put(self)
         self.main_frame.event_generate("<<CheckQueue>>")
 
+def disable_event():
+   pass

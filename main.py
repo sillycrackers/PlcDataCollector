@@ -15,15 +15,12 @@ def main():
     logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
-    app.left_body_frame.populate_indicators()
-
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
-
-
-
-    get_file_path_winreg()
+    # Disable the Close Window Control Icon
+    #root.protocol("WM_DELETE_WINDOW", disable_event)
 
     app.run_app()
 
 if __name__ == "__main__":
     main()
+

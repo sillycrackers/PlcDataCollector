@@ -17,9 +17,12 @@ def main():
     app = MainFrame(root)
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
     # Disable the Close Window Control
-    #root.protocol("WM_DELETE_WINDOW", disable_event)
+    root.protocol("WM_DELETE_WINDOW", disable_event)
+    change_theme("dark")
+    root.state('zoomed')
 
     app.run_app()
+
 
 if __name__ == "__main__":
     main()

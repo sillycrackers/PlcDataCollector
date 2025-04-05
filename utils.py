@@ -6,7 +6,12 @@ import ttkbootstrap as ttk
 import openpyxl
 from openpyxl import Workbook, load_workbook
 from enum import Enum, auto
+import shutil
 
+
+def copy_paste_file(file_path, dest_path):
+
+    shutil.copy(file_path, dest_path)
 
 def resource_path(relative_path):
     try:
@@ -41,9 +46,6 @@ def get_reg(reg_path):
         print("Couldn't find 'SOFTWARE\\Plc Data Collector\\last_file_path' in registry")
         return False
 
-
-
-
 def change_theme(theme):
     if theme == 'dark':
 
@@ -77,7 +79,7 @@ def save_to_excel(plc, row):
             #If Excel file doesn't exist then create it
             else:
                 #Create excel workbook, take active sheet and name it PLC Data
-                #Create initial column headers named: "Timestamp" and then the following tag names
+                #Create initial column headers named: "Timestamp" followed by the tag names
                 wb = Workbook()
                 ws = wb.active
                 ws.title = "PLC Data"

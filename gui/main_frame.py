@@ -13,6 +13,7 @@ from utils import *
 from gui.animated_label import AnimatedLabel
 from gui.right_body_frame import RightBodyFrame
 from gui.collecting_data_frame import CollectingDataFrame
+from ticketing_system import *
 
 
 # Main Frame
@@ -39,6 +40,7 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
+
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
@@ -56,6 +58,7 @@ class MainFrame(ttk.Frame):
         self.read_lock = threading.Lock()
         self.threads = []
         self.q = Queue()
+        self.ticketer = TicketingSystem(self)
 
         #========== Window Events ==============#
 
@@ -67,17 +70,33 @@ class MainFrame(ttk.Frame):
         # =========Top Frame==========#
         #-----------------------------#
         self.top_frame = ttk.Frame(self)
-        #Title Frame
-        self.title_frame = TitleFrame(self.top_frame, text="PLC Data Collector")
-        #Collecting data frame
-        self.collecting_data_frame = CollectingDataFrame(self.top_frame)
-        #Loading Label Column 1 Row 1
-        self.loading_label = AnimatedLabel(self.top_frame, text="Loading")
 
-        #==== Pack Widgets on Frame ====#
-        self.title_frame.pack()
-        self.collecting_data_frame.pack()
+        #======== Wrapper Frame (Wrap everything inside Top Frame) ======#
+        self.top_frame_wrapper = ttk.Frame(self.top_frame)
+        #Title Frame
+        self.title_frame = TitleFrame(self.top_frame_wrapper, text="PLC Data Collector")
+
+        #Inner Top Frame (contents below Title Frame)
+        self.inner_top_frame = ttk.Frame(self.top_frame_wrapper)
+        #Collecting data frame
+        self.collecting_data_frame = CollectingDataFrame(self.inner_top_frame)
+        #Loading label frame
+        self.loading_label_frame = ttk.Frame(self.inner_top_frame)
+        #Loading Label
+        self.loading_label = AnimatedLabel(self.loading_label_frame, text="Loading")
         self.loading_label.pack()
+
+        #==== Pack to Inner Top Frame ====#
+        self.collecting_data_frame.pack(side="left")
+        self.loading_label_frame.pack(side="left")
+
+        #==== Pack frames into Top Frame Wrapper ====#
+        self.title_frame.pack()
+        self.inner_top_frame.pack(side="left")
+
+        #==== Pack Top Frame Wrapper to Top Frame =====#
+        self.top_frame_wrapper.pack(side="left")
+
 
         #=========Main Body Frame==========#
         #----------------------------------#
@@ -93,7 +112,7 @@ class MainFrame(ttk.Frame):
 
         #===============Main Layout================#
         #------------------------------------------#
-        self.top_frame.pack(fill="x")
+        self.top_frame.pack(fill='x', padx=(20,0), pady=(20,0))
         self.main_body_frame.pack(expand=True, fill="both")
 
     def after_rotate_image(self):
@@ -102,7 +121,6 @@ class MainFrame(ttk.Frame):
             self.collecting_data_frame.rotate()
 
         self.after(10, self.after_rotate_image)
-
     #Function called when mouse is clicked anywhere
     def on_click(self, var):
 
@@ -147,14 +165,14 @@ class MainFrame(ttk.Frame):
                 self.unfreeze_window(msg.value)
 
             case TicketPurpose.SHOW_ANIMATED_LABEL:
-                # (AnimatedLabel: object,column : int, row : int)
-                #msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew", columnspan=2)
+                # (AnimatedLabel: object)
+                msg.value.pack()
                 self.show_loading_animation = True
-                #self.after(100, self.label_animation, msg.value[0])
+                self.after(100, self.label_animation, msg.value)
 
             case TicketPurpose.HIDE_ANIMATED_LABEL:
                 self.show_loading_animation = False
-                #msg.value[0].grid_forget()
+                msg.value.pack_forget()
 
                 # message : str
             case TicketPurpose.OUTPUT_MESSAGE:
@@ -184,11 +202,7 @@ class MainFrame(ttk.Frame):
 
     def open_manage_connections_window(self):
 
-        manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, parent_frame=self)
-
-        manage_connections_frame = ManageConnectionsFrame(parent_window=manage_connections_toplevel, connections=self.plc_data_connections, main_root_window=self.root_window)
-
-        manage_connections_frame.pack()
+        manage_connections_toplevel = ManageConnectionsToplevel(root_window=self.root_window, main_frame=self)
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
@@ -206,20 +220,16 @@ class MainFrame(ttk.Frame):
                 if connection.check_plc_connection():
 
                     alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
-                                          value=(f"Lost Connection to {connection.plc.name}", False), main_frame=self)
+                                          value=(f"Lost Connection to {connection.plc.name}", False))
                     indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              value=(True, connection.plc.name), main_frame=self)
+                                              value=(True, connection.plc.name))
                     alarm_ticket.transmit()
                     indicator_ticket.transmit()
 
                 else:
 
-                    alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
-                                          value=(f"Lost Connection to {connection.plc.name}", True), main_frame=self)
-                    indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              value=(False, connection.plc.name), main_frame=self)
-                    alarm_ticket.transmit()
-                    indicator_ticket.transmit()
+                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
+                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
 
             self.comm_lock.release()
 

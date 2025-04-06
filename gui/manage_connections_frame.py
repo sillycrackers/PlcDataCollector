@@ -9,14 +9,18 @@ from gui.data_entry import DataEntry
 from plc_connection import PlcConnection
 from utils import *
 from gui.animated_label import AnimatedLabel
+from ticketing_system import *
 
 
 class ManageConnectionsFrame(ttk.Frame):
-    def __init__(self, parent_window, connections, main_root_window):
+
+    def __init__(self, parent_window, main_frame):
         super().__init__(master=parent_window)
+
+        self.main_frame = main_frame
         self.parent_window = parent_window
-        self.connections = connections
-        self.main_root_window = main_root_window
+        self.connections = main_frame.plc_data_connections
+        self.main_root_window = main_frame.root_window
 
         #Variables
         self.applied = False
@@ -269,14 +273,10 @@ class ManageConnectionsFrame(ttk.Frame):
         apply_thread.start()
 
     def obtain_data_control(self):
-        self.parent_window.parent_frame.halt_threads = True
-        wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window,
-                                    main_frame=self.parent_window.parent_frame)
-        wait_cursor_ticket.transmit()
+        self.main_frame.halt_threads = True
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
 
-        loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
-                                      main_frame=self.parent_window.parent_frame)
-        loading_label_ticket.transmit()
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
         self.parent_window.parent_frame.read_lock.acquire()
         self.parent_window.parent_frame.comm_lock.acquire()
@@ -289,19 +289,11 @@ class ManageConnectionsFrame(ttk.Frame):
         self.parent_window.parent_frame.file_loaded = True
         self.parent_window.parent_frame.halt_threads = False
 
-        active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None,
-                                           main_frame=self.parent_window.parent_frame)
-        populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None,
-                                            main_frame=self.parent_window.parent_frame)
-        normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window,
-                                      main_frame=self.parent_window.parent_frame)
-        loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=(self.loading_label, 0, 1),
-                                      main_frame=self.parent_window.parent_frame)
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
 
-        active_alarm_clear_ticket.transmit()
-        populate_indicators_ticket.transmit()
-        normal_cursor_ticket.transmit()
-        loading_label_ticket.transmit()
 
     def apply_changes(self, ok=False):
 
@@ -394,7 +386,6 @@ class ManageConnectionsFrame(ttk.Frame):
             self.parent_window.close()
         else:
             self.run_apply_thread(ok=True)
-
 
     def callback(self, var, index, mode):
 

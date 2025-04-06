@@ -11,6 +11,7 @@ from gui.about_window import AboutWindow
 from plc import Plc
 from plc_connection import PlcConnection
 from utils import *
+from ticketing_system import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
@@ -88,10 +89,8 @@ class MainMenu(ttk.Menu):
 
             self.main_frame.halt_threads = True
 
-            wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window, main_frame=self.main_frame)
-            wait_cursor_ticket.transmit()
-            loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.main_frame.loading_label), main_frame=self.main_frame)
-            loading_label_ticket.transmit()
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
             if len(self.main_frame.plc_data_connections) > 0:
                 while self.main_frame.comm_thread_done == False or self.main_frame.read_thread_done == False:
@@ -115,16 +114,11 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
-            active_alarm_clear_ticket = Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None, main_frame=self.main_frame)
-            populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None, main_frame=self.main_frame)
-            normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window, main_frame=self.main_frame)
-            loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
-                                          value=(self.main_frame.loading_label), main_frame=self.main_frame)
-
-            active_alarm_clear_ticket.transmit()
-            populate_indicators_ticket.transmit()
-            normal_cursor_ticket.transmit()
-            loading_label_ticket.transmit()
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
+                                          value=self.main_frame.loading_label))
 
             self.main_frame.file_loaded = True
             self.main_frame.halt_threads = False

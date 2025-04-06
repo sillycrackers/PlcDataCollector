@@ -6,6 +6,7 @@ import traceback
 import time
 
 from utils import *
+from ticketing_system import *
 
 
 class PlcConnection:
@@ -25,9 +26,7 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                error_trigger_active_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Error reading trigger signal from {self.plc.name}",
-                                            main_frame=self.main_frame)
-                error_trigger_active_message_ticket.transmit()
+                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Error reading trigger signal from {self.plc.name}"))
                 return False
 
             # Only log data when trigger is active
@@ -52,10 +51,6 @@ class PlcConnection:
 
             else:
                 print("Trigger not active")
-                #trigger_not_active_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Trigger not active, no data logged.",
-                                          #main_frame=self.main_frame)
-                #trigger_not_active_message_ticket.transmit()
-
 
             return None
 
@@ -81,9 +76,7 @@ class PlcConnection:
                 ws.append(data_row)
                 wb.save(self.plc.file_path)
 
-                data_collected_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {self.plc.name}: {data_row}",
-                                            main_frame=self.main_frame)
-                data_collected_message_ticket.transmit()
+                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {self.plc.name}: {data_row}"))
 
             except:
                 traceback.print_exc()
@@ -94,13 +87,7 @@ class PlcConnection:
             comm.IPAddress = self.plc.ip_address
             ack_response = comm.Write(self.plc.ack_tag, 1)  # Send acknowledgment signal
             if not ack_response.Status == "Success":
-                error_ack_message_ticket = Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal.",
-                                            main_frame=self.main_frame)
-                error_ack_message_ticket.transmit()
-
-
-
-
+                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal."))
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):

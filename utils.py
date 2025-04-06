@@ -10,7 +10,6 @@ import shutil
 
 import gui.prompt
 
-
 def copy_paste_file(file_path, dest_path):
 
     shutil.copy(file_path, dest_path)
@@ -94,39 +93,6 @@ def save_to_excel(plc, row):
             print(f"Data logged: {row} to {plc.file_path}")
         except:
             traceback.print_exc()
-
-class TicketPurpose(Enum):
-
-    # ("message":str, Alarm active:bool)
-    UPDATE_ALARMS = auto()
-    # (state:bool,"plc.name:str")
-    TOGGLE_INDICATOR = auto()
-
-    POPULATE_INDICATORS = auto()
-
-    ACTIVE_ALARMS_CLEAR = auto()
-
-    SHOW_WAIT_CURSOR = auto()
-
-    SHOW_NORMAL_CURSOR = auto()
-
-    # (AnimatedLabel: object,column : int, row : int)
-    SHOW_ANIMATED_LABEL = auto()
-    # (AnimatedLabel: object,column : int, row : int)
-    HIDE_ANIMATED_LABEL = auto()
-
-    OUTPUT_MESSAGE = auto()
-
-class Ticket:
-    def __init__(self, purpose: TicketPurpose, value, main_frame):
-        self.purpose = purpose
-        self.value = value
-        self.main_frame = main_frame
-
-    def transmit(self):
-
-        self.main_frame.q.put(self)
-        self.main_frame.event_generate("<<CheckQueue>>")
 
 def disable_event(parent):
    gui.prompt.Prompt(parent)

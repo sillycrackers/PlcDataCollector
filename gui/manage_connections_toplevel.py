@@ -3,10 +3,11 @@ import ttkbootstrap as ttk
 
 
 from utils import *
+from gui.manage_connections_frame import ManageConnectionsFrame
 
 
 class ManageConnectionsToplevel(ttk.Toplevel):
-    def __init__(self, root_window, parent_frame):
+    def __init__(self, root_window, main_frame):
         super().__init__(master=root_window)
         self.logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
         self.iconphoto(False, self.logo_image)
@@ -17,8 +18,11 @@ class ManageConnectionsToplevel(ttk.Toplevel):
         self.position_center()
 
         self.root_window = root_window
-        self.parent_frame = parent_frame
+        self.main_frame = main_frame
 
+        manage_connections_frame = ManageConnectionsFrame(parent_window=self, main_frame=self.main_frame)
+
+        manage_connections_frame.pack()
 
 
         # Make parent window disabled and make sure to run close method when closing this window

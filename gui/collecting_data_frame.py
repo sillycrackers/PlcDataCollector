@@ -38,7 +38,6 @@ class CollectingDataFrame(ttk.Frame):
 
         #================== Widgets =========================#
 
-
         #self.label_font = tk.font.Font(font="Calibri",size=26,weight="normal")
         #Add the Tk Image to a label
         self.loading_image_label = ttk.Label(master=self, image=self.loading_image)

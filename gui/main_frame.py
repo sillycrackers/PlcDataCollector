@@ -1,10 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from queue import Queue
-import time
 import threading
-from PIL import Image, ImageTk
-from PIL.Image import Resampling
 
 import utils
 from gui.main_menu import MainMenu
@@ -37,7 +34,6 @@ class MainFrame(ttk.Frame):
         self.my_style.configure(style='alarm.Treeview', font=self.alarm_font, foreground="red",
                                 rowheight=self.alarm_font.metrics("linespace") + 2
                                 )
-
         #Main Menu
         self.main_menu = MainMenu(root_window, self)
         self.root_window.configure(menu = self.main_menu)
@@ -66,46 +62,39 @@ class MainFrame(ttk.Frame):
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
         self.root_window.bind("<Button>", self.on_click)
 
-        #=============Widgets================#
+        #===============Widgets================#
 
+        # =========Top Frame==========#
+        #-----------------------------#
+        self.top_frame = ttk.Frame(self)
         #Title Frame
-        self.title_frame = TitleFrame(self, text="PLC Data Collector")
+        self.title_frame = TitleFrame(self.top_frame, text="PLC Data Collector")
         #Collecting data frame
-        self.collecting_data_frame = CollectingDataFrame(self)
+        self.collecting_data_frame = CollectingDataFrame(self.top_frame)
         #Loading Label Column 1 Row 1
-        self.loading_label = AnimatedLabel(self, text="Loading")
+        self.loading_label = AnimatedLabel(self.top_frame, text="Loading")
+
+        #==== Pack Widgets on Frame ====#
+        self.title_frame.pack()
+        self.collecting_data_frame.pack()
+        self.loading_label.pack()
+
+        #=========Main Body Frame==========#
+        #----------------------------------#
+        self.main_body_frame = ttk.Frame(self)
         #Left Body Frame
-        self.left_body_frame = LeftBodyFrame(self)
+        self.left_body_frame = LeftBodyFrame(parent_frame=self.main_body_frame,main_frame=self)
         #Right Body Frame
-        self.right_body_frame = RightBodyFrame(self)
-        #loading Image
+        self.right_body_frame = RightBodyFrame(parent_frame=self.main_body_frame, main_frame=self)
 
-        #=============Grid setup================#
+        #==== Pack Widgets on Frame ====#
+        self.left_body_frame.pack(side="left", fill="y", pady=(20,20), padx=(20,10))
+        self.right_body_frame.pack(side="right", expand=True, fill="both", pady=(20,20), padx=(0,20))
 
-
-        #=========Columns=========#
-        self.grid_columnconfigure(index=0, weight=1)
-        self.grid_columnconfigure(index=1, weight=4)
-
-
-        #=========Rows=============#
-        #Title
-        self.grid_rowconfigure(index=0, minsize=200)
-        #Loading Label and loading image wheel
-        self.grid_rowconfigure(index=1,minsize=35, weight = 2)
-        #Left and right bodies
-        self.grid_rowconfigure(index=2, weight=8)
-
-        #===============Place Widgets on Grid================#
-
-        #Title (Title and Logo Image)
-        self.title_frame.grid(column=0, row=0, sticky="nsew")
-        #Left Body (Connections and alarms)
-        self.left_body_frame.grid(column=0, row=2, sticky="nsew", padx=(20, 10), pady=(0,20))
-        #Right Body (Output)
-        self.right_body_frame.grid(column=1, row=2, sticky="nsew", padx=(20, 10), pady=(0,20))
-        #Collecting Data Frame
-        self.collecting_data_frame.grid(column=0, row=1, sticky='nsew', padx=(20, 20))
+        #===============Main Layout================#
+        #------------------------------------------#
+        self.top_frame.pack(fill="x")
+        self.main_body_frame.pack(expand=True, fill="both")
 
     def after_rotate_image(self):
 
@@ -159,13 +148,13 @@ class MainFrame(ttk.Frame):
 
             case TicketPurpose.SHOW_ANIMATED_LABEL:
                 # (AnimatedLabel: object,column : int, row : int)
-                msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew", columnspan=2)
+                #msg.value[0].grid(column=msg.value[1], row=msg.value[2], sticky="ew", columnspan=2)
                 self.show_loading_animation = True
-                self.after(100, self.label_animation, msg.value[0])
+                #self.after(100, self.label_animation, msg.value[0])
 
             case TicketPurpose.HIDE_ANIMATED_LABEL:
                 self.show_loading_animation = False
-                msg.value[0].grid_forget()
+                #msg.value[0].grid_forget()
 
                 # message : str
             case TicketPurpose.OUTPUT_MESSAGE:

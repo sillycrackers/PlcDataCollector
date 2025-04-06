@@ -20,19 +20,24 @@ class Indicator(tk.Frame):
 
         self.current_icon_label = self.ind_icon_false_label
 
-        self.display_label.pack(side="left")
         self.current_icon_label.pack(side="right")
+        self.display_label.pack(side="right", padx=(0,10))
+
 
     def set_state(self, state):
         if state:
 
             self.current_icon_label.pack_forget()
+            self.display_label.pack_forget()
             self.current_icon_label = self.ind_icon_true_label
             self.current_icon_label.pack(side="right")
+            self.display_label.pack(side="right", padx=(0,10))
         else:
             self.current_icon_label.pack_forget()
+            self.display_label.pack_forget()
             self.current_icon_label = self.ind_icon_false_label
             self.current_icon_label.pack(side="right")
+            self.display_label.pack(side="right", padx=(0,10))
 
     def get_name(self):
 

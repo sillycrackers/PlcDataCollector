@@ -8,6 +8,8 @@ from openpyxl import Workbook, load_workbook
 from enum import Enum, auto
 import shutil
 
+import gui.prompt
+
 
 def copy_paste_file(file_path, dest_path):
 
@@ -126,5 +128,5 @@ class Ticket:
         self.main_frame.q.put(self)
         self.main_frame.event_generate("<<CheckQueue>>")
 
-def disable_event():
-   pass
+def disable_event(parent):
+   gui.prompt.Prompt(parent)

@@ -10,9 +10,7 @@ class NewOutputDisplay(ttk.Frame):
         super().__init__(master=parent)
 
         self.iid_count = 0
-
         self.at_bottom = True
-
         self.scrollbar = ttk.Scrollbar(self)
         self.listbox = ttk.Treeview(self, yscrollcommand=self.scrollbar.set, show="tree")
         self.scrollbar.configure(command=self.call_back)

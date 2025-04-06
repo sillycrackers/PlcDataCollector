@@ -8,11 +8,11 @@ from gui.colors import *
 
 
 class LeftBodyFrame(ttk.Frame):
-    def __init__(self, main_frame):
-        super().__init__(master=main_frame)
+    def __init__(self,parent_frame, main_frame):
+        super().__init__(master=parent_frame)
 
         self.main_frame = main_frame
-
+        self.parent_frame = parent_frame
 
         self.indicators = {}
 
@@ -22,19 +22,11 @@ class LeftBodyFrame(ttk.Frame):
         self.border_frame = ttk.Frame(self, borderwidth=1, relief=tk.RIDGE)
         self.border_frame.pack(fill="both", expand=True)
 
-        self.indicator_frame = ScrolledFrame(self.border_frame)
-        self.indicator_frame.pack(fill="both", expand=True)
+        self.scrolled_frame = ScrolledFrame(self.border_frame)
+        self.scrolled_frame.pack(fill="both", expand=True)
 
-        self.indicator_frame.columnconfigure(index=0, weight=1)
-        self.indicator_frame.columnconfigure(index=1, weight=1)
-        self.indicator_frame.columnconfigure(index=2, weight=2)
-        self.indicator_frame.rowconfigure(index=(0, 1, 2), weight=1)
-
-        self.spacer_label1 = ttk.Label(self.indicator_frame)
-        self.spacer_label2 = ttk.Label(self.indicator_frame)
-
-        self.spacer_label1.grid(row=0, column=0, sticky='ew')
-        self.spacer_label2.grid(row=0,column=2, sticky='ew')
+        self.indicator_frame = ttk.Frame(self.scrolled_frame)
+        self.indicator_frame.pack(fill="y", expand=True)
 
         self.open_manage_connections_button = ttk.Button(self,style='custom.TButton', text="Manage Connections", command=self.main_frame.open_manage_connections_window)
         self.open_manage_connections_button.pack(pady=(10,10))
@@ -53,7 +45,7 @@ class LeftBodyFrame(ttk.Frame):
 
         if len(self.indicators) > 0:
             for indicator in self.indicators.values():
-                indicator.grid_forget()
+                indicator.pack_forget()
 
             self.indicators.clear()
 
@@ -61,7 +53,7 @@ class LeftBodyFrame(ttk.Frame):
             self.indicators[connection.plc.name] = Indicator(self.indicator_frame, connection.plc.name, RED)
 
         for indicator in self.indicators:
-            self.indicators[indicator].grid(row=x, column=1, sticky='nse')
+            self.indicators[indicator].pack(fill="x", padx=20)
 
             x += 1
 

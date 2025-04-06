@@ -90,7 +90,7 @@ class MainMenu(ttk.Menu):
 
             wait_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window, main_frame=self.main_frame)
             wait_cursor_ticket.transmit()
-            loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.main_frame.loading_label, 1, 1), main_frame=self.main_frame)
+            loading_label_ticket = Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=(self.main_frame.loading_label), main_frame=self.main_frame)
             loading_label_ticket.transmit()
 
             if len(self.main_frame.plc_data_connections) > 0:
@@ -119,7 +119,7 @@ class MainMenu(ttk.Menu):
             populate_indicators_ticket = Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None, main_frame=self.main_frame)
             normal_cursor_ticket = Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window, main_frame=self.main_frame)
             loading_label_ticket = Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
-                                          value=(self.main_frame.loading_label, 1, 1), main_frame=self.main_frame)
+                                          value=(self.main_frame.loading_label), main_frame=self.main_frame)
 
             active_alarm_clear_ticket.transmit()
             populate_indicators_ticket.transmit()

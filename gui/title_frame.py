@@ -13,7 +13,7 @@ class TitleFrame(ttk.Frame):
         title_logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
         self.title_image = ttk.Label(self, image=title_logo_image)
         self.title_image.image = title_logo_image
-        self.title_image.pack(side="left", padx=20)
+        self.title_image.pack(side="left", padx=(0,20))
         self.title_label = ttk.Label(self, text=self.text, justify="left" ,font="calibri 28")
         self.title_label.pack(side="left")
 

@@ -5,11 +5,14 @@ from ttkbootstrap.scrolled import *
 from gui.new_output_display import NewOutputDisplay
 from gui.indicator import Indicator
 from gui.colors import *
+from utils import *
+
 
 
 class LeftBodyFrame(ttk.Frame):
     def __init__(self,parent_frame, main_frame):
         super().__init__(master=parent_frame)
+        #change_theme("dark")
 
         self.main_frame = main_frame
         self.parent_frame = parent_frame
@@ -19,13 +22,13 @@ class LeftBodyFrame(ttk.Frame):
         self.title_label = ttk.Label(self, text="PLC Connections", font="calibri 14", justify="left")
         self.title_label.pack(fill='x')
 
-        self.border_frame = ttk.Frame(self, borderwidth=1, relief=tk.RIDGE)
+        self.border_frame = ttk.Frame(self, borderwidth=1, relief=tk.SOLID)
         self.border_frame.pack(fill="both", expand=True)
 
         self.scrolled_frame = ScrolledFrame(self.border_frame)
         self.scrolled_frame.pack(fill="both", expand=True)
 
-        self.indicator_frame = ttk.Frame(self.scrolled_frame)
+        self.indicator_frame = ttk.Frame(self.scrolled_frame, style="custom.TFrame")
         self.indicator_frame.pack(fill="y", expand=True)
 
         self.open_manage_connections_button = ttk.Button(self,style='custom.TButton', text="Manage Connections", command=self.main_frame.open_manage_connections_window)

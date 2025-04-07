@@ -44,34 +44,21 @@ class ManageConnectionsFrame(ttk.Frame):
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
 
-        #Grid configure
-
-        #Title Label
-        self.grid_rowconfigure(0)
-        #Loading Label
-        self.grid_rowconfigure(1, minsize=35)
-        #Main Label Frame
-        self.grid_rowconfigure(2)
-
-        self.grid_columnconfigure(1)
-
+        #====== Main Frame ======#
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
-        self.title_label.grid(row=0, column=0, pady=(20,0))
-
-        self.loading_label = AnimatedLabel(self, text="Loading")
-
+        self.title_label.pack(pady=(30,0))
+        self.loading_label_frame = ttk.Frame(self, height=34)
+        self.loading_label = AnimatedLabel(self.loading_label_frame, text="Loading")
+        self.loading_label_frame.pack(fill="y")
         self.header_label = ttk.Label(self, text="Manage Connections",font="calibri 14", justify="left")
-        self.header_label.grid(row=2, column=0, sticky="w")
+        self.header_label.pack(fill="x")
+        self.base_frame = ttk.Frame(self, borderwidth=1, relief=tk.SOLID)
+        self.base_frame.pack()
 
-        self.base_frame = ttk.Frame(self, borderwidth=1, relief=tk.RIDGE)
-        self.base_frame.grid(row=3, column=0, pady=(0, 50))
 
         self.combo_list = []
-
         self.populate_combo_list()
-
         self.combo_list.append("Add New PLC...")
-
         self.option = tk.StringVar()
 
         try:
@@ -85,7 +72,6 @@ class ManageConnectionsFrame(ttk.Frame):
         #Option Menu
         self.option_menu = ttk.OptionMenu(self.base_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
-
         self.option_menu.configure(width=40)
         self.option_menu.pack(pady=20, expand=True)
 
@@ -94,12 +80,10 @@ class ManageConnectionsFrame(ttk.Frame):
         self.inner_frame.pack(padx=20, pady=20)
 
 
-
         #===========Data Entries=============#
 
         #startrow used to locate data entries on grid relative to the first one placed
         self.start_row = 0
-
 
         # Name Validation
         self.name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
@@ -281,12 +265,12 @@ class ManageConnectionsFrame(ttk.Frame):
         self.main_frame.comm_lock.acquire()
 
     def release_data_control(self):
-        self.parent_window.parent_frame.comm_lock.release()
-        self.parent_window.parent_frame.read_lock.release()
+        self.main_frame.comm_lock.release()
+        self.main_frame.read_lock.release()
         self.applied = True
         self.data_did_not_change = True
-        self.parent_window.parent_frame.file_loaded = True
-        self.parent_window.parent_frame.halt_threads = False
+        self.main_frame.file_loaded = True
+        self.main_frame.halt_threads = False
 
         self.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
         self.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
@@ -331,7 +315,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.obtain_data_control()
 
         # Add new connection to dict
-        self.add_plc_connection(PlcConnection(new_plc, self.parent_window.parent_frame))
+        self.add_plc_connection(PlcConnection(new_plc, self.main_frame))
 
         # Release locks and update flags for controlling threads, so they can start again
         self.release_data_control()

@@ -1,7 +1,6 @@
 import re
 import os
 
-
 def check_valid_ip(ip):
 
     ipv4_pattern = r'^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$'
@@ -20,7 +19,6 @@ def check_valid_tag_list(tag_list):
     return True
 
 def check_valid_tag(tag):
-
 
     if len(tag) == 0:
         return False

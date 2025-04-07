@@ -26,15 +26,6 @@ class MainFrame(ttk.Frame):
         #Pack Self
         self.pack(expand=True, fill="both")
 
-        #Global Styles
-
-        self.alarm_font = tk.font.Font(family="calibri", size=12, weight="normal")
-        self.my_style = ttk.Style(theme='flatly')
-        self.my_style.configure('TLabelframe.Label', font=('Calibri', 12,))
-        self.my_style.configure('custom.TButton', font=('Calibri', 12,))
-        self.my_style.configure(style='alarm.Treeview', font=self.alarm_font, foreground="red",
-                                rowheight=self.alarm_font.metrics("linespace") + 2
-                                )
         #Main Menu
         self.main_menu = MainMenu(root_window, self)
         self.root_window.configure(menu = self.main_menu)
@@ -193,7 +184,6 @@ class MainFrame(ttk.Frame):
         #Ctrl + c to quit program
         #<KeyPress event send_event=True state=Control|Mod1 keysym=c keycode=67 char='\x03' x=165 y=27>
 
-
     #This method is being called by thread.
     def read_plc_data(self):
         if len(self.plc_data_connections) > 0:
@@ -250,7 +240,7 @@ class MainFrame(ttk.Frame):
 
         self.comm_thread_done = True
 
-    def refresh_active_alarms(self):
+    def after_refresh_active_alarms(self):
 
 
         self.threads.clear()
@@ -279,7 +269,7 @@ class MainFrame(ttk.Frame):
                 self.read_thread_done = False
                 self.comm_thread_done = False
 
-        self.after(250, self.refresh_active_alarms)
+        self.after(250, self.after_refresh_active_alarms)
 
     def freeze_window(self, window):
         window.attributes('-disabled', 1)
@@ -289,13 +279,12 @@ class MainFrame(ttk.Frame):
 
     def output_message(self, message):
 
-
         self.right_body_frame.output.add_message(message)
 
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
-        self.after(100, self.refresh_active_alarms)
+        self.after(100, self.after_refresh_active_alarms)
 
         self.after(1000, self.after_rotate_image)
 

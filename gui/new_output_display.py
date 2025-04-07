@@ -11,14 +11,19 @@ class NewOutputDisplay(ttk.Frame):
 
         self.iid_count = 0
         self.at_bottom = True
-        self.scrollbar = ttk.Scrollbar(self)
-        self.listbox = ttk.Treeview(self, yscrollcommand=self.scrollbar.set, show="tree")
-        self.scrollbar.configure(command=self.call_back)
         self.style = style
 
-        if self.style is not None:
+
+        self.wrapper_frame = ttk.Frame(self, borderwidth=1, relief=tk.SOLID)
+        self.scrollbar = ttk.Scrollbar(self.wrapper_frame)
+        self.listbox = ttk.Treeview(self.wrapper_frame, yscrollcommand=self.scrollbar.set, show="tree")
+        self.scrollbar.configure(command=self.call_back)
+
+
+        if self.style:
             self.listbox.configure(style=self.style)
 
+        self.wrapper_frame.pack(expand=True, fill="both")
         self.scrollbar.pack(side="right", fill="y")
         self.listbox.pack(side="left", expand=True, fill="both")
 

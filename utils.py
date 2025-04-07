@@ -6,7 +6,8 @@ import ttkbootstrap as ttk
 from openpyxl import Workbook, load_workbook
 import shutil
 
-import gui.prompt
+
+from gui.prompt import Prompt
 
 def copy_paste_file(file_path, dest_path):
 
@@ -42,7 +43,7 @@ def get_reg(reg_path):
             return file_path_regval[0]
 
     except (FileNotFoundError, WindowsError):
-        print("Couldn't find 'SOFTWARE\\Plc Data Collector\\last_file_path' in registry")
+        print(f"Couldn't find '{reg_path}\\last_file_path' in registry")
         return False
 
 def change_theme(theme):
@@ -52,7 +53,9 @@ def change_theme(theme):
 
         style_object.configure('TLabelframe.Label', font=('Calibri', 12,))
         style_object.configure('custom.TButton', font=('Calibri', 12,))
-        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
+        #style_object.configure(style='custom.TFrame', background="#2f2f2f")
+        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red", rowheight=20)
+        style_object.configure(style='TFrame', bordercolor="#737373")
 
     elif theme == 'light':
 
@@ -60,7 +63,8 @@ def change_theme(theme):
 
         style_object.configure('TLabelframe.Label', font=('Calibri', 12,))
         style_object.configure('custom.TButton', font=('Calibri', 12,))
-        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red")
+        style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red", rowheight=20)
+        style_object.configure(style='TFrame', bordercolor="#737373")
 
 # Function to save data to Excel
 def save_to_excel(plc, row):
@@ -93,4 +97,4 @@ def save_to_excel(plc, row):
             traceback.print_exc()
 
 def disable_event(parent):
-   gui.prompt.Prompt(parent)
+   Prompt(parent)

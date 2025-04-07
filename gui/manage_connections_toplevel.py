@@ -9,13 +9,13 @@ from gui.manage_connections_frame import ManageConnectionsFrame
 class ManageConnectionsToplevel(ttk.Toplevel):
     def __init__(self, root_window, main_frame):
         super().__init__(master=root_window)
-        self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
-        self.iconphoto(False, self.logo_image)
-        self.minsize(width=550,height=550)
-        self.resizable(width=False, height=False)
-        self.title("Manage Connections")
 
         self.position_center()
+
+        self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
+        self.iconphoto(False, self.logo_image)
+        self.minsize(width=550,height=700)
+        self.title("Manage Connections")
 
         self.root_window = root_window
         self.main_frame = main_frame

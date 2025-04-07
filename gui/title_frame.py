@@ -10,7 +10,7 @@ class TitleFrame(ttk.Frame):
 
         super().__init__(master = parent)
 
-        title_logo_image = tk.PhotoImage(file=resource_path("data_icon.png"))
+        title_logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
         self.title_image = ttk.Label(self, image=title_logo_image)
         self.title_image.image = title_logo_image
         self.title_image.pack(side="left", padx=(0,20))

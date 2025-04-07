@@ -29,7 +29,7 @@ class CollectingDataFrame(ttk.Frame):
 
 
         #Make new smaller image
-        self.img = Image.open(resource_path("loading.png"))
+        self.img = Image.open(resource_path("gui\\imgs\\loading.png"))
         self.resized_img = self.img.resize(size=(25,25),resample=Image.Resampling.LANCZOS)
         self.img.close()
 

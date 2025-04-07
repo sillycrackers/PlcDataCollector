@@ -8,8 +8,7 @@ import threading
 
 import utils
 from gui.about_window import AboutWindow
-from plc import Plc
-from plc_connection import PlcConnection
+from plc_connection import PlcConnection, Plc
 from utils import *
 from ticketing_system import *
 
@@ -84,6 +83,8 @@ class MainMenu(ttk.Menu):
 
         if not booting:
             file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
+        else:
+            booting = False
 
         if os.path.exists(file_path):
 

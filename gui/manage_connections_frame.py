@@ -4,9 +4,8 @@ import tkinter as tk
 
 import entry_validation
 import utils
-from plc import Plc
 from gui.data_entry import DataEntry
-from plc_connection import PlcConnection
+from plc_connection import PlcConnection, Plc
 from utils import *
 from gui.animated_label import AnimatedLabel
 from ticketing_system import *
@@ -21,6 +20,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.parent_window = parent_window
         self.connections = main_frame.plc_data_connections
         self.main_root_window = main_frame.root_window
+        self.ticketer = main_frame.ticketer
 
         #Variables
         self.applied = False
@@ -238,7 +238,6 @@ class ManageConnectionsFrame(ttk.Frame):
         for string in input_string_list:
             output_string_list.append(string.strip())
 
-
         if not entry_validation.check_valid_tag_list(output_string_list):
             self.validation_labels['tag_list'].config(
                 text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
@@ -274,12 +273,12 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def obtain_data_control(self):
         self.main_frame.halt_threads = True
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
 
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
-        self.parent_window.parent_frame.read_lock.acquire()
-        self.parent_window.parent_frame.comm_lock.acquire()
+        self.main_frame.read_lock.acquire()
+        self.main_frame.comm_lock.acquire()
 
     def release_data_control(self):
         self.parent_window.parent_frame.comm_lock.release()
@@ -289,10 +288,10 @@ class ManageConnectionsFrame(ttk.Frame):
         self.parent_window.parent_frame.file_loaded = True
         self.parent_window.parent_frame.halt_threads = False
 
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-        self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+        self.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
 
 
     def apply_changes(self, ok=False):
@@ -357,7 +356,7 @@ class ManageConnectionsFrame(ttk.Frame):
             excel_file_location=self.excel_file_location_entry_variable.get()
         )
 
-        edit_plc_connection = PlcConnection(edit_plc, self.parent_window.parent_frame)
+        edit_plc_connection = PlcConnection(edit_plc, self.main_frame)
 
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
@@ -388,6 +387,8 @@ class ManageConnectionsFrame(ttk.Frame):
             self.run_apply_thread(ok=True)
 
     def callback(self, var, index, mode):
+
+        print(var, index, mode)
 
         self.data_did_not_change = False
         self.apply_button.config(state="enabled")

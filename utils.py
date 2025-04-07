@@ -3,9 +3,7 @@ import sys
 import traceback
 import winreg
 import ttkbootstrap as ttk
-import openpyxl
 from openpyxl import Workbook, load_workbook
-from enum import Enum, auto
 import shutil
 
 import gui.prompt

@@ -64,6 +64,7 @@ class MainFrame(ttk.Frame):
 
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
         self.root_window.bind("<Button>", self.on_click)
+        self.root_window.bind("<Control-e>", self.on_key_press)
 
         #===============Widgets================#
 
@@ -179,6 +180,20 @@ class MainFrame(ttk.Frame):
                 self.output_message(msg.value)
 
         self.q.task_done()
+
+    def on_key_press(self, event):
+
+        print("Ctrl-C pressed")
+        self.root_window.destroy()
+
+        #"Application closed with Ctrl-c"
+
+        sys.exit("Application closed with Ctrl-e")
+
+        #Ctrl + c to quit program
+        #<KeyPress event send_event=True state=Control|Mod1 keysym=c keycode=67 char='\x03' x=165 y=27>
+
+
     #This method is being called by thread.
     def read_plc_data(self):
         if len(self.plc_data_connections) > 0:
@@ -276,7 +291,6 @@ class MainFrame(ttk.Frame):
 
 
         self.right_body_frame.output.add_message(message)
-
 
     def run_app(self):
 

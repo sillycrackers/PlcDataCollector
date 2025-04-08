@@ -21,6 +21,8 @@ class MainFrame(ttk.Frame):
 
         self.root_window = root_window
 
+        change_theme("dark")
+
         #Pack Self
         self.pack(expand=True, fill="both")
 
@@ -29,7 +31,6 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
-
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
@@ -104,6 +105,8 @@ class MainFrame(ttk.Frame):
         #------------------------------------------#
         self.top_frame.pack(fill='x', padx=(20,0), pady=(20,0))
         self.main_body_frame.pack(expand=True, fill="both")
+
+
 
     def after_rotate_image(self):
 

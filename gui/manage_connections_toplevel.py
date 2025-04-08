@@ -10,8 +10,6 @@ class ManageConnectionsToplevel(ttk.Toplevel):
     def __init__(self, root_window, main_frame):
         super().__init__(master=root_window)
 
-        self.position_center()
-
         self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.minsize(width=550,height=700)
@@ -24,6 +22,7 @@ class ManageConnectionsToplevel(ttk.Toplevel):
 
         manage_connections_frame.pack()
 
+        self.position_center()
 
         # Make parent window disabled and make sure to run close method when closing this window
         self.transient(root_window)

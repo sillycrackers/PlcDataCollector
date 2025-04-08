@@ -1,8 +1,5 @@
 import tkinter as tk
-from idlelib.configdialog import font_sample_text
 
-
-import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
 class NewOutputDisplay(ttk.Frame):

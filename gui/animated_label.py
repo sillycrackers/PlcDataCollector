@@ -1,4 +1,3 @@
-import tkinter as tk
 import ttkbootstrap as ttk
 
 class AnimatedLabel(ttk.Frame):

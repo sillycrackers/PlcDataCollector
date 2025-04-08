@@ -1,12 +1,8 @@
-import tkinter as tk
-import ttkbootstrap as ttk
-from queue import Queue
-import time
-import threading
 from PIL import Image, ImageTk
 from PIL.Image import Resampling
 
 from utils import *
+from file_management import *
 
 class CollectingDataFrame(ttk.Frame):
     def __init__(self, main_frame):

@@ -1,12 +1,7 @@
-import tkinter as tk
-import ttkbootstrap as ttk
-from PIL.ImageOps import expand
-from openpyxl.styles.fills import fills
 from ttkbootstrap.scrolled import *
 
 from gui.new_output_display import NewOutputDisplay
-from gui.indicator import Indicator
-from gui.colors import *
+
 
 
 class RightBodyFrame(ttk.Frame):

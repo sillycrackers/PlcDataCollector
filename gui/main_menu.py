@@ -1,16 +1,14 @@
 import time
 from json import JSONEncoder
-import ttkbootstrap as ttk
 from tkinter import filedialog
 import json
-import os
 import threading
 
-import utils
 from gui.about_window import AboutWindow
 from plc_connection import PlcConnection, Plc
 from utils import *
 from ticketing_system import *
+from file_management import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):

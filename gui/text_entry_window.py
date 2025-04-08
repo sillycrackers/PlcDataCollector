@@ -1,11 +1,10 @@
 import tkinter as tk
-import ttkbootstrap as ttk
 from tkinter import filedialog
 import openpyxl
-import re
 import csv
 
 from utils import *
+from file_management import *
 
 class TextEntryWindow(ttk.Toplevel):
     def __init__(self, text_variable, parent_window):

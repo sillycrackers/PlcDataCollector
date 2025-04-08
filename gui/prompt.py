@@ -1,7 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
-from PIL.Image import Resampling
+
+from file_management import *
 
 
 import utils
@@ -10,7 +11,7 @@ class Prompt(ttk.Toplevel):
     def __init__(self, parent):
         super().__init__(master=parent)
         self.parent = parent
-        self.logo_image = tk.PhotoImage(file=utils.resource_path("gui\\imgs\\data_icon.png"))
+        self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.title("Prompt")
 
@@ -25,7 +26,7 @@ class Prompt(ttk.Toplevel):
         self.label_frame.pack(expand=True, padx=50, pady=50)
 
         #Make new smaller image
-        self.img = Image.open(utils.resource_path("gui\\imgs\\red_x.png"))
+        self.img = Image.open(resource_path("gui\\imgs\\red_x.png"))
         self.resized_img = ImageTk.PhotoImage(self.img.resize(size=(30,30),resample=Image.Resampling.LANCZOS))
         self.img.close()
 

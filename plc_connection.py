@@ -5,8 +5,8 @@ from datetime import datetime
 import traceback
 import time
 
-from utils import *
 from ticketing_system import *
+from file_management import *
 
 
 class PlcConnection:
@@ -49,36 +49,10 @@ class PlcConnection:
                 return data_row
 
             else:
-                print("Trigger not active")
+                ...
+                #print("Trigger not active")
 
             return None
-
-    # Function to save data to Excel
-    def save_to_excel(self, data_row):
-        # Ensure the folder exists
-        if not os.path.exists(self.plc.excel_file_location):
-            os.makedirs(self.plc.excel_file_location)
-        else:
-            print("Directory Already Exists")
-
-        if data_row:
-            try:
-                if os.path.exists(self.plc.file_path):
-                    wb = load_workbook(self.plc.file_path)
-                    ws = wb.active
-                else:
-                    wb = Workbook()
-                    ws = wb.active
-                    ws.title = "PLC Data"
-                    ws.append(["Timestamp"] + self.plc.tags)  # Header row
-
-                ws.append(data_row)
-                wb.save(self.plc.file_path)
-
-                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {self.plc.name}: {data_row}"))
-
-            except:
-                traceback.print_exc()
 
     # Function to send acknowledgment to PLC
     def send_acknowledgment(self):
@@ -94,7 +68,7 @@ class PlcConnection:
         data = self.read_plc_tags()
         if data:
             self.send_acknowledgment()
-            self.save_to_excel(data)
+            save_to_excel(self.plc, data, self.main_frame.ticketer)
         else:
             time.sleep(0.5)
 

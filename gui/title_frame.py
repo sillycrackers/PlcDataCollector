@@ -1,7 +1,8 @@
 import tkinter as tk
-import ttkbootstrap as ttk
+
 
 from utils import *
+from file_management import *
 
 class TitleFrame(ttk.Frame):
     def __init__(self, parent, text):

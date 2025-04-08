@@ -1,9 +1,7 @@
 import threading
-import time
 import tkinter as tk
 
 import entry_validation
-import utils
 from gui.data_entry import DataEntry
 from plc_connection import PlcConnection, Plc
 from utils import *
@@ -277,7 +275,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
         self.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
 
-
     def apply_changes(self, ok=False):
 
         if self.validate_entries():
@@ -371,9 +368,6 @@ class ManageConnectionsFrame(ttk.Frame):
             self.run_apply_thread(ok=True)
 
     def callback(self, var, index, mode):
-
-        print(var, index, mode)
-
         self.data_did_not_change = False
         self.apply_button.config(state="enabled")
         self.applied = False

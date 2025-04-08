@@ -1,9 +1,9 @@
 import tkinter as tk
-import ttkbootstrap as ttk
 
 
 from utils import *
 from gui.manage_connections_frame import ManageConnectionsFrame
+from file_management import *
 
 
 class ManageConnectionsToplevel(ttk.Toplevel):

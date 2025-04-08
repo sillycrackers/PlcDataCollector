@@ -1,7 +1,7 @@
 import tkinter as tk
-import ttkbootstrap as ttk
 
 from utils import *
+from file_management import *
 
 
 class Indicator(tk.Frame):

@@ -1,5 +1,4 @@
 import tkinter as tk
-import ttkbootstrap as ttk
 from ttkbootstrap.scrolled import *
 
 from gui.new_output_display import NewOutputDisplay

@@ -1,19 +1,17 @@
 import tkinter as tk
-import ttkbootstrap as ttk
 from queue import Queue
 import threading
 
-import utils
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
 from gui.left_body_frame import LeftBodyFrame
-from gui.manage_connections_frame import ManageConnectionsFrame
 from gui.manage_connections_toplevel import ManageConnectionsToplevel
 from utils import *
 from gui.animated_label import AnimatedLabel
 from gui.right_body_frame import RightBodyFrame
 from gui.collecting_data_frame import CollectingDataFrame
 from ticketing_system import *
+from file_management import *
 
 
 # Main Frame
@@ -221,15 +219,10 @@ class MainFrame(ttk.Frame):
 
             self.comm_lock.acquire()
             for connection in self.plc_data_connections.values():
-                print("Checking comms")
                 if connection.check_plc_connection():
 
-                    alarm_ticket = Ticket(purpose=TicketPurpose.UPDATE_ALARMS,
-                                          value=(f"Lost Connection to {connection.plc.name}", False))
-                    indicator_ticket = Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR,
-                                              value=(True, connection.plc.name))
-                    alarm_ticket.transmit()
-                    indicator_ticket.transmit()
+                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
+                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
 
                 else:
 

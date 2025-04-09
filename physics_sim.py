@@ -1,34 +1,26 @@
 import tkinter as tk
 
 class Ball:
-    def __init__(self, diameter=0, ball_id=0):
-        self.diameter = diameter
-        self.ball_id = ball_id
+    def __init__(self, radius=0, ball_id=0):
+        self.radius = radius
 
-        self.radius = self.diameter / 2
-        self.x_pos = 0
-        self.y_pos = 0
+        self.x = 0
+        self.y = 0
 
-        #Place ball at 0 initially
-        self.coord = (0,0,self.diameter,self.diameter)
+        self.current_speed = 0
 
-    def update_pos(self, x_pos, y_pos):
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+    def set_pos(self, x_pos, y_pos):
+        self.x = x_pos
+        self.y = y_pos
 
-        x0 = self.x_pos
-        y0 = self.y_pos
-        x1 = x0 + self.diameter
-        y1 = y0 + self.diameter
+    def draw_abs(self, x, y):
 
-        self.coord = (x0, y0, x1, y1)
+        self.set_pos(x,y)
 
-    def draw_abs(self, canvas : tk.Canvas, x, y):
+    def draw_rel(self, x, y):
 
-        canvas.moveto(self.ball_id, x, y)
-        self.update_pos(x,y)
+        self.set_pos(self.x + x, self.y + y)
 
-    def draw_rel(self, canvas : tk.Canvas, x, y):
+    def get_coord(self):
 
-        canvas.move(self.ball_id, x, y)
-        self.update_pos(self.x_pos + x, self.y_pos + y)
+        return self.x, self.y

@@ -1,6 +1,7 @@
 import tkinter as tk
 from queue import Queue
 import threading
+from datetime import datetime
 
 from gui.main_menu import MainMenu
 from gui.title_frame import TitleFrame
@@ -53,7 +54,7 @@ class MainFrame(tk.Frame):
         #========== Window Events ==============#
 
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
-        self.root_window.bind("<Button>", self.on_click)
+        self.root_window.bind("<Button>", self.on_mouse_click)
         self.root_window.bind("<Control-e>", self.on_key_press)
 
         #===============Widgets================#
@@ -73,6 +74,12 @@ class MainFrame(tk.Frame):
         self.collecting_data_frame = CollectingDataFrame(self.inner_top_frame)
         #Loading label frame
         self.loading_label_frame = ttk.Frame(self.inner_top_frame)
+
+        #Button for testing purposes
+        self.test_button = ttk.Button(self.top_frame_wrapper, text="Test", width=15, name="test_button",
+                                      command=lambda : self.on_button_press("test_button"))
+
+
         #Loading Label
         self.loading_label = AnimatedLabel(self.loading_label_frame, text="Loading")
         self.loading_label.pack()
@@ -84,6 +91,7 @@ class MainFrame(tk.Frame):
         #==== Pack frames into Top Frame Wrapper ====#
         self.title_frame.pack()
         self.inner_top_frame.pack(side="left")
+        self.test_button.pack(side="bottom")
 
         #==== Pack Top Frame Wrapper to Top Frame =====#
         self.top_frame_wrapper.pack(side="left")
@@ -106,8 +114,6 @@ class MainFrame(tk.Frame):
         self.top_frame.pack(fill='x', padx=(20,0), pady=(20,0))
         self.main_body_frame.pack(expand=True, fill="both")
 
-
-
     def after_rotate_image(self):
 
         if not self.halt_threads:
@@ -115,11 +121,19 @@ class MainFrame(tk.Frame):
 
         self.after(10, self.after_rotate_image)
     #Function called when mouse is clicked anywhere
-    def on_click(self, var):
+    def on_mouse_click(self, var):
 
         #Unselect item in treeview
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
+
+    def on_button_press(self, *args):
+
+        data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test", "data", "this"]
+
+        if args:
+            if args[0] == "test_button":
+               save_data_to_excel(header=["data1","data2","data3"],data=data_row ,file_path="C:\\Users\\silly\\OneDrive\\Documents\\Python\\test_data.xlsx",sheet_name= "Test Data")
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):

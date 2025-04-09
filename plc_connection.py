@@ -68,7 +68,7 @@ class PlcConnection:
         data = self.read_plc_tags()
         if data:
             self.send_acknowledgment()
-            save_to_excel(self.plc, data, self.main_frame.ticketer)
+            save_tag_data_to_excel(self.plc, data, self.main_frame.ticketer)
         else:
             time.sleep(0.5)
 

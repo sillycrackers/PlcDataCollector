@@ -11,7 +11,7 @@ def main():
     root.option_add('*tearOff', 'false')
     root.minsize(width=600,height=600)
     root.title("PLC Data Collector")
-    logo_image = tk.PhotoImage(file=resource_path("gui/imgs/data_icon.png"))
+    logo_image = tk.PhotoImage(file=resource_path("gui/imgs/data_icon_small.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())

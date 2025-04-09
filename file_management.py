@@ -50,38 +50,14 @@ def get_reg(reg_path):
         return False
 
 # Function to save data to Excel
-def save_to_excel(plc, row, ticketer : TicketingSystem):
+def save_tag_data_to_excel(plc, row, ticketer : TicketingSystem):
 
     # If folder doesn't exist, then create it
     if not os.path.exists(plc.excel_file_location):
         os.makedirs(plc.excel_file_location)
-
     if row:
         try:
-            # If file already exists then open it
-            if os.path.exists(plc.file_path):
-                wb = load_workbook(plc.file_path)
-                ws = wb.active
-            # If Excel file doesn't exist then create it
-            else:
-                # Create excel workbook, take active sheet and name it PLC Data
-                # Create initial column headers named: "Timestamp" followed by the tag names
-                wb = Workbook()
-                ws = wb.active
-
-                ws.title = "PLC Data"
-                ws.append(["Timestamp"] + plc.tags)  # Header row
-
-            # Add plc tag data as the next row in the sheet
-            ws.append(row)
-
-            for col in ws.columns:
-                print("Test")
-                ws.column_dimensions[col[0].column_letter].auto_size = True
-
-            # Save and close excel file after logging the tag data
-            wb.save(plc.file_path)
-
+            save_data_to_excel(header=plc.tags, data=row, file_path=plc.file_path, sheet_name="Plc Data")
             ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {plc.name}: {row}"))
 
         except:
@@ -91,3 +67,28 @@ def adjust_column_width(ws : Worksheet):
 
     for col in ws.columns:
         ws.column_dimensions[col[0].column_letter].auto_size = True
+
+def save_data_to_excel(header, data, file_path, sheet_name):
+    # If file already exists then open it
+    if os.path.exists(file_path):
+        wb = load_workbook(file_path)
+        ws = wb.active
+    # If Excel file doesn't exist then create it
+    else:
+        # Create excel workbook, take active sheet and name it PLC Data
+        # Create initial column headers named: "Timestamp" followed by the tag names
+        wb = Workbook()
+        ws = wb.active
+
+        ws.title = sheet_name
+        ws.append(["Timestamp"] + header)  # Header row
+
+    # Add plc tag data as the next row in the sheet
+    ws.append(data)
+
+    for col in ws.columns:
+        print("Test")
+        ws.column_dimensions[col[0].column_letter].auto_size = True
+
+    # Save and close excel file after logging the tag data
+    wb.save(file_path)

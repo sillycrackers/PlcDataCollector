@@ -3,9 +3,9 @@
 
 a = Analysis(
     ['main.py'],
-    pathex=['gui'],
+    pathex=['\\gui\\imgs:\\gui'],
     binaries=[],
-    datas=[('data_icon.ico', '.'), ('data_icon.png', '.'), ('loading.png', '.'), ('green_check.png', '.'), ('mark.png', '.')],
+    datas=[('gui\\imgs', 'gui\\imgs')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['data_icon.ico'],
+    icon=['gui\\imgs\\data_icon.ico'],
 )

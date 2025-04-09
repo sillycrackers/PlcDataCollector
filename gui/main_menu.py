@@ -9,6 +9,7 @@ from plc_connection import PlcConnection, Plc
 from utils import *
 from ticketing_system import *
 from file_management import *
+from gui.physics_sim_toplevel import PhysicsSimToplevel
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
@@ -43,9 +44,18 @@ class MainMenu(ttk.Menu):
         self.help_menu.add_command(label="About    ", command=self.open_about)
         self.add_cascade(label="  Help  ", menu=self.help_menu)
 
+        #Add-ons
+        self.add_on_menu = ttk.Menu(self, font="calibri 12")
+        self.add_on_menu.add_command(label="Physics Simulator    ", command=self.open_physics_sim)
+        self.add_cascade(label="  Add-ons  ", menu=self.add_on_menu)
+
     def open_about(self):
 
         about_window = AboutWindow(self.parent_window)
+
+    def open_physics_sim(self):
+
+        physics_sim_window = PhysicsSimToplevel()
 
     def change_theme(self, theme):
         change_theme(theme)

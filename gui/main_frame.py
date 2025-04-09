@@ -15,13 +15,13 @@ from file_management import *
 
 
 # Main Frame
-class MainFrame(ttk.Frame):
+class MainFrame(tk.Frame):
     def __init__(self, root_window):
         super().__init__(master=root_window)
 
         self.root_window = root_window
 
-        change_theme("dark")
+        #change_theme("dark")
 
         #Pack Self
         self.pack(expand=True, fill="both")

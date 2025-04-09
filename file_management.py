@@ -23,6 +23,7 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+#Save the last .pdc file open to Windows register, so we can load it next time the software opens
 def set_reg(file_path):
 
     try:
@@ -33,6 +34,7 @@ def set_reg(file_path):
     except Exception:
         print("ERROR: Couldn't change Windows Registry")
 
+#Load the last file open from Windows registry
 def get_reg(reg_path):
 
     try:

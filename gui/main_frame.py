@@ -189,10 +189,9 @@ class MainFrame(tk.Frame):
 
     def on_key_press(self, event):
 
-        print("Ctrl-C pressed")
         self.root_window.destroy()
 
-        #"Application closed with Ctrl-c"
+        #"Application closed with Ctrl-e"
 
         sys.exit("Application closed with Ctrl-e")
 

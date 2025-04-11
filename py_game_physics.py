@@ -1,13 +1,18 @@
 import pygame
 
+
 from physics_sim import *
 from file_management import *
 
 
 class MyPyGame:
     def __init__(self):
+        ...
+        self.ball1 = Ball(25,1,"red",100,100)
+        # noinspection PyTypeChecker
+        self.balls = pygame.sprite.Group(self.ball1)
 
-        self.ball1 = Ball(40, 1)
+
 
     def run(self):
         pygame.init()
@@ -17,8 +22,10 @@ class MyPyGame:
         screen = pygame.display.set_mode((600, 750))
         clock = pygame.time.Clock()
 
+        #self.ball1.set_pos(screen.get_width()/2, self.ball1.radius)
+
         #acceleration
-        a = 9.81
+        a = 100
         #change in time
         dt = 0
         #elapsed time
@@ -26,7 +33,7 @@ class MyPyGame:
         #current speed
         v = 0
 
-        self.ball1.set_pos(screen.get_width()/2, self.ball1.radius)
+        self.balls.draw(screen)
 
         #Insantaneous velocity : V = Vi + a*t
 
@@ -37,13 +44,8 @@ class MyPyGame:
                 if event.type == pygame.QUIT:
                     running = False
 
-            #grey
-
-            if not (self.ball1.y + self.ball1.radius) > screen.get_height():
-                screen.fill(color=(161, 161, 161))
-                pygame.draw.circle(screen, "red", self.ball1.get_coord(), 40)
-
-            self.ball1.y += v
+            self.balls.update(set_pos=(screen.get_width()/2, v))
+            self.balls.draw(screen)
 
             pygame.display.flip()
 
@@ -53,5 +55,7 @@ class MyPyGame:
             vt += dt
             #calculate velocity
             v = a * vt
+
+            print(vt)
 
         pygame.quit()

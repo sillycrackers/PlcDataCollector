@@ -1,25 +1,39 @@
 import tkinter as tk
 
-class Ball:
-    def __init__(self, radius=0, ball_id=0):
-        self.radius = radius
+import pygame
+from pygame.sprite import Sprite
+from pygame import gfxdraw
 
-        self.x = 0
-        self.y = 0
+class Ball(Sprite):
+    def __init__(self, radius=50, ball_id=0, color="red", x=0, y=0):
+        Sprite.__init__(self)
+
+
+        self.radius = radius
+        self.x = x
+        self.y = y
+
+        surface = pygame.Surface((radius*2, radius*2))
+        pygame.draw.circle(surface,color="red",center = (radius,radius),radius=radius)
+
+        #Set the image of the sprite as the circle
+        self.image=surface
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
 
         self.current_speed = 0
 
-    def set_pos(self, x_pos, y_pos):
-        self.x = x_pos
-        self.y = y_pos
+    def update(self, *args, **kwargs):
 
-    def draw_abs(self, x, y):
+        if "set_pos" in kwargs.keys():
+            self.set_pos(kwargs["set_pos"][0],kwargs["set_pos"][1])
 
-        self.set_pos(x,y)
 
-    def draw_rel(self, x, y):
+    def set_pos(self, x, y):
+        self.x = x
+        self.y = y
 
-        self.set_pos(self.x + x, self.y + y)
+        self.rect.center = (self.x, self.y)
 
     def get_coord(self):
 

@@ -14,13 +14,14 @@ class Ball(Sprite):
         self.y = y
         self.direction = 1
         self.vi = 0
-        self.gravity = 0.5
+        self.gravity = 0.4
         self.acc_time = 0
-        self.x_speed = 4
+        self.x_speed = 8
         self.y_speed = 0
 
-        surface = pygame.Surface((radius*2, radius*2))
-        pygame.draw.circle(surface,color="red",center = (radius,radius),radius=radius)
+        surface = pygame.Surface((radius*2, radius*2),pygame.SRCALPHA,32)
+        surface.convert_alpha()
+        pygame.draw.circle(surface,color=color,center = (radius,radius),radius=radius)
 
         #Set the image of the sprite as the circle
         self.image=surface
@@ -49,11 +50,12 @@ class Ball(Sprite):
         self.y += self.y_speed
         self.x += self.x_speed
 
-        if self.y < 0 or self.y >= screen.get_height():
-            self.y = screen.get_height()
+        if (self.y + self.radius) >= screen.get_height():
+            self.y = screen.get_height() - self.radius
             self.y_speed *= - 1
 
-        if self.x < 0 or self.x >= screen.get_width():
+
+        elif (self.x - self.radius) < 0 or (self.x + self.radius) >= screen.get_width():
             self.x_speed *= -1
 
 

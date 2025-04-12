@@ -7,19 +7,37 @@ from file_management import *
 
 class MyPyGame:
     def __init__(self):
-        ...
-        self.ball1 = Ball(25,1,"red",100,100)
+
+        pygame.init()
+        pygame.display.set_icon(pygame.image.load(resource_path("gui\\imgs\\data_icon_big.png")))
+        pygame.display.set_caption("Plc Data Collector - Physics Simulator")
+        self.screen = pygame.display.set_mode((600, 750))
+        self.clock = pygame.time.Clock()
+
+
+        self.ball1 = Ball(25,1,"red",10,100)
+        self.ball2 = Ball(40, 1, "green", 100, 60)
+        self.ball3 = Ball(5, 1, "pink", 200, 200)
+        self.ball4 = Ball(70, 1, "blue", 90, 10)
+        self.ball5 = Ball(10, 1, "purple", 300, 150)
+
+        self.balls = pygame.sprite.Group()
         # noinspection PyTypeChecker
-        self.balls = pygame.sprite.Group(self.ball1)
+        self.balls.add(self.ball1)
+        # noinspection PyTypeChecker
+        self.balls.add(self.ball2)
+        # noinspection PyTypeChecker
+        self.balls.add(self.ball3)
+        # noinspection PyTypeChecker
+        self.balls.add(self.ball4)
+        # noinspection PyTypeChecker
+        self.balls.add(self.ball5)
 
 
 
     def run(self):
-        pygame.init()
-        pygame.display.set_icon(pygame.image.load(resource_path("gui\\imgs\\data_icon_big.png")))
-        pygame.display.set_caption("Plc Data Collector - Physics Simulator")
-        screen = pygame.display.set_mode((600, 750))
-        clock = pygame.time.Clock()
+
+
 
         #change in time
         dt = 0
@@ -40,15 +58,19 @@ class MyPyGame:
             if self.ball1.direction < 0:
                 vt = 0
 
-            screen.fill("black")
+            self.screen.fill("black")
 
-            self.ball1.calc_position(screen, dt)
-            self.balls.draw(screen)
+            self.ball1.calc_position(self.screen, dt)
+            self.ball2.calc_position(self.screen, dt)
+            self.ball3.calc_position(self.screen, dt)
+            self.ball4.calc_position(self.screen, dt)
+            self.ball5.calc_position(self.screen, dt)
+            self.balls.draw(self.screen)
 
             pygame.display.flip()
 
             #Time in seconds
-            dt = clock.tick(60) / 1000
+            dt = self.clock.tick(60) / 1000
             #Acumulated time in seconds
             vt += dt
 

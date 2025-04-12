@@ -14,7 +14,10 @@ class MyPyGame:
         self.screen = pygame.display.set_mode((600, 750))
         self.clock = pygame.time.Clock()
 
+        #labels
+        self.text_font = pygame.font.SysFont("calibri", 24)
 
+        #balls
         self.ball1 = Ball(25,1,"red",10,100)
         self.ball2 = Ball(40, 1, "green", 100, 60)
         self.ball3 = Ball(5, 1, "pink", 200, 200)
@@ -60,6 +63,8 @@ class MyPyGame:
 
             self.screen.fill("black")
 
+            label1 = self.text_font.render(f"Y Speed:  {self.ball1.y_speed:.2f}", True, "white")
+            self.screen.blit(label1, (100,100))
             self.ball1.calc_position(self.screen, dt)
             self.ball2.calc_position(self.screen, dt)
             self.ball3.calc_position(self.screen, dt)

@@ -14,7 +14,7 @@ class Ball(Sprite):
         self.y = y
         self.direction = 1
         self.vi = 0
-        self.gravity = 0.4
+        self.gravity = 0.8
         self.acc_time = 0
         self.x_speed = 8
         self.y_speed = 0
@@ -55,7 +55,12 @@ class Ball(Sprite):
             self.y_speed *= - 1
 
 
-        elif (self.x - self.radius) < 0 or (self.x + self.radius) >= screen.get_width():
+        if (self.x - self.radius) < 0:
+            self.x = self.radius
+            self.x_speed *= -1
+
+        if (self.x + self.radius) >= screen.get_width():
+            self.x = screen.get_width() - self.radius
             self.x_speed *= -1
 
 

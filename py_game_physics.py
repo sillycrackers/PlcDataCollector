@@ -16,24 +16,16 @@ class MyPyGame:
 
     def run(self):
         pygame.init()
-
         pygame.display.set_icon(pygame.image.load(resource_path("gui\\imgs\\data_icon_big.png")))
         pygame.display.set_caption("Plc Data Collector - Physics Simulator")
         screen = pygame.display.set_mode((600, 750))
         clock = pygame.time.Clock()
 
-        #self.ball1.set_pos(screen.get_width()/2, self.ball1.radius)
-
-        #acceleration
-        a = 100
         #change in time
         dt = 0
         #elapsed time
         vt = 0
-        #current speed
-        v = 0
 
-        self.balls.draw(screen)
 
         #Insantaneous velocity : V = Vi + a*t
 
@@ -44,7 +36,13 @@ class MyPyGame:
                 if event.type == pygame.QUIT:
                     running = False
 
-            self.balls.update(set_pos=(screen.get_width()/2, v))
+
+            if self.ball1.direction < 0:
+                vt = 0
+
+            screen.fill("black")
+
+            self.ball1.calc_position(screen, dt)
             self.balls.draw(screen)
 
             pygame.display.flip()
@@ -53,9 +51,6 @@ class MyPyGame:
             dt = clock.tick(60) / 1000
             #Acumulated time in seconds
             vt += dt
-            #calculate velocity
-            v = a * vt
 
-            print(vt)
 
         pygame.quit()

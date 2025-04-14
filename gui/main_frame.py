@@ -22,7 +22,7 @@ class MainFrame(tk.Frame):
 
         self.root_window = root_window
 
-        #change_theme("dark")
+        change_theme("dark")
 
         #Pack Self
         self.pack(expand=True, fill="both")

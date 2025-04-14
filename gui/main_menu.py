@@ -9,8 +9,6 @@ from plc_connection import PlcConnection, Plc
 from utils import *
 from ticketing_system import *
 from file_management import *
-from gui.physics_sim_toplevel import PhysicsSimToplevel
-from py_game_physics import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
@@ -55,11 +53,7 @@ class MainMenu(ttk.Menu):
         about_window = AboutWindow(self.parent_window)
 
     def open_physics_sim(self):
-
-        physics_sim_window = MyPyGame()
-
-        physics_sim_window.run()
-
+        pass
 
     def change_theme(self, theme):
         change_theme(theme)

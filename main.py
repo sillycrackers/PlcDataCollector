@@ -6,7 +6,6 @@ from file_management import *
 
 def main():
 
-    #root = ttk.Window(themename='journal', hdpi=False)
     root = ttk.Window(themename="darkly", hdpi=False)
     root.option_add('*tearOff', 'false')
     root.minsize(width=600,height=600)

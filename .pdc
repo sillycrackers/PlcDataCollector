@@ -1,0 +1,1 @@
+[{"name": "CNC_Op15", "ip_address": "192.168.1.1", "trigger_tag": "trigger_test", "ack_tag": "ack_test", "tags": ["test_val"], "excel_file_name": "output", "excel_file_location": "C:/Users/ewesterveld/PycharmProjects", "file_path": "C:/Users/ewesterveld/PycharmProjects\\output.xlsx"}]

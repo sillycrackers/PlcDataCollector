@@ -188,7 +188,6 @@ class MainFrame(tk.Frame):
 
         sys.exit("Application closed with Ctrl-e")
 
-
     #This method is being called by thread.
     def read_plc_data(self):
         if len(self.plc_data_connections) > 0:

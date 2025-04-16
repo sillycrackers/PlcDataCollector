@@ -43,17 +43,11 @@ class MainMenu(ttk.Menu):
         self.help_menu.add_command(label="About    ", command=self.open_about)
         self.add_cascade(label="  Help  ", menu=self.help_menu)
 
-        #Add-ons
-        self.add_on_menu = ttk.Menu(self, font="calibri 12")
-        self.add_on_menu.add_command(label="Physics Simulator    ", command=self.open_physics_sim)
-        self.add_cascade(label="  Add-ons  ", menu=self.add_on_menu)
+
 
     def open_about(self):
 
         about_window = AboutWindow(self.parent_window)
-
-    def open_physics_sim(self):
-        pass
 
     def change_theme(self, theme):
         change_theme(theme)

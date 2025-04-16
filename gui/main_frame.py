@@ -75,11 +75,6 @@ class MainFrame(tk.Frame):
         #Loading label frame
         self.loading_label_frame = ttk.Frame(self.inner_top_frame)
 
-        #Button for testing purposes
-        self.test_button = ttk.Button(self.top_frame_wrapper, text="Test", width=15, name="test_button",
-                                      command=lambda : self.on_button_press("test_button"))
-
-
         #Loading Label
         self.loading_label = AnimatedLabel(self.loading_label_frame, text="Loading")
         self.loading_label.pack()
@@ -91,11 +86,9 @@ class MainFrame(tk.Frame):
         #==== Pack frames into Top Frame Wrapper ====#
         self.title_frame.pack()
         self.inner_top_frame.pack(side="left")
-        self.test_button.pack(side="bottom")
 
         #==== Pack Top Frame Wrapper to Top Frame =====#
         self.top_frame_wrapper.pack(side="left")
-
 
         #=========Main Body Frame==========#
         #----------------------------------#
@@ -188,15 +181,13 @@ class MainFrame(tk.Frame):
         self.q.task_done()
 
     def on_key_press(self, event):
-
+        print("CLOSE")
         self.root_window.destroy()
 
         #"Application closed with Ctrl-e"
 
         sys.exit("Application closed with Ctrl-e")
 
-        #Ctrl + c to quit program
-        #<KeyPress event send_event=True state=Control|Mod1 keysym=c keycode=67 char='\x03' x=165 y=27>
 
     #This method is being called by thread.
     def read_plc_data(self):

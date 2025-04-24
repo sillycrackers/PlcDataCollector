@@ -60,7 +60,7 @@ def save_tag_data_to_excel(plc, row, ticketer : TicketingSystem, write_type):
         os.makedirs(plc.excel_file_location)
     if row:
         try:
-            save_data_to_excel(header=plc.tags, data=row, file_path=plc.file_path, sheet_name="Plc Data", write_type=write_type)
+            save_data_to_excel(headers=plc.tags, data=row, file_path=plc.file_path, sheet_name="Plc Data", write_type=write_type)
             ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {plc.name}: {row}"))
 
         except:

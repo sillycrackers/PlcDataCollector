@@ -120,14 +120,6 @@ class MainFrame(tk.Frame):
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
 
-    def on_button_press(self, *args):
-
-        data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test", "data", "this"]
-
-        if args:
-            if args[0] == "test_button":
-               save_data_to_excel(header=["data1","data2","data3"],data=data_row ,file_path="C:\\Users\\silly\\OneDrive\\Documents\\Python\\test_data.xlsx",sheet_name= "Test Data")
-
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
         """

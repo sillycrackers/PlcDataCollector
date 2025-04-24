@@ -8,7 +8,7 @@ import openpyxl
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.dimensions import ColumnDimension
 from openpyxl.worksheet.worksheet import Worksheet
-from plc_connection import WriteType
+import plc_connection as pc
 
 from ticketing_system import *
 
@@ -87,10 +87,10 @@ def save_data_to_excel(headers, data, file_path, sheet_name, write_type):
 
         ws.append([first_header] + headers)  # Create Header row
 
-    if write_type==WriteType.APPEND:
+    if write_type==pc.WriteType.APPEND:
         # Add plc tag data as the next row in the sheet
         ws.append(data)
-    elif write_type==WriteType.OVERWRITE:
+    elif write_type==pc.WriteType.OVERWRITE:
         # Overwrite second row after headers with new values
         overwrite_row(ws=ws,row=2,data=data)
 

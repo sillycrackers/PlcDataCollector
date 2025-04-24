@@ -1,0 +1,3 @@
+- [ ] Implement "Save-as"
+- [ ] Implement "write type" in manage connections
+- [ ] Write unit tests

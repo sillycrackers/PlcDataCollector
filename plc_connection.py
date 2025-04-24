@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import traceback
 import time
+from enum import Enum, auto
 
 from ticketing_system import *
 from file_management import *
@@ -13,6 +14,7 @@ class PlcConnection:
     def __init__(self, plc, main_frame):
         self.plc = plc
         self.main_frame = main_frame
+        self.last_trigger = False
 
     # Function to read PLC tags
     def read_plc_tags(self):
@@ -25,32 +27,25 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Error reading trigger signal from {self.plc.name}"))
+                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
+                                                         value=f"Error reading trigger signal from {self.plc.name}"))
                 return False
 
             # Only log data when trigger is active
-            elif trigger_response.Value == 1:
-
+            elif trigger_response.Value == 1 and self.last_trigger == 0:
                 # Timestamp
                 data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
-
                 for tag in self.plc.tags:
-
                     response = comm.Read(tag)
-
                     if response.Status == "Success":
                         data_row.append(response.Value)
-
                     else:
                         data_row.append("Error")
                     if self.main_frame.halt_threads:
                         return False
 
+                self.last_trigger = trigger_response.Value
                 return data_row
-
-            else:
-                ...
-                #print("Trigger not active")
 
             return None
 
@@ -86,11 +81,13 @@ class PlcConnection:
                 return True
 
 
-
+class WriteType(Enum):
+    APPEND = auto()
+    OVERWRITE = auto()
 
 # PLC object for setting up PlcConnection object
 class Plc:
-    def __init__(self, name='', ip_address='', trigger_tag='', ack_tag='', tags=[], excel_file_name='', excel_file_location=''):
+    def __init__(self, name='', ip_address='', trigger_tag='', ack_tag='', tags=[], excel_file_name='', excel_file_location='', write_type=WriteType.APPEND):
         self.name = name
         self.ip_address = ip_address
         self.trigger_tag = trigger_tag
@@ -99,4 +96,7 @@ class Plc:
         self.excel_file_name = excel_file_name
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
+        self.write_type = write_type
+
+
 

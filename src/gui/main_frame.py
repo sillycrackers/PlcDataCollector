@@ -1,18 +1,16 @@
 import tkinter as tk
 from queue import Queue
 import threading
-from datetime import datetime
 
-from gui.main_menu import MainMenu
-from gui.title_frame import TitleFrame
-from gui.left_body_frame import LeftBodyFrame
-from gui.manage_connections_toplevel import ManageConnectionsToplevel
-from utils import *
-from gui.animated_label import AnimatedLabel
-from gui.right_body_frame import RightBodyFrame
-from gui.collecting_data_frame import CollectingDataFrame
-from ticketing_system import *
-from file_management import *
+from src.gui.main_menu import MainMenu
+from src.gui.title_frame import TitleFrame
+from src.gui.left_body_frame import LeftBodyFrame
+from src.gui.manage_connections_toplevel import ManageConnectionsToplevel
+from src.utils import *
+from src.gui.animated_label import AnimatedLabel
+from src.gui.right_body_frame import RightBodyFrame
+from src.gui.collecting_data_frame import CollectingDataFrame
+from src.file_management import *
 
 
 # Main Frame

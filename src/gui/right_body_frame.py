@@ -1,6 +1,6 @@
 from ttkbootstrap.scrolled import *
 
-from gui.new_output_display import NewOutputDisplay
+from src.gui.new_output_display import NewOutputDisplay
 
 
 

@@ -4,11 +4,10 @@ from tkinter import filedialog
 import json
 import threading
 
-from gui.about_window import AboutWindow
-from plc_connection import PlcConnection, Plc
-from utils import *
-from ticketing_system import *
-from file_management import *
+from src.gui.about_window import AboutWindow
+from src.plc_connection import PlcConnection, Plc
+from src.utils import *
+from src.file_management import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):

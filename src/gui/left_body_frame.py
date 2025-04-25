@@ -1,10 +1,10 @@
 import tkinter as tk
 from ttkbootstrap.scrolled import *
 
-from gui.new_output_display import NewOutputDisplay
-from gui.indicator import Indicator
-from gui.colors import *
-from utils import *
+from src.gui.new_output_display import NewOutputDisplay
+from src.gui.indicator import Indicator
+from src.gui.colors import *
+from src.utils import *
 
 
 

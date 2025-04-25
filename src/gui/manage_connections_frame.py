@@ -1,12 +1,12 @@
 import threading
 import tkinter as tk
 
-import entry_validation
-from gui.data_entry import DataEntry
-from plc_connection import PlcConnection, Plc
-from utils import *
-from gui.animated_label import AnimatedLabel
-from ticketing_system import *
+from src import entry_validation
+from src.gui.data_entry import DataEntry
+from src.plc_connection import PlcConnection, Plc
+from src.utils import *
+from src.gui.animated_label import AnimatedLabel
+from src.ticketing_system import *
 
 
 class ManageConnectionsFrame(ttk.Frame):

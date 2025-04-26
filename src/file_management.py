@@ -53,7 +53,7 @@ def get_reg(reg_path):
         return False
 
 # Function to save data to Excel
-def save_tag_data_to_excel(plc, data_row, ticketer : TicketingSystem, write_type):
+def save_tag_data_to_excel(plc, data_row, main_frame, write_type):
 
     # If folder doesn't exist, then create it
     if not os.path.exists(plc.excel_file_location):
@@ -61,7 +61,7 @@ def save_tag_data_to_excel(plc, data_row, ticketer : TicketingSystem, write_type
     if data_row:
         try:
             save_data_to_excel(headers=plc.tags, data_row=data_row, file_path=plc.file_path, sheet_name="Plc Data", write_type=write_type)
-            ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {plc.name}: {data_row}"))
+            transmit(main_frame,Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value=f"Data collected from {plc.name}: {data_row}"))
 
         except:
             traceback.print_exc()

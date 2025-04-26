@@ -1,14 +1,10 @@
 from enum import Enum, auto
 
 
-class TicketingSystem:
-    def __init__(self, main_frame):
-        self.main_frame = main_frame
+def transmit(receiver, ticket):
 
-    def transmit(self, ticket):
-
-        self.main_frame.q.put(ticket)
-        self.main_frame.event_generate("<<CheckQueue>>")
+    receiver.q.put(ticket)
+    receiver.event_generate("<<CheckQueue>>")
 
 class TicketPurpose(Enum):
 

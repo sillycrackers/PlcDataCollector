@@ -47,7 +47,6 @@ class MainFrame(tk.Frame):
         self.read_lock = threading.Lock()
         self.threads = []
         self.q = Queue()
-        self.ticketer = TicketingSystem(self)
 
         #========== Window Events ==============#
 
@@ -168,6 +167,9 @@ class MainFrame(tk.Frame):
             case TicketPurpose.OUTPUT_MESSAGE:
                 self.output_message(msg.value)
 
+            case _:
+                print(f"Unhandled ticket purpose: {msg.purpose}")
+
         self.q.task_done()
 
     def on_key_press(self, event):
@@ -217,13 +219,13 @@ class MainFrame(tk.Frame):
             for connection in self.plc_data_connections.values():
                 if connection.check_plc_connection():
 
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
+                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
+                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
 
                 else:
 
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
+                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
+                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
 
             self.comm_lock.release()
 

@@ -28,7 +28,7 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
+                transmit(self.main_frame, Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
                                                          value=f"Error reading trigger signal from {self.plc.name}"))
                 return False
 
@@ -56,7 +56,7 @@ class PlcConnection:
             comm.IPAddress = self.plc.ip_address
             ack_response = comm.Write(self.plc.ack_tag, 1)  # Send acknowledgment signal
             if not ack_response.Status == "Success":
-                self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal."))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal."))
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):
@@ -64,7 +64,7 @@ class PlcConnection:
         data = self.read_plc_tags()
         if data:
             self.send_acknowledgment()
-            save_tag_data_to_excel(plc= self.plc, data_row= data, ticketer= self.main_frame.ticketer, write_type= self.plc.write_type)
+            save_tag_data_to_excel(plc= self.plc, data_row= data,main_frame=self.main_frame, write_type= self.plc.write_type)
         else:
             time.sleep(0.5)
 

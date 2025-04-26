@@ -88,7 +88,15 @@ class WriteType(Enum):
 
 # PLC object for setting up PlcConnection object
 class Plc:
-    def __init__(self, name='', ip_address='', trigger_tag='', ack_tag='', tags=[], excel_file_name='', excel_file_location='', write_type=WriteType.APPEND):
+    def __init__(self, name='',
+                 ip_address='',
+                 trigger_tag='',
+                 ack_tag='',
+                 tags=[],
+                 excel_file_name='',
+                 excel_file_location='',
+                 write_type=WriteType.APPEND):
+
         self.name = name
         self.ip_address = ip_address
         self.trigger_tag = trigger_tag

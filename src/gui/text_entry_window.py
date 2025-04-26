@@ -1,15 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog
-import openpyxl
 import csv
 
-from utils import *
-from file_management import *
+from src.utils import *
+from src.file_management import *
 
 class TextEntryWindow(ttk.Toplevel):
     def __init__(self, text_variable, parent_window):
         super().__init__(master=parent_window)
-        self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
+        self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.title("Tag List")
         self.parent_window = parent_window

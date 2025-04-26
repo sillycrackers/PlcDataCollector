@@ -4,11 +4,10 @@ from tkinter import filedialog
 import json
 import threading
 
-from gui.about_window import AboutWindow
-from plc_connection import PlcConnection, Plc
-from utils import *
-from ticketing_system import *
-from file_management import *
+from src.gui.about_window import AboutWindow
+from src.plc_connection import PlcConnection, Plc
+from src.utils import *
+from src.file_management import *
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, o):
@@ -90,8 +89,8 @@ class MainMenu(ttk.Menu):
 
             self.main_frame.halt_threads = True
 
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
+            transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+            transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
             if len(self.main_frame.plc_data_connections) > 0:
                 while self.main_frame.comm_thread_done == False or self.main_frame.read_thread_done == False:
@@ -115,10 +114,10 @@ class MainMenu(ttk.Menu):
 
             print("NEW FILE!")
 
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-            self.main_frame.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
+            transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+            transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+            transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+            transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
                                           value=self.main_frame.loading_label))
 
             self.main_frame.file_loaded = True

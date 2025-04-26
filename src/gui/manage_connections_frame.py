@@ -1,12 +1,12 @@
 import threading
 import tkinter as tk
 
-import entry_validation
-from gui.data_entry import DataEntry
-from plc_connection import PlcConnection, Plc
-from utils import *
-from gui.animated_label import AnimatedLabel
-from ticketing_system import *
+from src import entry_validation
+from src.gui.data_entry import DataEntry
+from src.plc_connection import PlcConnection, Plc
+from src.utils import *
+from src.gui.animated_label import AnimatedLabel
+from src.ticketing_system import *
 
 
 class ManageConnectionsFrame(ttk.Frame):
@@ -256,8 +256,8 @@ class ManageConnectionsFrame(ttk.Frame):
     def obtain_data_control(self):
         self.main_frame.halt_threads = True
 
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
+        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
         self.main_frame.read_lock.acquire()
         self.main_frame.comm_lock.acquire()
@@ -270,10 +270,10 @@ class ManageConnectionsFrame(ttk.Frame):
         self.main_frame.file_loaded = True
         self.main_frame.halt_threads = False
 
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-        self.ticketer.transmit(Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
 
     def apply_changes(self, ok=False):
 

@@ -1,8 +1,8 @@
 from PIL import Image, ImageTk
 from PIL.Image import Resampling
 
-from utils import *
-from file_management import *
+from src.utils import *
+from src.file_management import *
 
 class CollectingDataFrame(ttk.Frame):
     def __init__(self, main_frame):
@@ -25,7 +25,7 @@ class CollectingDataFrame(ttk.Frame):
 
 
         #Make new smaller image
-        self.img = Image.open(resource_path("gui\\imgs\\loading.png"))
+        self.img = Image.open(resource_path("src\\gui\\imgs\\loading.png"))
         self.resized_img = self.img.resize(size=(25,25),resample=Image.Resampling.LANCZOS)
         self.img.close()
 

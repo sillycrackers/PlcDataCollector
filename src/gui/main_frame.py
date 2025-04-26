@@ -1,18 +1,16 @@
 import tkinter as tk
 from queue import Queue
 import threading
-from datetime import datetime
 
-from gui.main_menu import MainMenu
-from gui.title_frame import TitleFrame
-from gui.left_body_frame import LeftBodyFrame
-from gui.manage_connections_toplevel import ManageConnectionsToplevel
-from utils import *
-from gui.animated_label import AnimatedLabel
-from gui.right_body_frame import RightBodyFrame
-from gui.collecting_data_frame import CollectingDataFrame
-from ticketing_system import *
-from file_management import *
+from src.gui.main_menu import MainMenu
+from src.gui.title_frame import TitleFrame
+from src.gui.left_body_frame import LeftBodyFrame
+from src.gui.manage_connections_toplevel import ManageConnectionsToplevel
+from src.utils import *
+from src.gui.animated_label import AnimatedLabel
+from src.gui.right_body_frame import RightBodyFrame
+from src.gui.collecting_data_frame import CollectingDataFrame
+from src.file_management import *
 
 
 # Main Frame
@@ -49,7 +47,6 @@ class MainFrame(tk.Frame):
         self.read_lock = threading.Lock()
         self.threads = []
         self.q = Queue()
-        self.ticketer = TicketingSystem(self)
 
         #========== Window Events ==============#
 
@@ -120,14 +117,6 @@ class MainFrame(tk.Frame):
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
 
-    def on_button_press(self, *args):
-
-        data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test", "data", "this"]
-
-        if args:
-            if args[0] == "test_button":
-               save_data_to_excel(header=["data1","data2","data3"],data=data_row ,file_path="C:\\Users\\silly\\OneDrive\\Documents\\Python\\test_data.xlsx",sheet_name= "Test Data")
-
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
         """
@@ -178,6 +167,9 @@ class MainFrame(tk.Frame):
             case TicketPurpose.OUTPUT_MESSAGE:
                 self.output_message(msg.value)
 
+            case _:
+                print(f"Unhandled ticket purpose: {msg.purpose}")
+
         self.q.task_done()
 
     def on_key_press(self, event):
@@ -227,13 +219,13 @@ class MainFrame(tk.Frame):
             for connection in self.plc_data_connections.values():
                 if connection.check_plc_connection():
 
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
+                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
+                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
 
                 else:
 
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
-                    self.ticketer.transmit(Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
+                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
+                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
 
             self.comm_lock.release()
 

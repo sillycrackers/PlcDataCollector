@@ -1,16 +1,16 @@
 import tkinter as tk
 
 
-from utils import *
-from gui.manage_connections_frame import ManageConnectionsFrame
-from file_management import *
+from src.utils import *
+from src.gui.manage_connections_frame import ManageConnectionsFrame
+from src.file_management import *
 
 
 class ManageConnectionsToplevel(ttk.Toplevel):
     def __init__(self, root_window, main_frame):
         super().__init__(master=root_window)
 
-        self.logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
+        self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.minsize(width=550,height=700)
         self.title("Manage Connections")

@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from tkinter import filedialog
 
-from gui.text_entry_window import TextEntryWindow
+from src.gui.text_entry_window import TextEntryWindow
 
 
 class DataEntry:

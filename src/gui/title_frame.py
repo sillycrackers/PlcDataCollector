@@ -1,8 +1,8 @@
 import tkinter as tk
 
 
-from utils import *
-from file_management import *
+from src.utils import *
+from src.file_management import *
 
 class TitleFrame(ttk.Frame):
     def __init__(self, parent, text):
@@ -11,7 +11,7 @@ class TitleFrame(ttk.Frame):
 
         super().__init__(master = parent)
 
-        title_logo_image = tk.PhotoImage(file=resource_path("gui\\imgs\\data_icon.png"))
+        title_logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
         self.title_image = ttk.Label(self, image=title_logo_image)
         self.title_image.image = title_logo_image
         self.title_image.pack(side="left", padx=(0,20))

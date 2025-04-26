@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 
-import gui.prompt
+import src.gui.prompt
 
 
 def change_theme(theme):
@@ -25,4 +25,4 @@ def change_theme(theme):
 
 
 def disable_event(parent):
-   gui.prompt.Prompt(parent)
+   src.gui.prompt.Prompt(parent)

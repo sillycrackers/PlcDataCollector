@@ -82,7 +82,7 @@ class PlcConnection:
                 return True
 
 
-class WriteType(Enum):
+class WriteType(str, Enum):
     APPEND = auto()
     OVERWRITE = auto()
 
@@ -95,7 +95,8 @@ class Plc:
                  tags=[],
                  excel_file_name='',
                  excel_file_location='',
-                 write_type=WriteType.APPEND):
+                 write_type=WriteType.APPEND
+                 ):
 
         self.name = name
         self.ip_address = ip_address
@@ -106,6 +107,7 @@ class Plc:
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
         self.write_type = write_type
+
 
 
 

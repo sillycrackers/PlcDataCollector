@@ -6,7 +6,7 @@ def transmit(receiver, ticket):
     receiver.q.put(ticket)
     receiver.event_generate("<<CheckQueue>>")
 
-class TicketPurpose(Enum):
+class TicketPurpose(str, Enum):
 
     # ("message":str, Alarm active:bool)
     UPDATE_ALARMS = auto()

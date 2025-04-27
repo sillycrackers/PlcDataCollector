@@ -61,10 +61,14 @@ class LeftBodyFrame(ttk.Frame):
 
     def toggle_indicator(self, state, plc_name):
         if len(self.indicators) > 0:
-            if state:
-                self.indicators[plc_name].set_state(True)
-            else:
-                self.indicators[plc_name].set_state(False)
+
+            try:
+                if state:
+                    self.indicators[plc_name].set_state(True)
+                else:
+                    self.indicators[plc_name].set_state(False)
+            except KeyError:
+                print(f"Key error for toggle indicator list: {self.indicators}")
 
 
     def output_alarm_message(self, message):

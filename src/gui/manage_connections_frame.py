@@ -18,7 +18,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.parent_window = parent_window
         self.connections = main_frame.plc_data_connections
         self.main_root_window = main_frame.root_window
-        self.ticketer = main_frame.ticketer
+
 
         #Variables
         self.applied = False

@@ -112,10 +112,11 @@ class MainFrame(tk.Frame):
         self.after(10, self.after_rotate_image)
     #Function called when mouse is clicked anywhere
     def on_mouse_click(self, var):
-
         #Unselect item in treeview
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
+
+        print(self.plc_data_connections)
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
@@ -216,15 +217,18 @@ class MainFrame(tk.Frame):
         if len(self.plc_data_connections) > 0:
 
             self.comm_lock.acquire()
+
             for connection in self.plc_data_connections.values():
                 if connection.check_plc_connection():
 
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
+                    transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
 
                 else:
 
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
+                    transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
 
             self.comm_lock.release()

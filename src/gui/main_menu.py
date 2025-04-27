@@ -5,13 +5,13 @@ import json
 import threading
 
 from src.gui.about_window import AboutWindow
-from src.plc_connection import PlcConnection, Plc
+from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.file_management import *
 
 class PlcObjectEncoder(JSONEncoder):
-    def default(self, o):
-        return o.__dict__
+    def default(self, obj):
+        return obj.__dict__
 
 class MainMenu(ttk.Menu):
     def __init__(self, parent_window, main_frame):
@@ -43,7 +43,6 @@ class MainMenu(ttk.Menu):
         self.add_cascade(label="  Help  ", menu=self.help_menu)
 
 
-
     def open_about(self):
 
         about_window = AboutWindow(self.parent_window)
@@ -53,11 +52,11 @@ class MainMenu(ttk.Menu):
 
     def decode_json_to_plc_objects(self, json_string):
 
-        dict = json.loads(json_string)
+        json_dict = json.loads(json_string)
 
         plcs = []
 
-        for plc in dict:
+        for plc in json_dict:
             newPlc = Plc()
 
             newPlc.name = plc['name']
@@ -68,6 +67,12 @@ class MainMenu(ttk.Menu):
             newPlc.excel_file_name = plc['excel_file_name']
             newPlc.excel_file_location = plc['excel_file_location']
             newPlc.file_path = plc['file_path']
+            newPlc.write_type = plc['write_type']
+
+            if plc['write_type'] == "APPEND":
+                newPlc.write_type = WriteType.APPEND
+            else:
+                newPlc.write_type = WriteType.OVERWRITE
 
             plcs.append(newPlc)
 
@@ -132,7 +137,10 @@ class MainMenu(ttk.Menu):
         for item in list(self.main_frame.plc_data_connections.values()):
             plc_list.append(item.plc)
 
-        json_string = json.dumps(plc_list, cls=PlcObjectEncoder)
+
+        json_string = json.dumps(obj=plc_list, cls=PlcObjectEncoder)
+
+        print(json_string)
 
         files = [("PLC Data Collector",'*.pdc')]
 

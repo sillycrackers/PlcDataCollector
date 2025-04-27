@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import StrEnum, auto
 
 
 def transmit(receiver, ticket):
@@ -6,7 +6,7 @@ def transmit(receiver, ticket):
     receiver.q.put(ticket)
     receiver.event_generate("<<CheckQueue>>")
 
-class TicketPurpose(str, Enum):
+class TicketPurpose(StrEnum):
 
     # ("message":str, Alarm active:bool)
     UPDATE_ALARMS = auto()

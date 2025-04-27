@@ -222,13 +222,13 @@ class MainFrame(tk.Frame):
                 if connection.check_plc_connection():
 
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
-                    transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+                    #transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
 
                 else:
 
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
-                    transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+                    #transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
 
             self.comm_lock.release()

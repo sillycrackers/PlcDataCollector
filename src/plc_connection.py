@@ -1,13 +1,8 @@
 import pylogix as logix
-from openpyxl import Workbook, load_workbook
-import os
 from datetime import datetime
-import traceback
 import time
-from enum import Enum, auto
 
-import file_management
-from ticketing_system import *
+
 from file_management import *
 
 
@@ -82,7 +77,7 @@ class PlcConnection:
                 return True
 
 
-class WriteType(str, Enum):
+class WriteType(StrEnum):
     APPEND = auto()
     OVERWRITE = auto()
 

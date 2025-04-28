@@ -18,7 +18,7 @@ class DataEntry:
 
 
         self.name_label = ttk.Label(self.parent, text=self.label_text)
-        self.name_label.grid(row=self.row,column=0, sticky='w', padx=10)
+        self.name_label.grid(row=self.row,column=0, sticky='w', padx=(0,10))
         self.name_entry = ttk.Entry(self.parent, width=30, textvariable=self.text_variable)
         self.name_entry.grid(row=self.row,column=1, sticky='e', padx=5)
 

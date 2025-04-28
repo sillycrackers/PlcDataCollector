@@ -3,10 +3,12 @@ import tkinter as tk
 
 from src import entry_validation
 from src.gui.data_entry import DataEntry
-from src.plc_connection import PlcConnection, Plc
+from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.gui.animated_label import AnimatedLabel
 from src.ticketing_system import *
+from src.gui.write_type_selection import WriteTypeSelect
+
 
 
 class ManageConnectionsFrame(ttk.Frame):
@@ -32,6 +34,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable = ttk.StringVar()
         self.excel_file_name_entry_variable = ttk.StringVar()
         self.excel_file_location_entry_variable = ttk.StringVar()
+        self.write_type_selected_variable = ttk.StringVar()
 
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
@@ -41,6 +44,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable.trace_add("write", self.callback)
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
+        self.write_type_selected_variable.trace_add("write", self.callback)
 
         #====== Main Frame ======#
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
@@ -51,7 +55,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.header_label = ttk.Label(self, text="Manage Connections",font="calibri 14", justify="left")
         self.header_label.pack(fill="x")
         self.base_frame = ttk.Frame(self, borderwidth=1, relief=tk.SOLID)
-        self.base_frame.pack()
+        self.base_frame.pack(pady=(0,20))
 
 
         self.combo_list = []
@@ -71,7 +75,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.option_menu = ttk.OptionMenu(self.base_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
         self.option_menu.configure(width=40)
-        self.option_menu.pack(pady=20, expand=True)
+        self.option_menu.pack(pady=(20,0), expand=True)
 
         # Inner Frame used for data entries
         self.inner_frame = ttk.Frame(self.base_frame)
@@ -132,6 +136,17 @@ class ManageConnectionsFrame(ttk.Frame):
         self.excel_file_location_entry = DataEntry(self, self.inner_frame, "File Save Location:",
                                                    self.excel_file_location_entry_variable, self.start_row + 13, True,
                                                    "file_dir")
+
+        # Write Type Selection
+        self.write_type_frame = tk.Frame(self.inner_frame, background="Pink")
+        self.write_type_selection = WriteTypeSelect(self.write_type_frame, self.write_type_selected_variable)
+        self.write_type_selection.pack(fill="both", expand=True, pady=12)
+        self.write_type_frame.grid(row=self.start_row + 14, column=0, columnspan=2, sticky="w")
+
+        # Select default radiobutton
+        self.write_type_selected_variable.set(WriteType.APPEND)
+
+
 
         # Populate validation label dictionary used for hiding/showing red validation labels
         self.validation_labels = {
@@ -342,6 +357,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
 
+
         self.replace_plc_connection(edit_plc_connection, self.connections[old_plc_name])
 
         # Release locks and update flags for controlling threads, so they can start again
@@ -371,6 +387,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.data_did_not_change = False
         self.apply_button.config(state="enabled")
         self.applied = False
+        print(self.write_type_selected_variable.get())
 
     def update_entries(self, option):
 

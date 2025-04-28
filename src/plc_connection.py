@@ -1,6 +1,7 @@
 import pylogix as logix
 from datetime import datetime
 import time
+from enum import StrEnum, auto
 
 
 from file_management import *

@@ -3,14 +3,15 @@ import shutil
 import sys
 import traceback
 import winreg
+import importlib
 
 import openpyxl
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.dimensions import ColumnDimension
 from openpyxl.worksheet.worksheet import Worksheet
-import plc_connection as pc
 
-from ticketing_system import *
+import plc_connection as pc
+from ticketing_system import TicketPurpose, Ticket, transmit
 
 
 def copy_paste_file(file_path, dest_path):

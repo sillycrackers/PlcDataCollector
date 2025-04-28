@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import csv
+import openpyxl
 
 from src.utils import *
 from src.file_management import *

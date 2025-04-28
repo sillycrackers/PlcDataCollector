@@ -34,17 +34,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable = ttk.StringVar()
         self.excel_file_name_entry_variable = ttk.StringVar()
         self.excel_file_location_entry_variable = ttk.StringVar()
-        self.write_type_selected_variable = ttk.StringVar()
-
-        # Add Tracebacks to detect variable changed
-        self.name_entry_variable.trace_add("write", self.callback)
-        self.ip_address_entry_variable.trace_add("write", self.callback)
-        self.trigger_tag_entry_variable.trace_add("write", self.callback)
-        self.ack_tag_entry_variable.trace_add("write", self.callback)
-        self.tag_list_entry_variable.trace_add("write", self.callback)
-        self.excel_file_name_entry_variable.trace_add("write", self.callback)
-        self.excel_file_location_entry_variable.trace_add("write", self.callback)
-        self.write_type_selected_variable.trace_add("write", self.callback)
+        self.write_type_selected_variable = ttk.StringVar(name="write_type")
 
         #====== Main Frame ======#
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")
@@ -172,6 +162,16 @@ class ManageConnectionsFrame(ttk.Frame):
         self.cancel_button.pack(side='right', pady=20, padx=5)
 
         # ========================================#
+
+        # Add Tracebacks to detect variable changed
+        self.name_entry_variable.trace_add("write", self.callback)
+        self.ip_address_entry_variable.trace_add("write", self.callback)
+        self.trigger_tag_entry_variable.trace_add("write", self.callback)
+        self.ack_tag_entry_variable.trace_add("write", self.callback)
+        self.tag_list_entry_variable.trace_add("write", self.callback)
+        self.excel_file_name_entry_variable.trace_add("write", self.callback)
+        self.excel_file_location_entry_variable.trace_add("write", self.callback)
+        self.write_type_selected_variable.trace_add("write", self.callback)
 
         # hide validation labels initially
         self.hide_validation_labels()
@@ -342,6 +342,8 @@ class ManageConnectionsFrame(ttk.Frame):
     def edit_existing_connection(self):
         old_plc_name = self.option.get()
 
+        print(WriteType.OVERWRITE)
+
         edit_plc = Plc(
             name=self.name_entry_variable.get(),
             ip_address=self.ip_address_entry_variable.get(),
@@ -389,7 +391,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.data_did_not_change = False
         self.apply_button.config(state="enabled")
         self.applied = False
-        print(self.write_type_selected_variable.get())
+
+
 
     def update_entries(self, option):
 
@@ -405,6 +408,8 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.excel_file_name_entry_variable.set(self.connections[option.get()].plc.excel_file_name)
                 self.excel_file_location_entry_variable.set(self.connections[option.get()].plc.excel_file_location)
                 self.write_type_selected_variable.set(self.connections[option.get()].plc.write_type)
+
+
 
             except KeyError:
                 print("Key Error")

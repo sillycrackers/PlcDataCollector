@@ -127,7 +127,6 @@ class MainMenu(ttk.Menu):
             set_reg(file_path)
             self.file_path = file_path
 
-            print(file_path)
 
     def save_file_as(self):
 

@@ -69,11 +69,6 @@ class MainMenu(ttk.Menu):
             newPlc.file_path = plc['file_path']
             newPlc.write_type = plc['write_type']
 
-            if plc['write_type'] == "APPEND":
-                newPlc.write_type = WriteType.APPEND
-            else:
-                newPlc.write_type = WriteType.OVERWRITE
-
             plcs.append(newPlc)
 
         return plcs

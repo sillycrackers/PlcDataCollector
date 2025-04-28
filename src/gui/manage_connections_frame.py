@@ -146,8 +146,6 @@ class ManageConnectionsFrame(ttk.Frame):
         # Select default radiobutton
         self.write_type_selected_variable.set(WriteType.APPEND)
 
-
-
         # Populate validation label dictionary used for hiding/showing red validation labels
         self.validation_labels = {
             "name": self.name_validation_label,
@@ -320,7 +318,8 @@ class ManageConnectionsFrame(ttk.Frame):
             ack_tag=self.ack_tag_entry_variable.get(),
             tags=self.tag_list_entry_variable.get().strip().split(','),
             excel_file_name=self.excel_file_name_entry_variable.get(),
-            excel_file_location=self.excel_file_location_entry_variable.get()
+            excel_file_location=self.excel_file_location_entry_variable.get(),
+            write_type=self.write_type_selected_variable.get()
         )
 
         # Stop threads accessing data so we can edit it
@@ -349,7 +348,8 @@ class ManageConnectionsFrame(ttk.Frame):
             # Fixed bug here that was incorrectly converting string to list
             tags=self.tag_list_entry_variable.get().strip().split(','),
             excel_file_name=self.excel_file_name_entry_variable.get(),
-            excel_file_location=self.excel_file_location_entry_variable.get()
+            excel_file_location=self.excel_file_location_entry_variable.get(),
+            write_type=self.write_type_selected_variable.get()
         )
 
         edit_plc_connection = PlcConnection(edit_plc, self.main_frame)
@@ -400,9 +400,9 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.ack_tag_entry_variable.set(self.connections[option.get()].plc.ack_tag)
                 # Converts tag list into string, and take out white space
                 self.tag_list_entry_variable.set(','.join(self.connections[option.get()].plc.tags).strip())
-
                 self.excel_file_name_entry_variable.set(self.connections[option.get()].plc.excel_file_name)
                 self.excel_file_location_entry_variable.set(self.connections[option.get()].plc.excel_file_location)
+                self.write_type_selected_variable.set(self.connections[option.get()].plc.write_type)
 
             except KeyError:
                 print("Key Error")
@@ -414,6 +414,7 @@ class ManageConnectionsFrame(ttk.Frame):
             self.tag_list_entry_variable.set('')
             self.excel_file_name_entry_variable.set('')
             self.excel_file_location_entry_variable.set('')
+            self.write_type_selected_variable.set(WriteType.APPEND)
 
         self.apply_button.config(state="disabled")
 

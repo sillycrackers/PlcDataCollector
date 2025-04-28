@@ -7,4 +7,5 @@ Plc Data Collector is a GUI interface/software that allows multiple connections 
 
 This software incorporates Pylogix communication driver (https://github.com/dmroeder/pylogix) to connect and extract tag data from the Plcs. 
 
-.exe download: [a relative link](Plc Data Collector.exe)
+Download: \
+[PlcDataCollector.exe](./dist/PlcDataCollector.exe)

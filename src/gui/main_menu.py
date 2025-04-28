@@ -19,12 +19,14 @@ class MainMenu(ttk.Menu):
 
         self.parent_window = parent_window
         self.main_frame = main_frame
+        self.file_path = ''
 
 
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
         self.file_menu.add_command(label = "Open    ", command=lambda :self.create_open_file_thread("",False))
-        self.file_menu.add_command(label="Save    ", command=self.save_file)
+        self.file_menu.add_command(label="Save   ", command=self.save_file)
+        self.file_menu.add_command(label="Save As   ", command=self.save_file_as)
         #self.file_menu.add_separator()
         self.add_cascade(label="  File  ",menu= self.file_menu)
 
@@ -41,7 +43,6 @@ class MainMenu(ttk.Menu):
         self.help_menu = ttk.Menu(self, font='calibri 12')
         self.help_menu.add_command(label="About    ", command=self.open_about)
         self.add_cascade(label="  Help  ", menu=self.help_menu)
-
 
     def open_about(self):
 
@@ -124,34 +125,45 @@ class MainMenu(ttk.Menu):
             self.main_frame.halt_threads = False
 
             set_reg(file_path)
+            self.file_path = file_path
 
-    def save_file(self):
+            print(file_path)
 
-        plc_list = []
+    def save_file_as(self):
 
-        for item in list(self.main_frame.plc_data_connections.values()):
-            plc_list.append(item.plc)
-
-
-        json_string = json.dumps(obj=plc_list, cls=PlcObjectEncoder)
-
-        print(json_string)
+        #print(json_string)
 
         files = [("PLC Data Collector",'*.pdc')]
 
         try:
 
-            file_path = filedialog.asksaveasfilename(filetypes=files)
+            self.file_path = filedialog.asksaveasfilename(filetypes=files)
 
-            if not file_path.endswith(".pdc"):
-                file_path += ".pdc"
+            if not self.file_path.endswith(".pdc"):
+                self.file_path += ".pdc"
 
-            f = open(file_path, "w")
-            f.write(json_string)
-            f.close()
-
-            set_reg(file_path)
+            self.main_frame.data_changed = False
 
         except Exception:
 
             print("Error while saving file")
+
+    def save_file(self):
+
+
+        if self.file_path:
+            plc_list = []
+
+            for item in list(self.main_frame.plc_data_connections.values()):
+                plc_list.append(item.plc)
+
+            json_string = json.dumps(obj=plc_list, cls=PlcObjectEncoder)
+
+            f = open(self.file_path, "w")
+            f.write(json_string)
+            f.close()
+
+            set_reg(self.file_path)
+
+        else:
+            print("No file path to save to. Use: 'Save As'")

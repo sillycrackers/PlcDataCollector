@@ -140,7 +140,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Write Type Selection
         self.write_type_frame = tk.Frame(self.inner_frame, background="Pink")
         self.write_type_selection = WriteTypeSelect(self.write_type_frame, self.write_type_selected_variable)
-        self.write_type_selection.pack(fill="both", expand=True, pady=12)
+        self.write_type_selection.pack(fill="both", expand=True, pady=16)
         self.write_type_frame.grid(row=self.start_row + 14, column=0, columnspan=2, sticky="w")
 
         # Select default radiobutton
@@ -288,7 +288,7 @@ class ManageConnectionsFrame(ttk.Frame):
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.loading_label))
 
-    def apply_changes(self, ok=False):
+    def apply_changes(self, ok_button_pressed=False):
 
         if self.validate_entries():
 
@@ -304,7 +304,9 @@ class ManageConnectionsFrame(ttk.Frame):
 
             self.apply_button.config(state="disabled")
 
-            if ok:
+            self.main_frame.data_changed = True
+
+            if ok_button_pressed:
                 self.parent_window.close()
             else:
                 ...
@@ -418,7 +420,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.apply_button.config(state="disabled")
 
-        self.validate_entries()
 
     def add_plc_connection(self, plc_connection):
         self.connections[plc_connection.plc.name] = plc_connection

@@ -42,6 +42,7 @@ class MainFrame(tk.Frame):
         self.comm_thread_done = True
         self.read_thread_done = True
         self.file_loaded = False
+        self.data_changed = False
         self.click_count = 0
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
@@ -284,6 +285,8 @@ class MainFrame(tk.Frame):
         self.after(1000, self.after_rotate_image)
 
         fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
+
+        print(f"File path: {fp}")
 
         try:
             if fp:

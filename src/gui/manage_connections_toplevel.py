@@ -12,7 +12,7 @@ class ManageConnectionsToplevel(ttk.Toplevel):
 
         self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
-        self.minsize(width=550,height=700)
+        self.minsize(width=550,height=720)
         self.title("Manage Connections")
 
         self.root_window = root_window

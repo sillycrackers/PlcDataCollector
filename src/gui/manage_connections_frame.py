@@ -418,6 +418,8 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.apply_button.config(state="disabled")
 
+        self.validate_entries()
+
     def add_plc_connection(self, plc_connection):
         self.connections[plc_connection.plc.name] = plc_connection
 

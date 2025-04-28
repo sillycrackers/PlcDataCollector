@@ -99,34 +99,37 @@ class MainMenu(ttk.Menu):
                     print(f"comm thread done: {self.main_frame.comm_thread_done} read thread done: {self.main_frame.read_thread_done }")
                     time.sleep(0.5)
 
-            with open(file_path, 'r') as file:
-                file_content = file.read()
+            try:
+                with open(file_path, 'r') as file:
+                    file_content = file.read()
 
-            self.main_frame.read_lock.acquire()
-            self.main_frame.comm_lock.acquire()
+                self.main_frame.read_lock.acquire()
+                self.main_frame.comm_lock.acquire()
 
-            self.main_frame.plc_data_connections.clear()
+                self.main_frame.plc_data_connections.clear()
 
-            for plc in self.decode_json_to_plc_objects(file_content):
-                self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
+                for plc in self.decode_json_to_plc_objects(file_content):
+                    self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
 
-            self.main_frame.comm_lock.release()
-            self.main_frame.read_lock.release()
+                self.main_frame.comm_lock.release()
+                self.main_frame.read_lock.release()
 
-            print("NEW FILE!")
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
+                                              value=self.main_frame.loading_label))
 
-            transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-            transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-            transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-            transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
-                                          value=self.main_frame.loading_label))
+                self.main_frame.file_loaded = True
+                self.main_frame.halt_threads = False
 
-            self.main_frame.file_loaded = True
-            self.main_frame.halt_threads = False
+                set_reg(file_path)
+                self.file_path = file_path
 
-            set_reg(file_path)
-            self.file_path = file_path
-
+            except Exception:
+                print("Error trying to open file")
+        else:
+            print(f"File path doesn't exist")
 
     def save_file_as(self):
 
@@ -142,6 +145,8 @@ class MainMenu(ttk.Menu):
                 self.file_path += ".pdc"
 
             self.main_frame.data_changed = False
+
+            self.save_file()
 
         except Exception:
 

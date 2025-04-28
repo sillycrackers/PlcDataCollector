@@ -286,8 +286,6 @@ class MainFrame(tk.Frame):
 
         fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
 
-        print(f"File path: {fp}")
-
         try:
             if fp:
                 self.main_menu.create_open_file_thread(fp,True)

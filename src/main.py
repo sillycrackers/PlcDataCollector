@@ -16,7 +16,6 @@ def main():
     root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
     #Disable the Close Window Control
     root.protocol("WM_DELETE_WINDOW", lambda : disable_event(root))
-    #change_theme("dark")
     root.state('zoomed')
 
     app.run_app()

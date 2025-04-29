@@ -117,7 +117,6 @@ class MainFrame(tk.Frame):
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
 
-        print(self.plc_data_connections)
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):

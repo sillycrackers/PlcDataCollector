@@ -25,8 +25,6 @@ class PlcConnection:
             # Read trigger signal first
             trigger_response = comm.Read(self.plc.trigger_tag)
 
-            print(f"trigger_response.Value: {trigger_response.Value}")
-            print(f"Last trigger: {self.last_trigger}")
 
             if trigger_response.Status != "Success":
                 transmit(self.main_frame, Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
@@ -46,6 +44,7 @@ class PlcConnection:
                     if self.main_frame.halt_threads:
                         return False
 
+                #Used for a Oneshot to only log data once per trigger
                 self.last_trigger = trigger_response.Value
                 return data_row
             self.last_trigger = trigger_response.Value

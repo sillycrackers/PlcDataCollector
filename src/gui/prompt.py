@@ -29,7 +29,7 @@ class Prompt(ttk.Toplevel):
         self.img.close()
 
         #Message and x image
-        self.label = ttk.Label(self.label_frame, text="Cannot close program", font="Calibri 24")
+        self.label = ttk.Label(self.label_frame, text="Do you really want to exit?\nPress 'Ctrl e' to exit", font="Calibri 24")
         self.label.pack(side="left")
         self.x_image_label = ttk.Label(self.label_frame, image=self.resized_img)
         self.x_image_label.pack(side="right", padx=10, pady=(3,0))

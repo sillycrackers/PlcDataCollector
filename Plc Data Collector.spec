@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['main.py'],
-    pathex=['\\gui\\imgs:\\gui'],
+    ['src\\main.py'],
+    pathex=['.\\src', '.\\src\\gui', '.\\src\\gui\\imgs'],
     binaries=[],
-    datas=[('gui\\imgs', 'gui\\imgs')],
+    datas=[('.\\src\\gui\\imgs', '.\\src\\gui\\imgs')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['gui\\imgs\\data_icon.ico'],
+    icon=['src\\gui\\imgs\\data_icon.ico'],
 )

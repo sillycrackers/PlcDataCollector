@@ -389,7 +389,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def callback(self, var, index, mode):
         self.data_did_not_change = False
-        self.apply_button.config(state="enabled")
+        self.apply_button.config(state="normal")
         self.applied = False
 
 

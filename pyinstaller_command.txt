@@ -7,7 +7,8 @@ pyinstaller --onefile --add-data "data_icon.ico:." --add-data "data_icon.png:." 
 New image folder
 
 Without console
-pyinstaller --windowed --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "Plc Data Collector" .\\src\\main.py
+pyinstaller --windowed --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
 
 With console
-pyinstaller --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "Plc Data Collector" .\\src\\main.py
+pyinstaller --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
+

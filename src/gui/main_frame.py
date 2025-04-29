@@ -14,11 +14,12 @@ from src.file_management import *
 
 
 # Main Frame
-class MainFrame(tk.Frame):
+class MainFrame(ttk.Frame):
     def __init__(self, root_window):
         super().__init__(master=root_window)
 
         self.root_window = root_window
+
 
         change_theme("dark")
 
@@ -30,6 +31,7 @@ class MainFrame(tk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
+        self.version = "1.1"
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
@@ -48,6 +50,8 @@ class MainFrame(tk.Frame):
         self.read_lock = threading.Lock()
         self.threads = []
         self.q = Queue()
+
+        self.root_window.title(f"PLC Data Collector {self.version}")
 
         #========== Window Events ==============#
 
@@ -236,7 +240,6 @@ class MainFrame(tk.Frame):
         self.comm_thread_done = True
 
     def after_refresh_active_alarms(self):
-
 
         self.threads.clear()
 

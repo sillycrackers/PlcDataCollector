@@ -5,9 +5,10 @@ from src.file_management import *
 
 
 class AboutWindow(ttk.Toplevel):
-    def __init__(self, parent_window):
+    def __init__(self, parent_window, main_frame):
         super().__init__(master=parent_window)
         self.parent_window = parent_window
+        self.main_frame = main_frame
         self.title("About PLC Data Collector")
         self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
@@ -29,7 +30,7 @@ class AboutWindow(ttk.Toplevel):
 
         self.about_label_title = ttk.Label(self.label_frame, text="PLC Data Collector", font="calibri 16")
         self.about_label_title.pack(pady=20)
-        self.about_label_body = ttk.Label(self.label_frame, text='Version 1.0\n\nCopyright © 2025 Erik Westerveld',justify='center')
+        self.about_label_body = ttk.Label(self.label_frame, text=f'Version {main_frame.version}\n\nCopyright © 2025 Erik Westerveld',justify='center')
         self.about_label_body.pack()
 
         self.close_button = ttk.Button(self.main_frame, text="Close", command=self.close, width=20)

@@ -46,7 +46,7 @@ class MainMenu(ttk.Menu):
 
     def open_about(self):
 
-        about_window = AboutWindow(self.parent_window)
+        about_window = AboutWindow(self.parent_window, self.main_frame)
 
     def change_theme(self, theme):
         change_theme(theme)
@@ -68,7 +68,12 @@ class MainMenu(ttk.Menu):
             newPlc.excel_file_name = plc['excel_file_name']
             newPlc.excel_file_location = plc['excel_file_location']
             newPlc.file_path = plc['file_path']
-            newPlc.write_type = plc['write_type']
+
+            try:
+                newPlc.write_type = plc['write_type']
+            except KeyError:
+                print(f"File being loaded is missing 'write_type' for {plc['name']}, may be an old version")
+                newPlc.write_type = WriteType.APPEND
 
             plcs.append(newPlc)
 

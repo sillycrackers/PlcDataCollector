@@ -249,16 +249,15 @@ class MainFrame(ttk.Frame):
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
 
-        #Thread
+        #Create the Comm thread and Read thread if they are done or the file was just loaded.
         if self.comm_thread_done and self.read_thread_done or self.file_loaded:
             check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
             read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
             self.threads.append(check_connection_thread)
             self.threads.append(read_plc_data_thread)
 
-        #Start the threads
+        #Start the threads if they are done and not being told to halt or file was just loaded
         if not self.halt_threads and len(self.plc_data_connections) > 0:
-            #print(f"Thread Done Values, comm thread done: {self.comm_thread_done} read thread done: {self.read_thread_done} Halt threads: {self.halt_threads} File Loaded: {self.file_loaded}")
             if self.comm_thread_done and self.read_thread_done or self.file_loaded:
                 #print("Starting Threads")
                 for thread in self.threads:

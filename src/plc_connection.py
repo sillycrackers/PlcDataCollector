@@ -20,11 +20,8 @@ class PlcConnection:
 
             comm.IPAddress = self.plc.ip_address
 
-
-
             # Read trigger signal first
             trigger_response = comm.Read(self.plc.trigger_tag)
-
 
             if trigger_response.Status != "Success":
                 transmit(self.main_frame, Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
@@ -80,7 +77,6 @@ class PlcConnection:
                 return False
             else:
                 return True
-
 
 class WriteType(StrEnum):
     APPEND = auto()

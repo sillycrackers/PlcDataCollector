@@ -34,7 +34,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable = ttk.StringVar()
         self.excel_file_name_entry_variable = ttk.StringVar()
         self.excel_file_location_entry_variable = ttk.StringVar()
-        self.write_type_selected_variable = ttk.StringVar(name="write_type")
+        self.write_type_selected_variable = ttk.StringVar()
 
         #====== Main Frame ======#
         self.title_label = ttk.Label(self, text="Manage PLC Connections", font="calibri 28")

@@ -31,7 +31,7 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
-        self.version = "1.1"
+        self.version = "1.2"
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)

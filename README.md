@@ -9,3 +9,6 @@ This software incorporates Pylogix communication driver (https://github.com/dmro
 
 Download: \
 [PlcDataCollector.exe](https://www.erikstuff.com/pages//downloads//PlcDataCollector.zip)
+
+
+<img src=".//src//gui//imgs//screenshot.png">

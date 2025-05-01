@@ -115,6 +115,7 @@ class MainFrame(ttk.Frame):
             self.collecting_data_frame.rotate()
 
         self.after(10, self.after_rotate_image)
+
     #Function called when mouse is clicked anywhere
     def on_mouse_click(self, var):
         #Unselect item in treeview
@@ -212,6 +213,10 @@ class MainFrame(ttk.Frame):
 
     def add_plc_connection(self, plc_connection):
         self.plc_data_connections[plc_connection.plc.name] = plc_connection
+
+    def delete_plc_connection(self, plc_name):
+        del self.plc_data_connections[plc_name]
+
 
     # This method is being called by thread. It's checking the connection for all the plcs
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))

@@ -21,6 +21,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.connections = main_frame.plc_data_connections
         self.main_root_window = main_frame.root_window
 
+        self.parent_window.bind("<Button>", self.on_mouse_click)
 
         #Variables
         self.applied = False
@@ -50,7 +51,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.combo_list = []
         self.populate_combo_list()
-        self.combo_list.append("Add New PLC...")
         self.option = tk.StringVar()
 
         try:
@@ -61,11 +61,18 @@ class ManageConnectionsFrame(ttk.Frame):
         except StopIteration:
             print("Stop Iteration, no items in dictionary")
 
+        #Frame for combo and delete button
+        self.combo_frame = ttk.Frame(self.base_frame)
         #Option Menu
-        self.option_menu = ttk.OptionMenu(self.base_frame, self.option, self.option.get(), *self.combo_list,
+        self.option_menu = ttk.OptionMenu(self.combo_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
         self.option_menu.configure(width=40)
-        self.option_menu.pack(pady=(20,0), expand=True)
+        self.option_menu.pack(side="right", expand=True)
+        #Delete Button
+        self.delete_button = ttk.Button(self.combo_frame, text="Delete", style='custom.TButton', command=self.run_delete_thread)
+        self.delete_button.pack(side='left', padx=5)
+
+        self.combo_frame.pack(pady=(20,0))
 
         # Inner Frame used for data entries
         self.inner_frame = ttk.Frame(self.base_frame)
@@ -179,6 +186,39 @@ class ManageConnectionsFrame(ttk.Frame):
         # Populate entries as soon as window opens with first selected option in list
         self.update_entries(self.option)
 
+    def on_mouse_click(self, var):
+        print(f"Active threads: {threading.active_count()}")
+        print(f"Keys: {self.connections.keys()}")
+
+    def run_delete_thread(self):
+
+        delete_thread = threading.Thread(target=self.delete_connection, daemon=True)
+        delete_thread.start()
+
+    def delete_connection(self):
+        if self.option.get() != "Add New PLC...":
+            self.obtain_data_control()
+
+            self.main_frame.delete_plc_connection(self.option.get())
+
+            self.release_data_control()
+
+            if len(self.connections) > 0:
+                for key in self.connections:
+                    selection = key
+                    print(selection)
+                    break
+            else:
+                selection = "Add New PLC..."
+
+            self.populate_combo_list()
+            self.option.set(selection)
+            self.option_menu.set_menu(selection, *self.combo_list)
+
+            self.update_entries(self.option)
+        else:
+            print("Cannot delete this option")
+
     def hide_validation_labels(self):
         for label in self.validation_labels:
             self.validation_labels[label].config(text="")
@@ -190,6 +230,8 @@ class ManageConnectionsFrame(ttk.Frame):
         if len(list(self.connections)) > 0:
             for item in self.connections:
                 self.combo_list.append(item)
+
+        self.combo_list.append("Add New PLC...")
 
     def validate_entries(self):
         flag = True
@@ -328,12 +370,10 @@ class ManageConnectionsFrame(ttk.Frame):
         self.obtain_data_control()
 
         # Add new connection to dict
-        self.add_plc_connection(PlcConnection(new_plc, self.main_frame))
+        self.main_frame.add_plc_connection(PlcConnection(new_plc, self.main_frame))
 
         # Release locks and update flags for controlling threads, so they can start again
         self.release_data_control()
-
-        print("Changes Applied!")
 
         self.combo_list.insert(-1, new_plc.name)
         self.option.set(new_plc.name)
@@ -360,7 +400,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
-
 
         self.replace_plc_connection(edit_plc_connection, self.connections[old_plc_name])
 
@@ -409,8 +448,6 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.excel_file_location_entry_variable.set(self.connections[option.get()].plc.excel_file_location)
                 self.write_type_selected_variable.set(self.connections[option.get()].plc.write_type)
 
-
-
             except KeyError:
                 print("Key Error")
         else:
@@ -426,10 +463,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.apply_button.config(state="disabled")
 
 
-    def add_plc_connection(self, plc_connection):
-        self.connections[plc_connection.plc.name] = plc_connection
-
     def replace_plc_connection(self, new_plc_connection, old_plc_connection):
 
         self.connections.pop(old_plc_connection.plc.name)
-        self.add_plc_connection(new_plc_connection)
+        self.main_frame.add_plc_connection(new_plc_connection)

@@ -64,7 +64,7 @@ class ManageConnectionsFrame(ttk.Frame):
         #Option Menu
         self.option_menu = ttk.OptionMenu(self.combo_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
-        self.option_menu.configure(width=30)
+        self.option_menu.configure(width=20)
         self.option_menu.pack(side="right")
         #Delete Button
         self.delete_button = ttk.Button(self.combo_frame, text="Delete", style='custom.TButton', command=self.run_delete_thread)

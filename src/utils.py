@@ -13,6 +13,7 @@ def change_theme(theme):
         #style_object.configure(style='custom.TFrame', background="#2f2f2f")
         style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red", rowheight=20)
         style_object.configure(style='TFrame', bordercolor="#737373")
+        style_object.configure(style="TMenubutton", font=('Calibri', 12,))
 
     elif theme == 'light':
 
@@ -22,6 +23,7 @@ def change_theme(theme):
         style_object.configure('custom.TButton', font=('Calibri', 12,))
         style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red", rowheight=20)
         style_object.configure(style='TFrame', bordercolor="#737373")
+        style_object.configure(style="TMenubutton", font=('Calibri', 12,))
 
 
 def disable_event(parent):

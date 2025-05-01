@@ -4,7 +4,8 @@ import time
 from enum import StrEnum, auto
 
 
-from file_management import *
+import file_management as fm
+import ticketing_system as ts
 
 
 class PlcConnection:
@@ -12,6 +13,8 @@ class PlcConnection:
         self.plc = plc
         self.main_frame = main_frame
         self.last_trigger = False
+        self.last_archive_save_date = datetime.now()
+        self.data_to_archive = []
 
     # Function to read PLC tags
     def read_plc_tags(self):
@@ -24,7 +27,7 @@ class PlcConnection:
             trigger_response = comm.Read(self.plc.trigger_tag)
 
             if trigger_response.Status != "Success":
-                transmit(self.main_frame, Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE,
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
                                                          value=f"Error reading trigger signal from {self.plc.name}"))
                 return False
 
@@ -43,6 +46,8 @@ class PlcConnection:
 
                 #Used for a Oneshot to only log data once per trigger
                 self.last_trigger = trigger_response.Value
+                self.data_to_archive.append(data_row)
+                self.archive_data()
                 return data_row
             self.last_trigger = trigger_response.Value
             return None
@@ -53,7 +58,7 @@ class PlcConnection:
             comm.IPAddress = self.plc.ip_address
             ack_response = comm.Write(self.plc.ack_tag, 1)  # Send acknowledgment signal
             if not ack_response.Status == "Success":
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal."))
+                ts.transmit(self.main_frame,ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE, value="Error sending acknowledgment signal."))
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):
@@ -61,9 +66,23 @@ class PlcConnection:
         data = self.read_plc_tags()
         if data:
             self.send_acknowledgment()
-            save_tag_data_to_excel(plc= self.plc, data_row= data,main_frame=self.main_frame, write_type= self.plc.write_type)
+            fm.save_tag_data_to_excel(plc= self.plc, data_row= data,main_frame=self.main_frame, write_type= self.plc.write_type)
         else:
             time.sleep(0.5)
+
+    def archive_data(self):
+
+        cd = datetime.now()
+
+        file_name = f"{self.plc.name}_data_archive_{cd.year}_{cd.month}_{cd.day}"
+        file_location = f"{self.plc.excel_file_location}\\archive"
+
+        print(f"Current minute: {cd.minute} last archive minute:{self.last_archive_save_date.minute}")
+
+        if cd.day != self.last_archive_save_date.day:
+            if fm.archive(data_list=self.data_to_archive, archive_file_location=file_location, archive_file_name=file_name, headers=self.plc.tags):
+                self.last_archive_save_date = cd
+                self.data_to_archive.clear()
 
     # Verify connected to PLC
     def check_plc_connection(self):

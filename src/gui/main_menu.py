@@ -133,6 +133,18 @@ class MainMenu(ttk.Menu):
 
             except Exception:
                 print("Error trying to open file")
+
+                self.main_frame.comm_lock.release()
+                self.main_frame.read_lock.release()
+
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+                transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
+                                              value=self.main_frame.loading_label))
+
+                self.main_frame.file_loaded = True
+                self.main_frame.halt_threads = False
         else:
             print(f"File path doesn't exist")
 

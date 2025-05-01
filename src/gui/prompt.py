@@ -25,14 +25,14 @@ class Prompt(ttk.Toplevel):
 
         #Make new smaller image
         self.img = Image.open(resource_path("src\\gui\\imgs\\red_x.png"))
-        self.resized_img = ImageTk.PhotoImage(self.img.resize(size=(30,30),resample=Image.Resampling.LANCZOS))
+        self.resized_img = ImageTk.PhotoImage(self.img.resize(size=(50,50),resample=Image.Resampling.LANCZOS))
         self.img.close()
 
         #Message and x image
-        self.label = ttk.Label(self.label_frame, text="Do you really want to exit?\nPress 'Ctrl e' to exit", font="Calibri 24")
+        self.label = ttk.Label(self.label_frame, text="Do you really want to exit?\nPress 'Ctrl e' to exit", font="Calibri 24", justify="center")
         self.label.pack(side="left")
         self.x_image_label = ttk.Label(self.label_frame, image=self.resized_img)
-        self.x_image_label.pack(side="right", padx=10, pady=(3,0))
+        self.x_image_label.pack(side="right", padx=(30,10), pady=(3,0), expand=True)
 
         #Ok button to exit
         self.ok_button = ttk.Button(self.frame, text="Ok", style='custom.TButton', width=10, command=self.close)

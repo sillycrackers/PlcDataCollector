@@ -72,17 +72,22 @@ class PlcConnection:
 
     def archive_data(self):
 
+        #Save current datetime in variable
         cd = datetime.now()
 
+        #Name of the Excel file that will be saved
         file_name = f"{self.plc.name}_data_archive_{cd.year}_{cd.month}_{cd.day}"
+        #Folder where file will be saved
         file_location = f"{self.plc.excel_file_location}\\archive"
 
-        print(f"Current minute: {cd.minute} last archive minute:{self.last_archive_save_date.minute}")
-
         if cd.day != self.last_archive_save_date.day:
-            if fm.archive(data_list=self.data_to_archive, archive_file_location=file_location, archive_file_name=file_name, headers=self.plc.tags):
+            if fm.archive(data_list=self.data_to_archive, archive_file_location=file_location,
+                          archive_file_name=file_name, headers=self.plc.tags):
                 self.last_archive_save_date = cd
                 self.data_to_archive.clear()
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
+                                                       value=f"Archive file saved to: {file_location}\\{file_name}"))
+
 
     # Verify connected to PLC
     def check_plc_connection(self):

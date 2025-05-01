@@ -6,10 +6,8 @@ from src.gui.data_entry import DataEntry
 from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.gui.animated_label import AnimatedLabel
-from src.ticketing_system import *
+from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect
-
-
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -66,13 +64,13 @@ class ManageConnectionsFrame(ttk.Frame):
         #Option Menu
         self.option_menu = ttk.OptionMenu(self.combo_frame, self.option, self.option.get(), *self.combo_list,
                                           command=lambda _: self.update_entries(self.option))
-        self.option_menu.configure(width=40)
-        self.option_menu.pack(side="right", expand=True)
+        self.option_menu.configure(width=30)
+        self.option_menu.pack(side="right")
         #Delete Button
         self.delete_button = ttk.Button(self.combo_frame, text="Delete", style='custom.TButton', command=self.run_delete_thread)
-        self.delete_button.pack(side='left', padx=5)
+        self.delete_button.pack(side='left')
 
-        self.combo_frame.pack(pady=(20,0))
+        self.combo_frame.pack(pady=(20,0), padx=(20, 20), expand=True, fill="both")
 
         # Inner Frame used for data entries
         self.inner_frame = ttk.Frame(self.base_frame)

@@ -99,11 +99,50 @@ def save_data_to_excel(headers, data_row, file_path, sheet_name, write_type):
     for col in ws.columns:
         ws.column_dimensions[col[0].column_letter].auto_size = True
 
-    # Save and close excel file after logging the tag data
+    # Save and close Excel file after logging the tag data
     wb.save(file_path)
+
+def archive(data_list : [[]], archive_file_location : str, archive_file_name : str, headers : []):
+
+    file_path = f"{archive_file_location}\\{archive_file_name}.xlsx"
+
+    try:
+        os.makedirs(archive_file_location)
+    except FileExistsError:
+        print(f"Archive folder already exists: {archive_file_location}")
+
+    try:
+        # Create excel workbook, take active sheet and name it PLC Data
+        # Create initial column headers named: "Timestamp" followed by the tag names
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "archive"
+        first_header = "Timestamp"
+
+        ws.append([first_header] + headers)  # Create Header row
+
+        for data_row in data_list:
+            ws.append(data_row)
+
+
+        # Try to autosize the width of the columns
+        for col in ws.columns:
+            ws.column_dimensions[col[0].column_letter].auto_size = True
+
+        # Save and close Excel file after logging the tag data
+        wb.save(file_path)
+        return True
+
+    except Exception:
+        print(f"Error trying to save archive file {archive_file_name}")
+        return False
+
+
+
 
 def overwrite_row(ws, row, data):
 
     for col_num, d in enumerate(data, start=1):
         ws.cell(row=row, column=col_num).value = d
+
 

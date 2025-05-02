@@ -20,7 +20,6 @@ class MainFrame(ttk.Frame):
 
         self.root_window = root_window
 
-
         change_theme("dark")
 
         #Pack Self
@@ -48,7 +47,7 @@ class MainFrame(ttk.Frame):
         self.click_count = 0
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
-        self.threads = []
+        self.read_threads = {}
         self.q = Queue()
 
         self.root_window.title(f"PLC Data Collector {self.version}")
@@ -115,13 +114,11 @@ class MainFrame(ttk.Frame):
             self.collecting_data_frame.rotate()
 
         self.after(10, self.after_rotate_image)
-
     #Function called when mouse is clicked anywhere
     def on_mouse_click(self, var):
         #Unselect item in treeview
         if len(self.right_body_frame.output.listbox.selection()) > 0:
             self.right_body_frame.output.listbox.selection_remove(self.right_body_frame.output.listbox.selection()[0])
-
 
     #Called by Tk.After function, this is what calls functions passed by the background threads
     def process_queue(self, event):
@@ -187,16 +184,11 @@ class MainFrame(ttk.Frame):
         sys.exit("Application closed with Ctrl-e")
 
     #This method is being called by thread.
-    def read_plc_data(self):
-        if len(self.plc_data_connections) > 0:
-            self.read_lock.acquire()
-            for connection in self.plc_data_connections.values():
-                connection.collect_data()
-                if self.halt_threads:
-                    break
+    def read_plc_data(self, connection):
 
-            self.read_lock.release()
-
+        self.read_lock.acquire()
+        connection.collect_data()
+        self.read_lock.release()
         self.read_thread_done = True
 
     def label_animation(self, label):
@@ -216,7 +208,6 @@ class MainFrame(ttk.Frame):
 
     def delete_plc_connection(self, plc_name):
         del self.plc_data_connections[plc_name]
-
 
     # This method is being called by thread. It's checking the connection for all the plcs
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))
@@ -246,30 +237,11 @@ class MainFrame(ttk.Frame):
 
     def after_refresh_active_alarms(self):
 
-        self.threads.clear()
-
         self.left_body_frame.clear_alarm_messages()
 
         for alarm in self.active_alarms:
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
-
-        #Create the Comm thread and Read thread if they are done or the file was just loaded.
-        if self.comm_thread_done and self.read_thread_done or self.file_loaded:
-            check_connection_thread = threading.Thread(target=self.check_connection, daemon=True)
-            read_plc_data_thread = threading.Thread(target=self.read_plc_data, daemon=True)
-            self.threads.append(check_connection_thread)
-            self.threads.append(read_plc_data_thread)
-
-        #Start the threads if they are done and not being told to halt or file was just loaded
-        if not self.halt_threads and len(self.plc_data_connections) > 0:
-            if self.comm_thread_done and self.read_thread_done or self.file_loaded:
-
-                for thread in self.threads:
-                    thread.start()
-                self.file_loaded = False
-                self.read_thread_done = False
-                self.comm_thread_done = False
 
         self.after(250, self.after_refresh_active_alarms)
 
@@ -283,12 +255,41 @@ class MainFrame(ttk.Frame):
 
         self.right_body_frame.output.add_message(message)
 
+    def thread_manager(self):
+
+        self.create_read_threads()
+
+        if not self.halt_threads:
+
+                if len(self.read_threads) > 0:
+
+                    for thread in self.read_threads:
+                        #If the thread has finished or is not started
+                        if not self.read_threads[thread].is_alive():
+                            #Check if that thread is still in our connections, if it is then start thread again
+                            if thread in self.plc_data_connections:
+                                self.read_threads[thread].start()
+                            #Otherwise remove it from the threads dict
+                            else:
+                                del self.read_threads[thread]
+
+        self.after(0, self.thread_manager)
+
+    def create_read_threads(self):
+        # Add plc connection to thread dict if it isn't already in it
+        if len(self.plc_data_connections) > 0:
+            for con in self.plc_data_connections:
+                if con not in self.read_threads:
+                    self.read_threads[con.plc.name] = threading.Thread(target=self.read_plc_data, args=(con,), daemon=True)
+
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
         self.after(100, self.after_refresh_active_alarms)
 
         self.after(1000, self.after_rotate_image)
+
+        self.after(10, self.thread_manager)
 
         fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
 

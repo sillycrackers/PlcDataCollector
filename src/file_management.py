@@ -8,8 +8,8 @@ import winreg
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-import plc_connection as pc
-from ticketing_system import TicketPurpose, Ticket, transmit
+import src.plc_connection as pc
+from src.ticketing_system import TicketPurpose, Ticket, transmit
 
 
 def copy_paste_file(file_path, dest_path):

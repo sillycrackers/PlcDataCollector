@@ -101,7 +101,7 @@ class MainFrame(ttk.Frame):
         self.right_body_frame = RightBodyFrame(parent_frame=self.main_body_frame, main_frame=self)
 
         #==== Pack Widgets on Frame ====#
-        self.left_body_frame.pack(side="left", fill="y", pady=(20,20), padx=(20,10))
+        self.left_body_frame.pack(side="left", fill="y", pady=(26,20), padx=(20,10))
         self.right_body_frame.pack(side="right", expand=True, fill="both", pady=(20,20), padx=(0,20))
 
         #===============Main Layout================#
@@ -179,7 +179,7 @@ class MainFrame(ttk.Frame):
         self.q.task_done()
 
     def on_key_press(self, event):
-        print("CLOSE")
+
         self.root_window.destroy()
 
         #"Application closed with Ctrl-e"
@@ -264,7 +264,7 @@ class MainFrame(ttk.Frame):
         #Start the threads if they are done and not being told to halt or file was just loaded
         if not self.halt_threads and len(self.plc_data_connections) > 0:
             if self.comm_thread_done and self.read_thread_done or self.file_loaded:
-                #print("Starting Threads")
+
                 for thread in self.threads:
                     thread.start()
                 self.file_loaded = False

@@ -4,8 +4,8 @@ import time
 from enum import StrEnum, auto
 
 
-import file_management as fm
-import ticketing_system as ts
+import src.file_management as fm
+import src.ticketing_system as ts
 
 
 class PlcConnection:

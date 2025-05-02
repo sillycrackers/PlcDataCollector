@@ -8,6 +8,7 @@ from src.gui.about_window import AboutWindow
 from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.file_management import *
+import src.ticketing_system as ts
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, obj):
@@ -100,8 +101,6 @@ class MainMenu(ttk.Menu):
 
             if len(self.main_frame.plc_data_connections) > 0:
                 while self.main_frame.comm_thread_done == False or self.main_frame.read_thread_done == False:
-                    print("waiting")
-                    print(f"comm thread done: {self.main_frame.comm_thread_done} read thread done: {self.main_frame.read_thread_done }")
                     time.sleep(0.5)
 
             try:
@@ -153,7 +152,6 @@ class MainMenu(ttk.Menu):
 
     def save_file_as(self):
 
-        #print(json_string)
 
         files = [("PLC Data Collector",'*.pdc')]
 
@@ -188,6 +186,9 @@ class MainMenu(ttk.Menu):
             f.close()
 
             set_reg(self.file_path)
+
+            ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
+                                                   value=f"File saved to : {self.file_path}"))
 
         else:
             print("No file path to save to. Use: 'Save As'")

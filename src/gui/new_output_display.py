@@ -1,4 +1,5 @@
 import tkinter as tk
+import ttkbootstrap as ttk
 
 from ttkbootstrap.scrolled import *
 
@@ -22,15 +23,12 @@ class NewOutputDisplay(ttk.Frame):
         self.scrollbar.pack(side="right", fill="y")
         self.listbox.pack(side="left", expand=True, fill="both")
 
-
     def call_back(self, *args):
 
-        if float(args[1]) > 0.9:
+        if float(args[1]) > 0.8:
             self.at_bottom = True
-            print("At bottom")
         else:
             self.at_bottom = False
-            print("Not at bottom")
 
         self.listbox.yview(*args)
 
@@ -44,9 +42,12 @@ class NewOutputDisplay(ttk.Frame):
 
     def clear_messages(self):
 
-        if self.iid_count > 1:
-            self.iid_count -= 1
+        #if self.iid_count > 1:
+            #self.iid_count -= 1
 
         if self.iid_count > 0:
             for item in self.listbox.get_children():
                 self.listbox.delete(item)
+
+            self.iid_count = 0
+

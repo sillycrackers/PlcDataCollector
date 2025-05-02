@@ -185,8 +185,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.update_entries(self.option)
 
     def on_mouse_click(self, var):
-        print(f"Active threads: {threading.active_count()}")
-        print(f"Keys: {self.connections.keys()}")
+        pass
 
     def run_delete_thread(self):
 

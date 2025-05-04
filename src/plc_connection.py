@@ -19,7 +19,7 @@ class PlcConnection:
     # Function to read PLC tags
     def read_plc_tags(self):
 
-        with logix.PLC() as comm:
+        with logix.PLC(timeout=1) as comm:
 
             comm.IPAddress = self.plc.ip_address
 

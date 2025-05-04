@@ -193,8 +193,12 @@ class ManageConnectionsFrame(ttk.Frame):
         delete_thread.start()
 
     def delete_connection(self):
+
+
         if self.option.get() != "Add New PLC...":
             self.obtain_data_control()
+
+            print("Hello")
 
             self.main_frame.delete_plc_connection(self.option.get())
 
@@ -314,13 +318,17 @@ class ManageConnectionsFrame(ttk.Frame):
         self.main_frame.read_lock.acquire()
         self.main_frame.comm_lock.acquire()
 
+        while not self.main_frame.threads_done:
+            print("waiting")
+
     def release_data_control(self):
         self.main_frame.comm_lock.release()
         self.main_frame.read_lock.release()
-        self.applied = True
+
         self.data_did_not_change = True
         self.main_frame.file_loaded = True
         self.main_frame.halt_threads = False
+        self.main_frame.threads_done = False
 
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
@@ -344,7 +352,7 @@ class ManageConnectionsFrame(ttk.Frame):
             self.apply_button.config(state="disabled")
 
             self.main_frame.data_changed = True
-
+            self.applied = True
             if ok_button_pressed:
                 self.parent_window.close()
             else:
@@ -428,8 +436,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.apply_button.config(state="normal")
         self.applied = False
 
-
-
     def update_entries(self, option):
 
         if not option.get() == "Add New PLC...":
@@ -458,7 +464,6 @@ class ManageConnectionsFrame(ttk.Frame):
             self.write_type_selected_variable.set(WriteType.APPEND)
 
         self.apply_button.config(state="disabled")
-
 
     def replace_plc_connection(self, new_plc_connection, old_plc_connection):
 

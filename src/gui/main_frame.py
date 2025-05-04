@@ -2,7 +2,7 @@ import tkinter as tk
 from queue import Queue
 import threading
 
-from read_thread import ReadThread
+from worker_thread import WorkerThread
 from src.gui.main_menu import MainMenu
 from src.gui.title_frame import TitleFrame
 from src.gui.left_body_frame import LeftBodyFrame
@@ -46,7 +46,8 @@ class MainFrame(ttk.Frame):
         self.comm_lock = threading.Lock()
         self.read_lock = threading.Lock()
         self.q = Queue()
-        self.thread_status = {}
+        self.read_thread_status = {}
+        self.comm_thread_status = {}
         self.threads_done = False
 
         self.root_window.title(f"PLC Data Collector {self.version}")
@@ -208,26 +209,18 @@ class MainFrame(ttk.Frame):
     # This method is being called by thread. It's checking the connection for all the plcs
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))
 
-    def check_connection(self):
+    def check_connection(self, name):
 
         if len(self.plc_data_connections) > 0:
-
-            self.comm_lock.acquire()
 
             for connection in self.plc_data_connections.values():
                 if connection.check_plc_connection():
 
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
-                    #transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
-
                 else:
-
                     transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
-                    #transmit(self, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
                     transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
-
-            self.comm_lock.release()
 
 
     def after_refresh_active_alarms(self):
@@ -250,17 +243,21 @@ class MainFrame(ttk.Frame):
 
         self.right_body_frame.output.add_message(message)
 
+
+    #Thread manager which starts read and com threads
+    #Being called by After()
     def thread_manager(self):
 
+        print(f"Active threads: {threading.active_count()}")
+
         if not self.halt_threads:
-            self.create_read_threads()
+            self.create_worker_threads()
         elif self.all_thread_done():
             self.threads_done = True
 
-
         self.after(10, self.thread_manager)
 
-    def create_read_threads(self):
+    def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
 
         #print(f"Active threads: {threading.active_count()}")
@@ -269,47 +266,57 @@ class MainFrame(ttk.Frame):
         if self.file_loaded:
             if len(self.plc_data_connections) > 0:
                 for con in self.plc_data_connections:
-                    t = ReadThread(name=con, run_method=self.read_plc_data, done_method=self.thread_done)
-                    t.start()
-                    self.thread_status[con] = True
+                    t1 = WorkerThread(name=con, run_method=self.read_plc_data, done_method=self.read_thread_done)
+                    t2 = WorkerThread(name=con, run_method=self.check_connection, done_method=self.comm_thread_done)
+                    t1.start()
+                    t2.start()
+                    self.read_thread_status[con] = True
+                    self.comm_thread_status[con] = True
 
                 self.file_loaded = False
         else:
             if len(self.plc_data_connections) > 0:
+                self.create_threads(status=self.read_thread_status, run_method=self.read_plc_data, done_method=self.read_thread_done)
+                self.create_threads(status=self.comm_thread_status, run_method=self.check_connection, done_method=self.comm_thread_done)
 
-                #Check if plc connection is in thread_status dict
-                #If it's not then add it
-                for con in self.plc_data_connections:
-                    if con not in self.thread_status:
-                        self.thread_status[con] = False
-                ''' 
-                loop through thread status dict, remove item if no longer in plc 
-                connections, otherwise if status False, 
-                create a new read thread for that connection and start it
-                '''
+    def create_threads(self, status, run_method, done_method):
+        # Check if plc connection is in thread_status dict
+        # If it's not then add it
+        for con in self.plc_data_connections:
+            if con not in status:
+                status[con] = False
+        ''' 
+        loop through thread status dict, remove item if no longer in plc 
+        connections, otherwise if status False, 
+        create a new read thread for that connection and start it
+        '''
+        thread_to_delete = ''
 
-                thread_to_delete = ''
+        for thread in status:
+            if thread in self.plc_data_connections:
+                if status[thread] == False:
+                    t = WorkerThread(name=thread, run_method=run_method, done_method=done_method)
+                    t.start()
+                    status[thread] = True
+            else:
+                thread_to_delete = thread
 
-                for thread in self.thread_status:
-                    if thread in self.plc_data_connections:
-                        if self.thread_status[thread] == False:
-                            t = ReadThread(name=thread, run_method=self.read_plc_data, done_method=self.thread_done)
-                            t.start()
-                            self.thread_status[thread] = True
-                    else:
-                        thread_to_delete=thread
+        if thread_to_delete:
+            del status[thread_to_delete]
 
-                if thread_to_delete:
-                    del self.thread_status[thread_to_delete]
+    def read_thread_done(self, name):
+        self.read_thread_status[name] = False
 
-
-    def thread_done(self, name):
-        self.thread_status[name] = False
+    def comm_thread_done(self, name):
+        self.comm_thread_status[name] = False
 
     def all_thread_done(self):
 
-        for thread in self.thread_status:
-            if self.thread_status[thread]:
+        for thread in self.read_thread_status:
+            if self.read_thread_status[thread]:
+                return False
+        for thread in self.comm_thread_status:
+            if self.comm_thread_status[thread]:
                 return False
 
         return True

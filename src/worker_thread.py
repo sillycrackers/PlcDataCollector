@@ -1,7 +1,7 @@
 import threading
 
 
-class ReadThread(threading.Thread):
+class WorkerThread(threading.Thread):
     def __init__(self, name, run_method, done_method):
         threading.Thread.__init__(self)
 

@@ -263,8 +263,8 @@ class MainFrame(ttk.Frame):
         if self.file_loaded:
             if len(self.plc_data_connections) > 0:
                 for con in self.plc_data_connections:
-                    t1 = WorkerThread(name=con, run_method=self.read_plc_data, done_method=self.read_thread_done)
-                    t2 = WorkerThread(name=con, run_method=self.check_connection, done_method=self.comm_thread_done)
+                    t1 = WorkerThread(name=con, run_method=self.read_plc_data, done_method=self.read_thread_done_callback)
+                    t2 = WorkerThread(name=con, run_method=self.check_connection, done_method=self.comm_thread_done_callback)
                     t1.start()
                     t2.start()
                     self.read_thread_status[con] = True
@@ -273,8 +273,8 @@ class MainFrame(ttk.Frame):
                 self.file_loaded = False
         else:
             if len(self.plc_data_connections) > 0:
-                self.create_threads(status=self.read_thread_status, run_method=self.read_plc_data, done_method=self.read_thread_done)
-                self.create_threads(status=self.comm_thread_status, run_method=self.check_connection, done_method=self.comm_thread_done)
+                self.create_threads(status=self.read_thread_status, run_method=self.read_plc_data, done_method=self.read_thread_done_callback)
+                self.create_threads(status=self.comm_thread_status, run_method=self.check_connection, done_method=self.comm_thread_done_callback)
 
     def create_threads(self, status, run_method, done_method):
         # Check if plc connection is in thread_status dict
@@ -301,10 +301,10 @@ class MainFrame(ttk.Frame):
         if thread_to_delete:
             del status[thread_to_delete]
 
-    def read_thread_done(self, name):
+    def read_thread_done_callback(self, name):
         self.read_thread_status[name] = False
 
-    def comm_thread_done(self, name):
+    def comm_thread_done_callback(self, name):
         self.comm_thread_status[name] = False
 
     def all_thread_done(self):

@@ -3,9 +3,9 @@
 
 a = Analysis(
     ['src\\main.py'],
-    pathex=['.\\src', '.\\src\\gui', '.\\src\\gui\\imgs'],
+    pathex=['.\\\\src:.\\\\src\\\\gui:.\\\\src\\\\gui\\\\imgs'],
     binaries=[],
-    datas=[('.\\src\\gui\\imgs', '.\\src\\gui\\imgs')],
+    datas=[('.\\\\src\\\\gui\\\\imgs', '.\\\\src\\\\gui\\\\imgs')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

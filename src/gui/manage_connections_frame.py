@@ -246,9 +246,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.response = False
         self.delete_response = False
 
-
-
-
     def hide_validation_labels(self):
         for label in self.validation_labels:
             self.validation_labels[label].config(text="")

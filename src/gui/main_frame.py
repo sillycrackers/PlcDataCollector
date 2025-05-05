@@ -245,6 +245,9 @@ class MainFrame(ttk.Frame):
     #Being called by After()
     def thread_manager(self):
 
+        #print(f"read thread status: {self.read_thread_status}")
+        #print(f"comm thread status: {self.comm_thread_status}")
+
         if not self.halt_threads:
             self.create_worker_threads()
             self.threads_done = False
@@ -256,9 +259,6 @@ class MainFrame(ttk.Frame):
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
-
-        #print(f"Active threads: {threading.active_count()}")
-        #print(f"Thread dict: {self.thread_status}")
 
         if self.file_loaded:
             if len(self.plc_data_connections) > 0:

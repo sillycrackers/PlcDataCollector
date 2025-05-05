@@ -89,26 +89,14 @@ class MainMenu(ttk.Menu):
 
         if not booting:
             file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
-        else:
-            booting = False
+            self.obtain_data_control()
 
         if os.path.exists(file_path):
-
-            self.main_frame.halt_threads = True
-
-            transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
-            transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
-
-            if len(self.main_frame.plc_data_connections) > 0:
-                while self.main_frame.comm_thread_done == False or self.main_frame.read_thread_done == False:
-                    time.sleep(0.5)
 
             try:
                 with open(file_path, 'r') as file:
                     file_content = file.read()
 
-                self.main_frame.read_lock.acquire()
-                self.main_frame.comm_lock.acquire()
 
                 self.main_frame.plc_data_connections.clear()
 
@@ -116,17 +104,10 @@ class MainMenu(ttk.Menu):
                     (self.main_frame.
                      add_plc_connection(PlcConnection(plc, self.main_frame)))
 
-                self.main_frame.comm_lock.release()
-                self.main_frame.read_lock.release()
-
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
-                                              value=self.main_frame.loading_label))
+                self.release_data_control()
 
                 self.main_frame.file_loaded = True
-                self.main_frame.halt_threads = False
+                booting = False
 
                 set_reg(file_path)
                 self.file_path = file_path
@@ -136,19 +117,35 @@ class MainMenu(ttk.Menu):
             except Exception:
                 print("Error trying to open file")
 
-                self.main_frame.comm_lock.release()
-                self.main_frame.read_lock.release()
-
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-                transmit(self.main_frame,Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL,
-                                              value=self.main_frame.loading_label))
+                self.release_data_control()
 
                 self.main_frame.file_loaded = True
-                self.main_frame.halt_threads = False
+
         else:
             print(f"File path doesn't exist")
+
+    def obtain_data_control(self):
+
+        self.main_frame.halt_threads = True
+        print("Halt threads!")
+
+        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
+
+        while self.main_frame.threads_done != True:
+            print("waiting")
+            time.sleep(.1)
+
+    def release_data_control(self):
+        print("File Loaded")
+        self.main_frame.file_loaded = True
+        self.main_frame.halt_threads = False
+        self.main_frame.threads_done = False
+
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+        transmit(self.main_frame, Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
     def save_file_as(self):
 
@@ -176,6 +173,8 @@ class MainMenu(ttk.Menu):
         if self.file_path:
             plc_list = []
 
+            self.obtain_data_control()
+
             for item in list(self.main_frame.plc_data_connections.values()):
                 plc_list.append(item.plc)
 
@@ -189,6 +188,8 @@ class MainMenu(ttk.Menu):
 
             ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
                                                    value=f"File saved to : {self.file_path}"))
+
+            self.release_data_control()
 
         else:
             print("No file path to save to. Use: 'Save As'")

@@ -12,6 +12,5 @@ class WorkerThread(threading.Thread):
 
 
     def run(self):
-        print(f"{self.name} starting")
         self.run_method(self.name)
         self.done_method(self.name)

@@ -31,7 +31,7 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
-        self.version = "1.3"
+        self.version = "2.0"
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
@@ -206,22 +206,20 @@ class MainFrame(ttk.Frame):
     def delete_plc_connection(self, plc_name):
         del self.plc_data_connections[plc_name]
 
-    # This method is being called by thread. It's checking the connection for all the plcs
+    # This method is being called by thread. It's checking the connection for the plc
     # and adding a tuple to the queue (name of the plc (str), True or False (connected or not))
 
     def check_connection(self, name):
 
         if len(self.plc_data_connections) > 0:
 
-            for connection in self.plc_data_connections.values():
-                if connection.check_plc_connection():
+            if self.plc_data_connections[name].check_plc_connection():
 
-                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", False)))
-                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, connection.plc.name)))
-                else:
-                    transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {connection.plc.name}", True)))
-                    transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, connection.plc.name)))
-
+                transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", False)))
+                transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc_data_connections[name].plc.name)))
+            else:
+                transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", True)))
+                transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
 
     def after_refresh_active_alarms(self):
 
@@ -231,7 +229,7 @@ class MainFrame(ttk.Frame):
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
 
-        self.after(250, self.after_refresh_active_alarms)
+        self.after(10, self.after_refresh_active_alarms)
 
     def freeze_window(self, window):
         window.attributes('-disabled', 1)
@@ -243,19 +241,19 @@ class MainFrame(ttk.Frame):
 
         self.right_body_frame.output.add_message(message)
 
-
     #Thread manager which starts read and com threads
     #Being called by After()
     def thread_manager(self):
 
-        print(f"Active threads: {threading.active_count()}")
 
         if not self.halt_threads:
             self.create_worker_threads()
+            self.threads_done = False
         elif self.all_thread_done():
+            print(f"All threads done? {self.all_thread_done()}")
             self.threads_done = True
 
-        self.after(10, self.thread_manager)
+        self.after(100, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
@@ -318,17 +316,16 @@ class MainFrame(ttk.Frame):
         for thread in self.comm_thread_status:
             if self.comm_thread_status[thread]:
                 return False
-
         return True
 
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
-        self.after(100, self.after_refresh_active_alarms)
+        self.after(10, self.after_refresh_active_alarms)
 
-        self.after(1000, self.after_rotate_image)
+        self.after(10, self.after_rotate_image)
 
-        self.after(100, self.thread_manager)
+        self.after(10, self.thread_manager)
 
         fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
 

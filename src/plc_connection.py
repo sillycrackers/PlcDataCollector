@@ -127,7 +127,3 @@ class Plc:
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
         self.write_type = write_type
-
-
-
-

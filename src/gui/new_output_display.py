@@ -25,7 +25,7 @@ class NewOutputDisplay(ttk.Frame):
 
     def call_back(self, *args):
 
-        if float(args[1]) > 0.8:
+        if float(args[1]) > 0.6:
             self.at_bottom = True
         else:
             self.at_bottom = False

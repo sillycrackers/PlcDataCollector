@@ -1,4 +1,5 @@
 import threading
+import time
 import tkinter as tk
 
 from src import entry_validation
@@ -194,7 +195,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def delete_connection(self):
 
-
         if self.option.get() != "Add New PLC...":
             self.obtain_data_control()
 
@@ -207,7 +207,6 @@ class ManageConnectionsFrame(ttk.Frame):
             if len(self.connections) > 0:
                 for key in self.connections:
                     selection = key
-                    print(selection)
                     break
             else:
                 selection = "Add New PLC..."
@@ -310,20 +309,20 @@ class ManageConnectionsFrame(ttk.Frame):
         apply_thread.start()
 
     def obtain_data_control(self):
+
         self.main_frame.halt_threads = True
+        print("Halt threads!")
 
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
-        self.main_frame.read_lock.acquire()
-        self.main_frame.comm_lock.acquire()
+        while self.main_frame.threads_done != True:
+            time.sleep(.1)
 
-        while not self.main_frame.threads_done:
-            print("waiting")
 
     def release_data_control(self):
-        self.main_frame.comm_lock.release()
-        self.main_frame.read_lock.release()
+        #self.main_frame.comm_lock.release()
+        #self.main_frame.read_lock.release()
 
         self.data_did_not_change = True
         self.main_frame.file_loaded = True

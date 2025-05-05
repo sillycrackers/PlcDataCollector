@@ -9,6 +9,7 @@ from src.utils import *
 from src.gui.animated_label import AnimatedLabel
 from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect
+from src.gui.delete_prompt import DeletePrompt
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -20,11 +21,17 @@ class ManageConnectionsFrame(ttk.Frame):
         self.connections = main_frame.plc_data_connections
         self.main_root_window = main_frame.root_window
 
+
         self.parent_window.bind("<Button>", self.on_mouse_click)
 
         #Variables
         self.applied = False
         self.data_did_not_change = True
+
+        # True = yes, False = no
+        self.delete_response = False
+        # When True, indicates user selected yes or no
+        self.response = False
 
         # Entry Variables
         self.name_entry_variable = ttk.StringVar()
@@ -193,31 +200,54 @@ class ManageConnectionsFrame(ttk.Frame):
         delete_thread = threading.Thread(target=self.delete_connection, daemon=True)
         delete_thread.start()
 
+    def response_callback(self, yes):
+        if yes:
+            self.delete_response = True
+        else:
+            self.delete_response = False
+
+        self.response = True
+
     def delete_connection(self):
 
-        if self.option.get() != "Add New PLC...":
-            self.obtain_data_control()
+        DeletePrompt(parent=self,parent_window=self.parent_window,plc_name=self.option.get(),response_callback=self.response_callback)
 
-            print("Hello")
+        while not self.response:
+            time.sleep(0.1)
 
-            self.main_frame.delete_plc_connection(self.option.get())
 
-            self.release_data_control()
 
-            if len(self.connections) > 0:
-                for key in self.connections:
-                    selection = key
-                    break
+        if self.delete_response:
+
+            if self.option.get() != "Add New PLC...":
+                self.obtain_data_control()
+
+                print("Hello")
+
+                self.main_frame.delete_plc_connection(self.option.get())
+
+                self.release_data_control()
+
+                if len(self.connections) > 0:
+                    for key in self.connections:
+                        selection = key
+                        break
+                else:
+                    selection = "Add New PLC..."
+
+                self.populate_combo_list()
+                self.option.set(selection)
+                self.option_menu.set_menu(selection, *self.combo_list)
+
+                self.update_entries(self.option)
             else:
-                selection = "Add New PLC..."
+                print("Cannot delete this option")
 
-            self.populate_combo_list()
-            self.option.set(selection)
-            self.option_menu.set_menu(selection, *self.combo_list)
+        self.response = False
+        self.delete_response = False
 
-            self.update_entries(self.option)
-        else:
-            print("Cannot delete this option")
+
+
 
     def hide_validation_labels(self):
         for label in self.validation_labels:
@@ -318,7 +348,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         while self.main_frame.threads_done != True:
             time.sleep(.1)
-
 
     def release_data_control(self):
         #self.main_frame.comm_lock.release()

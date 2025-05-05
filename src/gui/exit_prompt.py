@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import src.file_management as fm
 
 
-class Prompt(ttk.Toplevel):
+class ExitPrompt(ttk.Toplevel):
     def __init__(self, parent):
         super().__init__(master=parent)
         self.parent = parent
@@ -36,7 +36,7 @@ class Prompt(ttk.Toplevel):
 
         #Ok button to exit
         self.ok_button = ttk.Button(self.frame, text="Ok", style='custom.TButton', width=10, command=self.close)
-        self.ok_button.pack(side="bottom", padx=20, pady=(20,40))
+        self.ok_button.pack(side="bottom", padx=20, pady=(0,40))
 
         # Make parent window disabled and make sure to run close method when closing this window
         self.transient(self.parent)

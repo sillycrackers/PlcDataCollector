@@ -245,7 +245,6 @@ class MainFrame(ttk.Frame):
     #Being called by After()
     def thread_manager(self):
 
-
         if not self.halt_threads:
             self.create_worker_threads()
             self.threads_done = False
@@ -253,7 +252,7 @@ class MainFrame(ttk.Frame):
             print(f"All threads done? {self.all_thread_done()}")
             self.threads_done = True
 
-        self.after(100, self.thread_manager)
+        self.after(10, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i

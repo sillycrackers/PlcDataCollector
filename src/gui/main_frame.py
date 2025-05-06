@@ -229,7 +229,7 @@ class MainFrame(ttk.Frame):
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
 
-        self.after(10, self.after_refresh_active_alarms)
+        self.after(100, self.after_refresh_active_alarms)
 
     def freeze_window(self, window):
         window.attributes('-disabled', 1)
@@ -247,6 +247,7 @@ class MainFrame(ttk.Frame):
 
         #print(f"read thread status: {self.read_thread_status}")
         #print(f"comm thread status: {self.comm_thread_status}")
+        #print(f"Active threads: {threading.active_count()}")
 
         if not self.halt_threads:
             self.create_worker_threads()
@@ -255,12 +256,13 @@ class MainFrame(ttk.Frame):
             print(f"All threads done? {self.all_thread_done()}")
             self.threads_done = True
 
-        self.after(10, self.thread_manager)
+        self.after(1000, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
 
         if self.file_loaded:
+
             if len(self.plc_data_connections) > 0:
                 for con in self.plc_data_connections:
                     t1 = WorkerThread(name=con, run_method=self.read_plc_data, done_method=self.read_thread_done_callback)

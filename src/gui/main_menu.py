@@ -3,12 +3,15 @@ from json import JSONEncoder
 from tkinter import filedialog
 import json
 import threading
+import subprocess
 
 from src.gui.about_window import AboutWindow
 from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.file_management import *
 import src.ticketing_system as ts
+from src.gui.manual_top_level import ManualTopLevel
+
 
 class PlcObjectEncoder(JSONEncoder):
     def default(self, obj):
@@ -43,7 +46,14 @@ class MainMenu(ttk.Menu):
         #Help Menu
         self.help_menu = ttk.Menu(self, font='calibri 12')
         self.help_menu.add_command(label="About    ", command=self.open_about)
+        self.help_menu.add_command(label="Manual    ", command=self.open_manual)
         self.add_cascade(label="  Help  ", menu=self.help_menu)
+
+    def open_manual(self):
+
+        #manual_window = ManualTopLevel(self.parent_window, self.main_frame)
+
+        subprocess.Popen([resource_path("src\\PLC Data Collector Manual.pdf")], shell=True)
 
     def open_about(self):
 

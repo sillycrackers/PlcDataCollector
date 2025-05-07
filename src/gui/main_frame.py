@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from queue import Queue
 import threading
@@ -47,7 +48,9 @@ class MainFrame(ttk.Frame):
         self.read_lock = threading.Lock()
         self.q = Queue()
         self.read_thread_status = {}
+        self.read_status_lock = threading.Lock()
         self.comm_thread_status = {}
+        self.comm_status_lock = threading.Lock()
         self.threads_done = False
 
         self.root_window.title(f"PLC Data Collector {self.version}")
@@ -245,9 +248,9 @@ class MainFrame(ttk.Frame):
     #Being called by After()
     def thread_manager(self):
 
-        #print(f"read thread status: {self.read_thread_status}")
-        #print(f"comm thread status: {self.comm_thread_status}")
-        #print(f"Active threads: {threading.active_count()}")
+        print(f"read thread status: {self.read_thread_status}")
+        print(f"comm thread status: {self.comm_thread_status}")
+        print(f"Active threads: {threading.active_count()}")
 
         if not self.halt_threads:
             self.create_worker_threads()
@@ -256,7 +259,7 @@ class MainFrame(ttk.Frame):
             print(f"All threads done? {self.all_thread_done()}")
             self.threads_done = True
 
-        self.after(1000, self.thread_manager)
+        self.after(50, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
@@ -269,16 +272,21 @@ class MainFrame(ttk.Frame):
                     t2 = WorkerThread(name=con, run_method=self.check_connection, done_method=self.comm_thread_done_callback)
                     t1.start()
                     t2.start()
+                    self.read_status_lock.acquire()
+                    self.comm_status_lock.acquire()
                     self.read_thread_status[con] = True
                     self.comm_thread_status[con] = True
+                    self.read_status_lock.release()
+                    self.comm_status_lock.release()
 
-                self.file_loaded = False
+            self.file_loaded = False
+
         else:
             if len(self.plc_data_connections) > 0:
-                self.create_threads(status=self.read_thread_status, run_method=self.read_plc_data, done_method=self.read_thread_done_callback)
-                self.create_threads(status=self.comm_thread_status, run_method=self.check_connection, done_method=self.comm_thread_done_callback)
+                self.create_threads(status=self.read_thread_status, run_method=self.read_plc_data, done_method=self.read_thread_done_callback, lock=self.read_status_lock)
+                self.create_threads(status=self.comm_thread_status, run_method=self.check_connection, done_method=self.comm_thread_done_callback, lock=self.comm_status_lock)
 
-    def create_threads(self, status, run_method, done_method):
+    def create_threads(self, status, run_method, done_method, lock):
         # Check if plc connection is in thread_status dict
         # If it's not then add it
         for con in self.plc_data_connections:
@@ -296,7 +304,9 @@ class MainFrame(ttk.Frame):
                 if status[thread] == False:
                     t = WorkerThread(name=thread, run_method=run_method, done_method=done_method)
                     t.start()
+                    lock.acquire()
                     status[thread] = True
+                    lock.release()
             else:
                 thread_to_delete = thread
 
@@ -304,19 +314,30 @@ class MainFrame(ttk.Frame):
             del status[thread_to_delete]
 
     def read_thread_done_callback(self, name):
+
+        self.read_status_lock.acquire()
         self.read_thread_status[name] = False
+        time.sleep(0.1)
+        self.read_status_lock.release()
 
     def comm_thread_done_callback(self, name):
+        self.comm_status_lock.acquire()
         self.comm_thread_status[name] = False
+        self.comm_status_lock.release()
 
     def all_thread_done(self):
 
+        self.read_status_lock.acquire()
         for thread in self.read_thread_status:
             if self.read_thread_status[thread]:
                 return False
+        self.read_status_lock.release()
+
+        self.comm_status_lock.acquire()
         for thread in self.comm_thread_status:
             if self.comm_thread_status[thread]:
                 return False
+        self.comm_status_lock.release()
         return True
 
     def run_app(self):

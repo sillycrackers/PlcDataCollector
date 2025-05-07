@@ -32,7 +32,7 @@ class MainFrame(ttk.Frame):
         self.root_window.configure(menu = self.main_menu)
 
         #Variables
-        self.version = "2.0"
+        self.version = "2.1"
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)
@@ -225,8 +225,6 @@ class MainFrame(ttk.Frame):
                 transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
 
     def after_refresh_active_alarms(self):
-
-
 
         self.left_body_frame.clear_alarm_messages()
 

@@ -1,6 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from CTkPDFViewer import *
+
 
 
 import src.utils as utils
@@ -28,10 +28,6 @@ class ManualTopLevel(tk.Toplevel):
         #Main Wrapper Frame for all content
         self.wrapper_frame = tk.Frame(master=self, background="#a3a3a3")
         self.wrapper_frame.pack(expand=True, fill="both")
-
-        self.pdf_frame = CTkPDFViewer(self.wrapper_frame, file=fm.resource_path("src\\PLC Data Collector Manual.pdf"))
-
-        self.pdf_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
 
 

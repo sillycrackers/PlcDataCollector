@@ -51,8 +51,6 @@ class MainMenu(ttk.Menu):
 
     def open_manual(self):
 
-        #manual_window = ManualTopLevel(self.parent_window, self.main_frame)
-
         subprocess.Popen([resource_path("src\\PLC Data Collector Manual.pdf")], shell=True)
 
     def open_about(self):

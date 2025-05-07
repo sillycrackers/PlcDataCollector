@@ -226,13 +226,15 @@ class MainFrame(ttk.Frame):
 
     def after_refresh_active_alarms(self):
 
+
+
         self.left_body_frame.clear_alarm_messages()
 
         for alarm in self.active_alarms:
             if self.active_alarms[alarm]:
                 self.left_body_frame.output_alarm_message(message=alarm)
 
-        self.after(100, self.after_refresh_active_alarms)
+        self.after(10, self.after_refresh_active_alarms)
 
     def freeze_window(self, window):
         window.attributes('-disabled', 1)
@@ -248,18 +250,18 @@ class MainFrame(ttk.Frame):
     #Being called by After()
     def thread_manager(self):
 
-        print(f"read thread status: {self.read_thread_status}")
-        print(f"comm thread status: {self.comm_thread_status}")
-        print(f"Active threads: {threading.active_count()}")
+        print(f"Active Threads: {threading.active_count()}")
+
 
         if not self.halt_threads:
             self.create_worker_threads()
             self.threads_done = False
-        elif self.all_thread_done():
+        elif self.halt_threads and self.all_thread_done():
             print(f"All threads done? {self.all_thread_done()}")
             self.threads_done = True
 
-        self.after(50, self.thread_manager)
+
+        self.after(100, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
@@ -289,15 +291,18 @@ class MainFrame(ttk.Frame):
     def create_threads(self, status, run_method, done_method, lock):
         # Check if plc connection is in thread_status dict
         # If it's not then add it
+
         for con in self.plc_data_connections:
             if con not in status:
                 status[con] = False
+
         ''' 
         loop through thread status dict, remove item if no longer in plc 
         connections, otherwise if status False, 
         create a new read thread for that connection and start it
         '''
         thread_to_delete = ''
+
 
         for thread in status:
             if thread in self.plc_data_connections:
@@ -317,7 +322,6 @@ class MainFrame(ttk.Frame):
 
         self.read_status_lock.acquire()
         self.read_thread_status[name] = False
-        time.sleep(0.1)
         self.read_status_lock.release()
 
     def comm_thread_done_callback(self, name):
@@ -343,11 +347,11 @@ class MainFrame(ttk.Frame):
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
-        self.after(10, self.after_refresh_active_alarms)
+        self.after(1000, self.after_refresh_active_alarms)
 
-        self.after(10, self.after_rotate_image)
+        self.after(1000, self.after_rotate_image)
 
-        self.after(10, self.thread_manager)
+        self.after(1000, self.thread_manager)
 
         fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
 

@@ -216,13 +216,10 @@ class ManageConnectionsFrame(ttk.Frame):
             time.sleep(0.1)
 
 
-
         if self.delete_response:
 
             if self.option.get() != "Add New PLC...":
                 self.obtain_data_control()
-
-                print("Hello")
 
                 self.main_frame.delete_plc_connection(self.option.get())
 
@@ -338,13 +335,12 @@ class ManageConnectionsFrame(ttk.Frame):
     def obtain_data_control(self):
 
         self.main_frame.halt_threads = True
-        print("Halt threads!")
 
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
         while self.main_frame.threads_done != True:
-            time.sleep(.1)
+            time.sleep(.5)
 
     def release_data_control(self):
         #self.main_frame.comm_lock.release()

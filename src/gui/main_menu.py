@@ -135,17 +135,14 @@ class MainMenu(ttk.Menu):
     def obtain_data_control(self):
 
         self.main_frame.halt_threads = True
-        print("Halt threads!")
 
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
         while self.main_frame.threads_done != True:
-            print("waiting")
             time.sleep(.1)
 
     def release_data_control(self):
-        print("File Loaded")
         self.main_frame.file_loaded = True
         self.main_frame.halt_threads = False
         self.main_frame.threads_done = False

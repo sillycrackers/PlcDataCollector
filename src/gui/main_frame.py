@@ -248,18 +248,15 @@ class MainFrame(ttk.Frame):
     #Being called by After()
     def thread_manager(self):
 
-        print(f"Active Threads: {threading.active_count()}")
-
-
         if not self.halt_threads:
             self.create_worker_threads()
             self.threads_done = False
-        elif self.halt_threads and self.all_thread_done():
-            print(f"All threads done? {self.all_thread_done()}")
-            self.threads_done = True
+        elif self.halt_threads:
+            if self.all_thread_done():
+                self.threads_done = True
 
 
-        self.after(100, self.thread_manager)
+        self.after(50, self.thread_manager)
 
     def create_worker_threads(self):
         # Add plc connection to thread dict if it isn't already in i
@@ -307,6 +304,7 @@ class MainFrame(ttk.Frame):
                 if status[thread] == False:
                     t = WorkerThread(name=thread, run_method=run_method, done_method=done_method)
                     t.start()
+
                     lock.acquire()
                     status[thread] = True
                     lock.release()
@@ -332,12 +330,14 @@ class MainFrame(ttk.Frame):
         self.read_status_lock.acquire()
         for thread in self.read_thread_status:
             if self.read_thread_status[thread]:
+                self.read_status_lock.release()
                 return False
         self.read_status_lock.release()
 
         self.comm_status_lock.acquire()
         for thread in self.comm_thread_status:
             if self.comm_thread_status[thread]:
+                self.comm_status_lock.release()
                 return False
         self.comm_status_lock.release()
         return True

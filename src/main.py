@@ -3,7 +3,7 @@ import ttkbootstrap as ttk
 
 from src.gui.main_frame import MainFrame
 import src.file_management as fm
-import utils
+from src import utils
 
 def main():
 

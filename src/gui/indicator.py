@@ -1,7 +1,8 @@
 import tkinter as tk
+import ttkbootstrap as ttk
 
-from src.utils import *
-from src.file_management import *
+from src import utils
+import src.file_management as fm
 
 
 class Indicator(tk.Frame):
@@ -12,10 +13,10 @@ class Indicator(tk.Frame):
         self.display_text = display_text
         self.display_label = ttk.Label(self, text=self.display_text, font=f"calibri 16", justify="right")
 
-        self.ind_icon_true = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\green_check.png"))
+        self.ind_icon_true = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\green_check.png"))
         self.ind_icon_true_label = ttk.Label(self, image=self.ind_icon_true)
 
-        self.ind_icon_false = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\mark.png"))
+        self.ind_icon_false = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\mark.png"))
         self.ind_icon_false_label = ttk.Label(self, image=self.ind_icon_false)
 
         self.current_icon_label = self.ind_icon_false_label

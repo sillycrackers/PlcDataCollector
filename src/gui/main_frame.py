@@ -1,18 +1,20 @@
-import time
+import ttkbootstrap as ttk
 import tkinter as tk
 from queue import Queue
 import threading
+import sys
 
 from src.worker_thread import WorkerThread
 from src.gui.main_menu import MainMenu
 from src.gui.title_frame import TitleFrame
 from src.gui.left_body_frame import LeftBodyFrame
 from src.gui.manage_connections_toplevel import ManageConnectionsToplevel
-from src.utils import *
 from src.gui.animated_label import AnimatedLabel
 from src.gui.right_body_frame import RightBodyFrame
 from src.gui.collecting_data_frame import CollectingDataFrame
-from src.file_management import *
+from src.utils import change_theme
+import src.ticketing_system as ts
+import src.file_management as fm
 
 
 # Main Frame
@@ -113,7 +115,7 @@ class MainFrame(ttk.Frame):
 
     def after_rotate_image(self):
 
-        if not self.halt_threads:
+        if not self.halt_threads and len(self.plc_data_connections) > 0:
             self.collecting_data_frame.rotate()
 
         self.after(10, self.after_rotate_image)
@@ -128,49 +130,49 @@ class MainFrame(ttk.Frame):
         """
         Read the queue
         """
-        msg: Ticket
+        msg: ts.Ticket
         msg = self.q.get()
 
         match msg.purpose:
 
-            case TicketPurpose.UPDATE_ALARMS:
+            case ts.TicketPurpose.UPDATE_ALARMS:
                 # ("message":str, Alarm active:bool)
                 self.active_alarms[msg.value[0]] = msg.value[1]
 
-            case TicketPurpose.TOGGLE_INDICATOR:
+            case ts.TicketPurpose.TOGGLE_INDICATOR:
                 # (state:bool,"plc.name:str")
                 self.left_body_frame.toggle_indicator(msg.value[0], msg.value[1])
 
-            case TicketPurpose.ACTIVE_ALARMS_CLEAR:
+            case ts.TicketPurpose.ACTIVE_ALARMS_CLEAR:
                 self.active_alarms.clear()
 
-            case TicketPurpose.POPULATE_INDICATORS:
+            case ts.TicketPurpose.POPULATE_INDICATORS:
                 self.left_body_frame.populate_indicators()
 
-            case TicketPurpose.SHOW_WAIT_CURSOR:
+            case ts.TicketPurpose.SHOW_WAIT_CURSOR:
                 # (window:ttk.Window)
                 msg.value.config(cursor="watch")
                 msg.value.update_idletasks()
                 self.freeze_window(msg.value)
 
-            case TicketPurpose.SHOW_NORMAL_CURSOR:
+            case ts.TicketPurpose.SHOW_NORMAL_CURSOR:
                 # window:ttk.Window
                 msg.value.config(cursor="")
                 msg.value.update_idletasks()
                 self.unfreeze_window(msg.value)
 
-            case TicketPurpose.SHOW_ANIMATED_LABEL:
+            case ts.TicketPurpose.SHOW_ANIMATED_LABEL:
                 # (AnimatedLabel: object)
                 msg.value.pack()
                 self.show_loading_animation = True
                 self.after(100, self.label_animation, msg.value)
 
-            case TicketPurpose.HIDE_ANIMATED_LABEL:
+            case ts.TicketPurpose.HIDE_ANIMATED_LABEL:
                 self.show_loading_animation = False
                 msg.value.pack_forget()
 
                 # message : str
-            case TicketPurpose.OUTPUT_MESSAGE:
+            case ts.TicketPurpose.OUTPUT_MESSAGE:
                 self.output_message(msg.value)
 
             case _:
@@ -218,11 +220,11 @@ class MainFrame(ttk.Frame):
 
             if self.plc_data_connections[name].check_plc_connection():
 
-                transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", False)))
-                transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc_data_connections[name].plc.name)))
+                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", False)))
+                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc_data_connections[name].plc.name)))
             else:
-                transmit(self, Ticket(purpose=TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", True)))
-                transmit(self, Ticket(purpose=TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
+                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", True)))
+                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
 
     def after_refresh_active_alarms(self):
 
@@ -345,13 +347,13 @@ class MainFrame(ttk.Frame):
     def run_app(self):
 
         #Window thread that will clear list and show any active alarms
-        self.after(1000, self.after_refresh_active_alarms)
+        self.after(2000, self.after_refresh_active_alarms)
 
-        self.after(1000, self.after_rotate_image)
+        self.after(2000, self.after_rotate_image)
 
-        self.after(1000, self.thread_manager)
+        self.after(2000, self.thread_manager)
 
-        fp = get_reg(r"SOFTWARE\\Plc Data Collector\\")
+        fp = fm.get_reg(r"SOFTWARE\\Plc Data Collector\\")
 
         try:
             if fp:

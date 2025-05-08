@@ -1,11 +1,12 @@
 import threading
 import time
 import tkinter as tk
+import ttkbootstrap as ttk
 
 from src import entry_validation
 from src.gui.data_entry import DataEntry
 from src.plc_connection import PlcConnection, Plc, WriteType
-from src.utils import *
+from src import utils
 from src.gui.animated_label import AnimatedLabel
 from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect

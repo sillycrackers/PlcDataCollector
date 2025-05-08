@@ -4,7 +4,7 @@ from ttkbootstrap.scrolled import *
 from src.gui.new_output_display import NewOutputDisplay
 from src.gui.indicator import Indicator
 from src.gui.colors import *
-from src.utils import *
+from src import utils
 
 
 
@@ -73,7 +73,6 @@ class LeftBodyFrame(ttk.Frame):
 
     def output_alarm_message(self, message):
         self.alarm_output.add_message(message)
-
 
     def clear_alarm_messages(self):
         self.alarm_output.clear_messages()

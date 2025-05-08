@@ -1,8 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 
-
-
 import src.utils as utils
 import src.file_management as fm
 

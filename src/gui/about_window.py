@@ -1,7 +1,8 @@
 import tkinter as tk
+import ttkbootstrap as ttk
 
-from src.utils import *
-from src.file_management import *
+from src import utils
+import src.file_management as fm
 
 
 class AboutWindow(ttk.Toplevel):
@@ -10,7 +11,7 @@ class AboutWindow(ttk.Toplevel):
         self.parent_window = parent_window
         self.main_frame = main_frame
         self.title("About PLC Data Collector")
-        self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
+        self.logo_image = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
         self.geometry("400x220")
         self.resizable(width=False, height=False)
@@ -20,7 +21,7 @@ class AboutWindow(ttk.Toplevel):
         self.main_frame.pack(fill='both', expand=True)
 
         #Logo Image
-        self.logo_image = tk.PhotoImage(file=resource_path("src\\gui\\imgs\\data_icon.png"))
+        self.logo_image = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\data_icon.png"))
         self.logo_image_label = ttk.Label(self.main_frame, image=self.logo_image)
         self.logo_image_label.grid(row=0,column=0, padx=20, pady=20)
 

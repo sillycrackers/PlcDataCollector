@@ -1,14 +1,16 @@
 import time
+import ttkbootstrap as ttk
 from json import JSONEncoder
 from tkinter import filedialog
 import json
 import threading
 import subprocess
+import os
 
 from src.gui.about_window import AboutWindow
 from src.plc_connection import PlcConnection, Plc, WriteType
-from src.utils import *
-from src.file_management import *
+from src import utils
+import src.file_management as fm
 import src.ticketing_system as ts
 
 
@@ -50,14 +52,14 @@ class MainMenu(ttk.Menu):
 
     def open_manual(self):
 
-        subprocess.Popen([resource_path("src\\PLC Data Collector Manual.pdf")], shell=True)
+        subprocess.Popen([fm.resource_path("src\\PLC Data Collector Manual.pdf")], shell=True)
 
     def open_about(self):
 
         about_window = AboutWindow(self.parent_window, self.main_frame)
 
     def change_theme(self, theme):
-        change_theme(theme)
+        utils.change_theme(theme)
 
     def decode_json_to_plc_objects(self, json_string):
 
@@ -116,7 +118,7 @@ class MainMenu(ttk.Menu):
                 self.main_frame.file_loaded = True
                 booting = False
 
-                set_reg(file_path)
+                fm.set_reg(file_path)
                 self.file_path = file_path
 
                 self.parent_window.title(f"PLC Data Collector {self.main_frame.version}      File Loaded:   {file_path}")
@@ -135,8 +137,8 @@ class MainMenu(ttk.Menu):
 
         self.main_frame.halt_threads = True
 
-        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
-        transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
+        ts.transmit(self.main_frame,ts.Ticket(purpose=ts.TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
+        ts.transmit(self.main_frame,ts.Ticket(purpose=ts.TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
         while self.main_frame.threads_done != True:
             time.sleep(.1)
@@ -146,10 +148,10 @@ class MainMenu(ttk.Menu):
         self.main_frame.halt_threads = False
         self.main_frame.threads_done = False
 
-        transmit(self.main_frame, Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
-        transmit(self.main_frame, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))
-        transmit(self.main_frame, Ticket(purpose=TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
-        transmit(self.main_frame, Ticket(purpose=TicketPurpose.HIDE_ANIMATED_LABEL, value=self.main_frame.loading_label))
+        ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
+        ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.POPULATE_INDICATORS, value=None))
+        ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.SHOW_NORMAL_CURSOR, value=self.parent_window))
+        ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.HIDE_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
     def save_file_as(self):
 
@@ -188,7 +190,7 @@ class MainMenu(ttk.Menu):
             f.write(json_string)
             f.close()
 
-            set_reg(self.file_path)
+            fm.set_reg(self.file_path)
 
             ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
                                                    value=f"File saved to : {self.file_path}"))

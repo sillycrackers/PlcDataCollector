@@ -10,7 +10,6 @@ from src.plc_connection import PlcConnection, Plc, WriteType
 from src.utils import *
 from src.file_management import *
 import src.ticketing_system as ts
-from src.gui.manual_top_level import ManualTopLevel
 
 
 class PlcObjectEncoder(JSONEncoder):

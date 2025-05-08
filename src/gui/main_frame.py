@@ -3,7 +3,7 @@ import tkinter as tk
 from queue import Queue
 import threading
 
-from worker_thread import WorkerThread
+from src.worker_thread import WorkerThread
 from src.gui.main_menu import MainMenu
 from src.gui.title_frame import TitleFrame
 from src.gui.left_body_frame import LeftBodyFrame

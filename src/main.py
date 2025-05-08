@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from gui.main_frame import MainFrame
-from utils import *
-from file_management import *
+from src.gui.main_frame import MainFrame
+from src.utils import *
+from src.file_management import *
 
 def main():
 

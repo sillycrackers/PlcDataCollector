@@ -1,16 +1,9 @@
-pyinstaller --onefile --windowed --add-data "data_icon.ico:." --add-data "data_icon.png:." --add-data "loading.png:." --add-data "green_check.png:." --add-data "mark.png:." --paths \gui --icon data_icon.ico  main.py
-
-With console
-pyinstaller --onefile --add-data "data_icon.ico:." --add-data "data_icon.png:." --add-data "loading.png:." --add-data "green_check.png:." --add-data "mark.png:." --paths \gui --icon data_icon.ico  --name "Plc Data Collector" main.py
-
-
-New image folder
 
 Without console
-pyinstaller --windowed --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
+pyinstaller --windowed --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --add-data ".\\src\\PLC Data Collector Manual.pdf:.\\src\\PLC Data Collector Manual.pdf" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
 
 With console
-pyinstaller --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
+pyinstaller --onefile --add-data ".\\src\\gui\\imgs:.\\src\\gui\\imgs" --add-data ".\\src\\PLC Data Collector Manual.pdf:.\\src\\PLC Data Collector Manual.pdf" --paths .\\src:.\\src\\gui:.\\src\\gui\\imgs --icon .\\src\\gui\\imgs\\data_icon.ico  --name "PlcDataCollector" .\\src\\main.py
 
 zip file in powershell
 Compress-Archive -Path .\\dist\\PlcDataCollector.exe -DestinationPath .\\dist\\PlcDataCollector.zip

@@ -190,8 +190,8 @@ class MainFrame(ttk.Frame):
 
     #This method is being called by thread.
     def read_plc_data(self, name):
-
-        self.plc_data_connections[name].collect_data()
+        while not self.halt_threads:
+            self.plc_data_connections[name].collect_data()
 
     def label_animation(self, label):
 
@@ -216,15 +216,16 @@ class MainFrame(ttk.Frame):
 
     def check_connection(self, name):
 
-        if len(self.plc_data_connections) > 0:
+        while not self.halt_threads:
+            if len(self.plc_data_connections) > 0:
 
-            if self.plc_data_connections[name].check_plc_connection():
+                if self.plc_data_connections[name].check_plc_connection():
 
-                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", False)))
-                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc_data_connections[name].plc.name)))
-            else:
-                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", True)))
-                ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
+                    ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", False)))
+                    ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc_data_connections[name].plc.name)))
+                else:
+                    ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc_data_connections[name].plc.name}", True)))
+                    ts.transmit(self, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc_data_connections[name].plc.name)))
 
     def after_refresh_active_alarms(self):
 
@@ -249,6 +250,8 @@ class MainFrame(ttk.Frame):
     #Thread manager which starts read and com threads
     #Being called by After()
     def thread_manager(self):
+
+        print(f"Active threads {threading.active_count()}")
 
         if not self.halt_threads:
             self.create_worker_threads()

@@ -19,7 +19,7 @@ class PlcConnection:
     # Function to read PLC tags
     def read_plc_tags(self):
 
-        with logix.PLC() as comm:
+        with logix.PLC(timeout=3) as comm:
 
             comm.IPAddress = self.plc.ip_address
 
@@ -88,19 +88,21 @@ class PlcConnection:
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
                                                        value=f"Archive file saved to: {file_location}\\{file_name}"))
 
-
     # Verify connected to PLC
     def check_plc_connection(self):
 
-        with logix.PLC() as comm:
+        with logix.PLC(timeout=3) as comm:
             comm.IPAddress = self.plc.ip_address
 
             response = comm.GetPLCTime()
 
             if response.Status != "Success":
-                return False
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc.name}", True)))
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(False, self.plc.name)))
             else:
-                return True
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc.name}", False)))
+                ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc.name)))
+
 
 class WriteType(StrEnum):
     APPEND = auto()

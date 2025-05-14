@@ -24,8 +24,8 @@ class MainMenu(ttk.Menu):
 
         self.parent_window = parent_window
         self.main_frame = main_frame
+        self.thread_manager = main_frame.thread_manager
         self.file_path = ''
-
 
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
@@ -135,18 +135,17 @@ class MainMenu(ttk.Menu):
 
     def obtain_data_control(self):
 
-        self.main_frame.halt_threads = True
+        self.thread_manager.halt_threads = True
 
         ts.transmit(self.main_frame,ts.Ticket(purpose=ts.TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
         ts.transmit(self.main_frame,ts.Ticket(purpose=ts.TicketPurpose.SHOW_ANIMATED_LABEL, value=self.main_frame.loading_label))
 
-        while self.main_frame.threads_done != True:
+        while self.thread_manager.all_threads_done() != True:
             time.sleep(.1)
 
     def release_data_control(self):
         self.main_frame.file_loaded = True
-        self.main_frame.halt_threads = False
-        self.main_frame.threads_done = False
+        self.thread_manager.halt_threads = False
 
         ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
         ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.POPULATE_INDICATORS, value=None))

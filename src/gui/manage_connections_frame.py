@@ -20,8 +20,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.main_frame = main_frame
         self.parent_window = parent_window
         self.connections = main_frame.plc_data_connections
+        self.thread_manager = main_frame.thread_manager
         self.main_root_window = main_frame.root_window
-
 
         self.parent_window.bind("<Button>", self.on_mouse_click)
 
@@ -335,22 +335,20 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def obtain_data_control(self):
 
-        self.main_frame.halt_threads = True
+        self.thread_manager.halt_threads = True
 
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_WAIT_CURSOR, value=self.parent_window))
         transmit(self.main_frame,Ticket(purpose=TicketPurpose.SHOW_ANIMATED_LABEL, value=self.loading_label))
 
-        while self.main_frame.threads_done != True:
-            time.sleep(.5)
+        while self.thread_manager.all_threads_done() != True:
+            time.sleep(.1)
+            print("waiting")
 
     def release_data_control(self):
-        #self.main_frame.comm_lock.release()
-        #self.main_frame.read_lock.release()
 
         self.data_did_not_change = True
         self.main_frame.file_loaded = True
-        self.main_frame.halt_threads = False
-        self.main_frame.threads_done = False
+        self.thread_manager.halt_threads = False
 
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.ACTIVE_ALARMS_CLEAR, value=None))
         transmit(self.main_frame, Ticket(purpose=TicketPurpose.POPULATE_INDICATORS, value=None))

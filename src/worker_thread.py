@@ -11,7 +11,6 @@ class WorkerThread(threading.Thread):
         self.done_method = done_method
 
 
-
     def run(self):
         self.run_method(self.name)
         self.done_method(self.name)

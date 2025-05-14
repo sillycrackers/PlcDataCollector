@@ -31,7 +31,7 @@ class MainFrame(ttk.Frame):
         self.pack(expand=True, fill="both")
 
         #Variables
-        self.version = "2.1"
+        self.version = "2.2"
         self.active_alarms = {}
         self.alarm_active = tk.BooleanVar()
         self.alarm_active.set(False)

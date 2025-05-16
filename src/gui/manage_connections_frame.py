@@ -371,7 +371,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
             self.apply_button.config(state="disabled")
 
-            self.main_frame.data_changed = True
             self.applied = True
             if ok_button_pressed:
                 self.parent_window.close()

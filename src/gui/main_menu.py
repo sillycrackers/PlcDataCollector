@@ -164,8 +164,6 @@ class MainMenu(ttk.Menu):
             if not self.file_path.endswith(".pdc"):
                 self.file_path += ".pdc"
 
-            self.main_frame.data_changed = False
-
             self.save_file()
 
         except Exception:

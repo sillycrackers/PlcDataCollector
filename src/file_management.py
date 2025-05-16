@@ -3,8 +3,6 @@ import shutil
 import sys
 import traceback
 import winreg
-
-
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 

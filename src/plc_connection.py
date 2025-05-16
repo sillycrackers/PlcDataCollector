@@ -41,7 +41,7 @@ class PlcConnection:
                         data_row.append(response.Value)
                     else:
                         data_row.append("Error")
-                    if self.main_frame.halt_threads:
+                    if self.main_frame.thread_manager.halt_threads:
                         return False
 
                 #Used for a Oneshot to only log data once per trigger

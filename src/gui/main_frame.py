@@ -33,16 +33,11 @@ class MainFrame(ttk.Frame):
         #Variables
         self.version = "2.2"
         self.active_alarms = {}
-        self.alarm_active = tk.BooleanVar()
-        self.alarm_active.set(False)
         self.root_window = root_window
         self.plc_data_connections = {}
         self.dot_count = 1
         self.show_loading_animation = False
-
         self.file_loaded = False
-        self.data_changed = False
-        self.click_count = 0
 
         self.q = Queue()
 

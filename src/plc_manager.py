@@ -1,3 +1,4 @@
+from src.plc_connection import PlcConnection
 
 class PlcManager:
     def __init__(self):

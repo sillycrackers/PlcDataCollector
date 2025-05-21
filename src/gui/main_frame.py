@@ -31,7 +31,7 @@ class MainFrame(ttk.Frame):
         self.pack(expand=True, fill="both")
 
         #Variables
-        self.version = "2.2"
+        self.version = "2.3"
         self.active_alarms = {}
         self.root_window = root_window
         self.plc_data_connections = {}

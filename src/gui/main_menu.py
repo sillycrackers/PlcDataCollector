@@ -30,8 +30,8 @@ class MainMenu(ttk.Menu):
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
         self.file_menu.add_command(label = "Open    ", command=lambda :self.create_open_file_thread("",False))
-        self.file_menu.add_command(label="Save   ", command=self.save_file)
-        self.file_menu.add_command(label="Save As   ", command=self.save_file_as)
+        self.file_menu.add_command(label="Save   ", command=lambda  : self.create_save_file_thread())
+        self.file_menu.add_command(label="Save As   ", command=lambda : self.create_save_file_as_thread())
         #self.file_menu.add_separator()
         self.add_cascade(label="  File  ",menu= self.file_menu)
 
@@ -93,6 +93,18 @@ class MainMenu(ttk.Menu):
         open_file_thread = threading.Thread(daemon=True, target=self.open_file,args=(file_path, booting) )
 
         open_file_thread.start()
+
+
+    def create_save_file_thread(self):
+
+        save_file_thread = threading.Thread(daemon=True, target=self.save_file)
+        save_file_thread.start()
+
+    def create_save_file_as_thread(self):
+
+        save_file_as_thread = threading.Thread(daemon=True, target=self.save_file_as)
+        save_file_as_thread.start()
+
 
     def open_file(self,file_path="", booting=False):
 

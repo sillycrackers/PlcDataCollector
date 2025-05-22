@@ -172,7 +172,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.ok_button.pack(side='right', pady=20, padx=5)
 
         # Cancel Button
-        self.cancel_button = ttk.Button(self.base_frame, text="Cancel", style='custom.TButton', command=parent_window.close)
+        self.cancel_button = ttk.Button(self.base_frame, text="Cancel", style='custom.TButton', command = lambda : parent_window.close(not self.data_did_not_change))
         self.cancel_button.pack(side='right', pady=20, padx=5)
 
         # ========================================#
@@ -192,6 +192,8 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # Populate entries as soon as window opens with first selected option in list
         self.update_entries(self.option)
+
+        self.data_did_not_change = True
 
     def on_mouse_click(self, var):
         pass
@@ -238,6 +240,8 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.option_menu.set_menu(selection, *self.combo_list)
 
                 self.update_entries(self.option)
+
+                self.data_did_not_change = True
             else:
                 print("Cannot delete this option")
 
@@ -373,7 +377,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
             self.applied = True
             if ok_button_pressed:
-                self.parent_window.close()
+                self.parent_window.close(not self.data_did_not_change)
             else:
                 ...
 
@@ -446,7 +450,7 @@ class ManageConnectionsFrame(ttk.Frame):
     def ok(self):
 
         if self.applied or self.data_did_not_change:
-            self.parent_window.close()
+            self.parent_window.close(not self.data_did_not_change)
         else:
             self.run_apply_thread(ok=True)
 
@@ -483,6 +487,8 @@ class ManageConnectionsFrame(ttk.Frame):
             self.write_type_selected_variable.set(WriteType.APPEND)
 
         self.apply_button.config(state="disabled")
+
+        self.data_did_not_change = True
 
     def replace_plc_connection(self, new_plc_connection, old_plc_connection):
 

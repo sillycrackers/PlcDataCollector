@@ -110,40 +110,44 @@ class MainMenu(ttk.Menu):
 
         if not booting:
             file_path = filedialog.askopenfilename(defaultextension=".pdc", filetypes=[("PLC Data Collector",'*.pdc')])
-            self.obtain_data_control()
-
-        if os.path.exists(file_path):
-
-            try:
-                with open(file_path, 'r') as file:
-                    file_content = file.read()
 
 
-                self.main_frame.plc_data_connections.clear()
+        if file_path:
 
-                for plc in self.decode_json_to_plc_objects(file_content):
-                    (self.main_frame.
-                     add_plc_connection(PlcConnection(plc, self.main_frame)))
+            if os.path.exists(file_path):
 
-                self.release_data_control()
+                self.obtain_data_control()
 
-                self.main_frame.file_loaded = True
-                booting = False
+                try:
+                    with open(file_path, 'r') as file:
+                        file_content = file.read()
 
-                fm.set_reg(file_path)
-                self.file_path = file_path
 
-                self.parent_window.title(f"PLC Data Collector {self.main_frame.version}      File Loaded:   {file_path}")
+                    self.main_frame.plc_data_connections.clear()
 
-            except Exception:
-                print("Error trying to open file")
+                    for plc in self.decode_json_to_plc_objects(file_content):
+                        (self.main_frame.
+                         add_plc_connection(PlcConnection(plc, self.main_frame)))
 
-                self.release_data_control()
+                    self.release_data_control()
 
-                self.main_frame.file_loaded = True
+                    self.main_frame.file_loaded = True
+                    booting = False
 
-        else:
-            print(f"File path doesn't exist")
+                    fm.set_reg(file_path)
+                    self.file_path = file_path
+
+                    self.parent_window.title(f"PLC Data Collector {self.main_frame.version}      File Loaded:   {file_path}")
+
+                except Exception:
+                    print("Error trying to open file")
+
+                    self.release_data_control()
+
+                    self.main_frame.file_loaded = True
+
+            else:
+                print(f"File path doesn't exist")
 
     def obtain_data_control(self):
 

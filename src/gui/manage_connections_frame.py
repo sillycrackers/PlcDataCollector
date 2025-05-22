@@ -193,6 +193,8 @@ class ManageConnectionsFrame(ttk.Frame):
         # Populate entries as soon as window opens with first selected option in list
         self.update_entries(self.option)
 
+        self.data_did_not_change = True
+
     def on_mouse_click(self, var):
         pass
 
@@ -238,6 +240,8 @@ class ManageConnectionsFrame(ttk.Frame):
                 self.option_menu.set_menu(selection, *self.combo_list)
 
                 self.update_entries(self.option)
+
+                self.data_did_not_change = True
             else:
                 print("Cannot delete this option")
 

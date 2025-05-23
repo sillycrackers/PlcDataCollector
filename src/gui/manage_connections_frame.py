@@ -37,6 +37,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Entry Variables
         self.name_entry_variable = ttk.StringVar()
         self.ip_address_entry_variable = ttk.StringVar()
+        self.trigger_type_entry_variable = ttk.StringVar()
         self.trigger_tag_entry_variable = ttk.StringVar()
         self.ack_tag_entry_variable = ttk.StringVar()
         self.tag_list_entry_variable = ttk.StringVar()
@@ -82,8 +83,12 @@ class ManageConnectionsFrame(ttk.Frame):
         self.combo_frame.pack(pady=(20,0), padx=(20, 20), expand=True, fill="both")
 
         # Inner Frame used for data entries
-        self.inner_frame = ttk.Frame(self.base_frame)
-        self.inner_frame.pack(padx=20, pady=20)
+        self.data_entries_frame = ttk.Frame(self.base_frame)
+        self.data_entries_frame.pack(padx=20, pady=20)
+
+        self.plc_trigger_frame = ttk.Frame(self.data_entries_frame)
+
+
 
 
         #===========Data Entries=============#
@@ -92,57 +97,57 @@ class ManageConnectionsFrame(ttk.Frame):
         self.start_row = 0
 
         # Name Validation
-        self.name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.name_validation_label.grid(row=self.start_row, column=0, columnspan=2, sticky='e')
         # PLC Name
-        self.name_entry = DataEntry(self, self.inner_frame, "Plc Name:", self.name_entry_variable, self.start_row + 1)
+        self.name_entry = DataEntry(self, self.data_entries_frame, "Plc Name:", self.name_entry_variable, self.start_row + 1)
 
         # Ip Address Validation
-        self.ip_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.ip_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.ip_validation_label.grid(row=self.start_row + 2, column=0, columnspan=2, sticky='e')
 
         # PLC IP Address
-        self.ip_address_entry = DataEntry(self, self.inner_frame, "IP Address:", self.ip_address_entry_variable,
+        self.ip_address_entry = DataEntry(self, self.data_entries_frame, "IP Address:", self.ip_address_entry_variable,
                                           self.start_row + 3)
 
         # Trigger Tag Validation
-        self.trigger_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.trigger_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.trigger_validation_label.grid(row=self.start_row + 4, column=0, columnspan=2, sticky='e')
         # Trigger Tag
-        self.trigger_tag_entry = DataEntry(self, self.inner_frame, "Trigger Tag:", self.trigger_tag_entry_variable,
+        self.trigger_tag_entry = DataEntry(self, self.data_entries_frame, "Trigger Tag:", self.trigger_tag_entry_variable,
                                            self.start_row + 5)
 
         # Acknowledge Tag Validation
-        self.ack_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.ack_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.ack_validation_label.grid(row=self.start_row + 6, column=0, columnspan=2, sticky='e')
         # Acknowledge Tag
-        self.ack_tag_entry = DataEntry(self, self.inner_frame, "Acknowledge Tag:", self.ack_tag_entry_variable,
+        self.ack_tag_entry = DataEntry(self, self.data_entries_frame, "Acknowledge Tag:", self.ack_tag_entry_variable,
                                        self.start_row + 7)
 
         # Tag List Validation
-        self.tag_list_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.tag_list_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.tag_list_validation_label.grid(row=self.start_row + 8, column=0, columnspan=2, sticky='e')
         # Tag List
-        self.tag_list_entry = DataEntry(self.parent_window, self.inner_frame, "Tag List:", self.tag_list_entry_variable,
+        self.tag_list_entry = DataEntry(self.parent_window, self.data_entries_frame, "Tag List:", self.tag_list_entry_variable,
                                         self.start_row + 9, True, "tag_entry")
         # Excel File Name Validation
-        self.excel_file_name_validation_label = ttk.Label(self.inner_frame, text="", foreground="red", justify='right')
+        self.excel_file_name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.excel_file_name_validation_label.grid(row=self.start_row + 10, column=0, columnspan=2, sticky='e')
         # Excel File Name
-        self.excel_file_name_entry = DataEntry(self, self.inner_frame, "Excel File Name:",
+        self.excel_file_name_entry = DataEntry(self, self.data_entries_frame, "Excel File Name:",
                                                self.excel_file_name_entry_variable, self.start_row + 11)
 
         # Excel File Location Validation
-        self.excel_file_location_validation_label = ttk.Label(self.inner_frame, text="", foreground="red",
+        self.excel_file_location_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red",
                                                               justify='right')
         self.excel_file_location_validation_label.grid(row=self.start_row + 12, column=0, columnspan=2, sticky='e')
         # Excel File Location
-        self.excel_file_location_entry = DataEntry(self, self.inner_frame, "File Save Location:",
+        self.excel_file_location_entry = DataEntry(self, self.data_entries_frame, "File Save Location:",
                                                    self.excel_file_location_entry_variable, self.start_row + 13, True,
                                                    "file_dir")
 
         # Write Type Selection
-        self.write_type_frame = tk.Frame(self.inner_frame, background="Pink")
+        self.write_type_frame = tk.Frame(self.data_entries_frame, background="Pink")
         self.write_type_selection = WriteTypeSelect(self.write_type_frame, self.write_type_selected_variable)
         self.write_type_selection.pack(fill="both", expand=True, pady=16)
         self.write_type_frame.grid(row=self.start_row + 14, column=0, columnspan=2, sticky="w")

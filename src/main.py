@@ -13,7 +13,7 @@ def main():
     logo_image = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\data_icon_small.png"))
     root.iconphoto(False, logo_image)
     app = MainFrame(root)
-    root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
+    #root.bind_all("<Button-1>", lambda event: event.widget.focus_set())
     #Disable the Close Window Control
     root.protocol("WM_DELETE_WINDOW", lambda : utils.disable_event(root))
     root.state('zoomed')

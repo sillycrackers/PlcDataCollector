@@ -110,10 +110,16 @@ class WriteType(StrEnum):
     APPEND = auto()
     OVERWRITE = auto()
 
+class TriggerType(StrEnum):
+    PLC_TRIGGER = auto()
+    TIME = auto()
+    INTERVAL = auto
+
 # PLC object for setting up PlcConnection object
 class Plc:
     def __init__(self, name='',
                  ip_address='',
+                 trigger_type= TriggerType.PLC_TRIGGER,
                  trigger_tag='',
                  ack_tag='',
                  tags=[],
@@ -124,6 +130,7 @@ class Plc:
 
         self.name = name
         self.ip_address = ip_address
+        self.trigger_type = trigger_type
         self.trigger_tag = trigger_tag
         self.ack_tag = ack_tag
         self.tags = tags

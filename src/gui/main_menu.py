@@ -72,6 +72,7 @@ class MainMenu(ttk.Menu):
 
             newPlc.name = plc['name']
             newPlc.ip_address = plc['ip_address']
+            newPlc.trigger_type = plc['trigger_type']
             newPlc.trigger_tag = plc['trigger_tag']
             newPlc.ack_tag = plc['ack_tag']
             newPlc.tags = plc['tags']
@@ -126,8 +127,7 @@ class MainMenu(ttk.Menu):
                     self.main_frame.plc_data_connections.clear()
 
                     for plc in self.decode_json_to_plc_objects(file_content):
-                        (self.main_frame.
-                         add_plc_connection(PlcConnection(plc, self.main_frame)))
+                        self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
 
                     self.release_data_control()
 

@@ -122,10 +122,16 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.trigger_type_entry = TriggerSelectEntry(parent=self.data_entries_frame,
                                                      text_variable=self.trigger_type_entry_variable,
-                                                     row=self.row_index)
+                                                     row=self.row_index, command= self.data_changed)
         self.row_index += 1
 
-        #TODO --------Trigger, and acknowledge tag frame
+        #TODO ------ Specified Time Data Entry if time trigger type selected
+
+
+        #TODO --------Interval Data entry if interval tirgger type selected
+
+
+        #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
         # Trigger Tag Validation
         self.trigger_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
@@ -219,7 +225,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable.trace_add("write", self.callback)
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
-        self.write_type_selected_variable.trace_add("write", self.callback)
+
 
         # hide validation labels initially
         self.hide_validation_labels()
@@ -520,6 +526,9 @@ class ManageConnectionsFrame(ttk.Frame):
             self.run_apply_thread(ok=True)
 
     def callback(self, var, index, mode):
+        self.data_changed()
+
+    def data_changed(self):
         self.data_did_not_change = False
         self.apply_button.config(state="normal")
         self.applied = False

@@ -11,9 +11,7 @@ class DataEntry:
                  text_variable,
                  row,
                  has_popup=False,
-                 popup_type="",
-                 is_option_menu=False,
-                 *args):
+                 popup_type=""):
 
         self.parent = parent
         self.label_text = label_text
@@ -22,26 +20,16 @@ class DataEntry:
         self.has_popup = has_popup
         #popup types include: "tag_entry", "file_dir"
         self.popup_type = popup_type
-        self.is_option_menu = is_option_menu
         self.parent_window = parent_window
 
 
         self.data_entry_label = ttk.Label(self.parent, text=self.label_text)
         self.data_entry_label.grid(row=self.row,column=0, sticky='w', padx=(0,10))
 
-        if not self.is_option_menu:
-            self.data_entry = ttk.Entry(self.parent, width=30, textvariable=self.text_variable)
-            self.data_entry.grid(row=self.row,column=1, sticky='e', padx=5)
-        else:
 
-            self.option_items = []
+        self.data_entry = ttk.Entry(self.parent, width=30, textvariable=self.text_variable)
+        self.data_entry.grid(row=self.row,column=1, sticky='e', padx=5)
 
-            self.option_menu = ttk.OptionMenu(master=self.parent,
-                                              variable=self.text_variable,
-                                              default=self.text_variable.get(),
-                                              *args)
-
-            self.option_menu.grid(row=self.row, column=1, sticky='ew')
 
         if self.has_popup:
             self.popup_button = ttk.Button(self.parent, text="···", command= self.open_popup)

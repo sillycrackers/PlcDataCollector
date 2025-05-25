@@ -9,24 +9,24 @@ def transmit(receiver, ticket):
 class TicketPurpose(StrEnum):
 
     # ("message":str, Alarm active:bool)
-    UPDATE_ALARMS = auto()
+    UPDATE_ALARMS = "update_alarms"
     # (state:bool,"plc.name:str")
-    TOGGLE_INDICATOR = auto()
+    TOGGLE_INDICATOR = "toggle_indicator"
 
-    POPULATE_INDICATORS = auto()
+    POPULATE_INDICATORS = "populate_indicators"
 
-    ACTIVE_ALARMS_CLEAR = auto()
+    ACTIVE_ALARMS_CLEAR = "active_alarms_clear"
 
-    SHOW_WAIT_CURSOR = auto()
+    SHOW_WAIT_CURSOR = "show_wait_cursor"
 
-    SHOW_NORMAL_CURSOR = auto()
+    SHOW_NORMAL_CURSOR = "show_normal_cursor"
 
     # (AnimatedLabel: object,column : int, row : int)
-    SHOW_ANIMATED_LABEL = auto()
+    SHOW_ANIMATED_LABEL = "show_animated_label"
     # (AnimatedLabel: object,column : int, row : int)
-    HIDE_ANIMATED_LABEL = auto()
+    HIDE_ANIMATED_LABEL = "hide_animated_label"
 
-    OUTPUT_MESSAGE = auto()
+    OUTPUT_MESSAGE = "output_message"
 
 class Ticket:
     def __init__(self, purpose: TicketPurpose, value):

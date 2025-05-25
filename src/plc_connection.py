@@ -107,13 +107,15 @@ class PlcConnection:
 
 
 class WriteType(StrEnum):
-    APPEND = auto()
-    OVERWRITE = auto()
+    APPEND = "append"
+    OVERWRITE = "overwrite"
+
 
 class TriggerType(StrEnum):
-    PLC_TRIGGER = auto()
-    TIME = auto()
-    INTERVAL = auto
+    PLC_TRIGGER = "plc_trigger"
+    TIME = "time"
+    INTERVAL = "interval"
+
 
 # PLC object for setting up PlcConnection object
 class Plc:

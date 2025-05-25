@@ -5,12 +5,13 @@ import ttkbootstrap as ttk
 
 from src import entry_validation
 from src.gui.data_entry import DataEntry
-from src.plc_connection import PlcConnection, Plc, WriteType
+from src.plc_connection import PlcConnection, Plc, WriteType, TriggerType
 from src import utils
 from src.gui.animated_label import AnimatedLabel
 from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect
 from src.gui.delete_prompt import DeletePrompt
+from src.gui.trigger_select_entry import TriggerSelectEntry
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -28,6 +29,11 @@ class ManageConnectionsFrame(ttk.Frame):
         #Variables
         self.applied = False
         self.data_did_not_change = True
+        self.trigger_type_strings = {
+            TriggerType.PLC_TRIGGER: "PLC Trigger",
+            TriggerType.TIME: "Specific Time",
+            TriggerType.INTERVAL: "Time Interval"
+        }
 
         # True = yes, False = no
         self.delete_response = False
@@ -86,71 +92,93 @@ class ManageConnectionsFrame(ttk.Frame):
         self.data_entries_frame = ttk.Frame(self.base_frame)
         self.data_entries_frame.pack(padx=20, pady=20)
 
-        self.plc_trigger_frame = ttk.Frame(self.data_entries_frame)
-
 
 
 
         #===========Data Entries=============#
 
         #startrow used to locate data entries on grid relative to the first one placed
-        self.start_row = 0
+        self.row_index = 0
 
         # Name Validation
         self.name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.name_validation_label.grid(row=self.start_row, column=0, columnspan=2, sticky='e')
+        self.name_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # PLC Name
-        self.name_entry = DataEntry(self, self.data_entries_frame, "Plc Name:", self.name_entry_variable, self.start_row + 1)
-
+        self.name_entry = DataEntry(self, self.data_entries_frame, "Plc Name:", self.name_entry_variable,
+                                    self.row_index)
+        self.row_index += 1
         # Ip Address Validation
         self.ip_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.ip_validation_label.grid(row=self.start_row + 2, column=0, columnspan=2, sticky='e')
-
+        self.ip_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # PLC IP Address
         self.ip_address_entry = DataEntry(self, self.data_entries_frame, "IP Address:", self.ip_address_entry_variable,
-                                          self.start_row + 3)
+                                          self.row_index)
+        self.row_index += 1
+        #TODO ---------Trigger type selection option menu
+
+        self.trigger_type_entry_variable.set("PLC Trigger")
+
+        self.trigger_type_entry = TriggerSelectEntry(parent=self.data_entries_frame,
+                                                     text_variable=self.trigger_type_entry_variable,
+                                                     row=self.row_index)
+        self.row_index += 1
+
+        #TODO --------Trigger, and acknowledge tag frame
 
         # Trigger Tag Validation
         self.trigger_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.trigger_validation_label.grid(row=self.start_row + 4, column=0, columnspan=2, sticky='e')
+        self.trigger_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # Trigger Tag
         self.trigger_tag_entry = DataEntry(self, self.data_entries_frame, "Trigger Tag:", self.trigger_tag_entry_variable,
-                                           self.start_row + 5)
+                                           self.row_index)
+        self.row_index += 1
 
         # Acknowledge Tag Validation
         self.ack_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.ack_validation_label.grid(row=self.start_row + 6, column=0, columnspan=2, sticky='e')
+        self.ack_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # Acknowledge Tag
         self.ack_tag_entry = DataEntry(self, self.data_entries_frame, "Acknowledge Tag:", self.ack_tag_entry_variable,
-                                       self.start_row + 7)
+                                       self.row_index)
+        self.row_index += 1
 
         # Tag List Validation
         self.tag_list_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.tag_list_validation_label.grid(row=self.start_row + 8, column=0, columnspan=2, sticky='e')
+        self.tag_list_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # Tag List
         self.tag_list_entry = DataEntry(self.parent_window, self.data_entries_frame, "Tag List:", self.tag_list_entry_variable,
-                                        self.start_row + 9, True, "tag_entry")
+                                        self.row_index, True, "tag_entry")
+        self.row_index += 1
         # Excel File Name Validation
         self.excel_file_name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.excel_file_name_validation_label.grid(row=self.start_row + 10, column=0, columnspan=2, sticky='e')
+        self.excel_file_name_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # Excel File Name
         self.excel_file_name_entry = DataEntry(self, self.data_entries_frame, "Excel File Name:",
-                                               self.excel_file_name_entry_variable, self.start_row + 11)
+                                               self.excel_file_name_entry_variable, self.row_index)
+        self.row_index += 1
 
         # Excel File Location Validation
         self.excel_file_location_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red",
                                                               justify='right')
-        self.excel_file_location_validation_label.grid(row=self.start_row + 12, column=0, columnspan=2, sticky='e')
+        self.excel_file_location_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         # Excel File Location
         self.excel_file_location_entry = DataEntry(self, self.data_entries_frame, "File Save Location:",
-                                                   self.excel_file_location_entry_variable, self.start_row + 13, True,
+                                                   self.excel_file_location_entry_variable, self.row_index, True,
                                                    "file_dir")
+        self.row_index += 1
 
         # Write Type Selection
         self.write_type_frame = tk.Frame(self.data_entries_frame, background="Pink")
         self.write_type_selection = WriteTypeSelect(self.write_type_frame, self.write_type_selected_variable)
         self.write_type_selection.pack(fill="both", expand=True, pady=16)
-        self.write_type_frame.grid(row=self.start_row + 14, column=0, columnspan=2, sticky="w")
+        self.write_type_frame.grid(row=self.row_index, column=0, columnspan=2, sticky="w")
+        self.row_index += 1
 
         # Select default radiobutton
         self.write_type_selected_variable.set(WriteType.APPEND)
@@ -185,6 +213,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
         self.ip_address_entry_variable.trace_add("write", self.callback)
+        self.trigger_tag_entry_variable.trace_add("write", self.callback)
         self.trigger_tag_entry_variable.trace_add("write", self.callback)
         self.ack_tag_entry_variable.trace_add("write", self.callback)
         self.tag_list_entry_variable.trace_add("write", self.callback)
@@ -222,7 +251,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         while not self.response:
             time.sleep(0.1)
-
 
         if self.delete_response:
 
@@ -383,21 +411,34 @@ class ManageConnectionsFrame(ttk.Frame):
             self.applied = True
             if ok_button_pressed:
                 self.parent_window.close(not self.data_did_not_change)
-            else:
-                ...
 
     def add_new_connection(self):
 
-        new_plc = Plc(
-            name=self.name_entry_variable.get(),
-            ip_address=self.ip_address_entry_variable.get(),
-            trigger_tag=self.trigger_tag_entry_variable.get(),
-            ack_tag=self.ack_tag_entry_variable.get(),
-            tags=self.tag_list_entry_variable.get().strip().split(','),
-            excel_file_name=self.excel_file_name_entry_variable.get(),
-            excel_file_location=self.excel_file_location_entry_variable.get(),
-            write_type=self.write_type_selected_variable.get()
-        )
+        try:
+            selected_trigger_type = self.trigger_type_entry_variable.get()
+
+            if selected_trigger_type == "PLC Trigger":
+                trigger_type = TriggerType.PLC_TRIGGER
+            elif selected_trigger_type == "Specified Time":
+                trigger_type = TriggerType.TIME
+            else:
+                trigger_type = TriggerType.INTERVAL
+
+
+            new_plc = Plc(
+                name=self.name_entry_variable.get(),
+                ip_address=self.ip_address_entry_variable.get(),
+                trigger_type=trigger_type,
+                trigger_tag=self.trigger_tag_entry_variable.get(),
+                ack_tag=self.ack_tag_entry_variable.get(),
+                tags=self.tag_list_entry_variable.get().strip().split(','),
+                excel_file_name=self.excel_file_name_entry_variable.get(),
+                excel_file_location=self.excel_file_location_entry_variable.get(),
+                write_type=self.write_type_selected_variable.get()
+            )
+        except Exception:
+            print("Error adding new module")
+
 
         # Stop threads accessing data so we can edit it
         self.obtain_data_control()
@@ -415,19 +456,23 @@ class ManageConnectionsFrame(ttk.Frame):
     def edit_existing_connection(self):
         old_plc_name = self.option.get()
 
-        print(WriteType.OVERWRITE)
+        # ["PLC Trigger", "Specified Time", "Time Interval"]
 
-        edit_plc = Plc(
-            name=self.name_entry_variable.get(),
-            ip_address=self.ip_address_entry_variable.get(),
-            trigger_tag=self.trigger_tag_entry_variable.get(),
-            ack_tag=self.ack_tag_entry_variable.get(),
-            # Fixed bug here that was incorrectly converting string to list
-            tags=self.tag_list_entry_variable.get().strip().split(','),
-            excel_file_name=self.excel_file_name_entry_variable.get(),
-            excel_file_location=self.excel_file_location_entry_variable.get(),
-            write_type=self.write_type_selected_variable.get()
-        )
+        try:
+
+            edit_plc = Plc(
+                name=self.name_entry_variable.get(),
+                ip_address=self.ip_address_entry_variable.get(),
+                trigger_type=self.selection_to_trigger_type_enum(),
+                trigger_tag=self.trigger_tag_entry_variable.get(),
+                ack_tag=self.ack_tag_entry_variable.get(),
+                tags=self.tag_list_entry_variable.get().strip().split(','),
+                excel_file_name=self.excel_file_name_entry_variable.get(),
+                excel_file_location=self.excel_file_location_entry_variable.get(),
+                write_type=self.write_type_selected_variable.get()
+            )
+        except Exception:
+            print("Error applying settings")
 
         edit_plc_connection = PlcConnection(edit_plc, self.main_frame)
 
@@ -439,18 +484,33 @@ class ManageConnectionsFrame(ttk.Frame):
         # Release locks and update flags for controlling threads, so they can start again
         self.release_data_control()
 
-        print("Changes Applied!")
-
         # Clear list and populate new list with newly added item to dictionary
         self.populate_combo_list()
 
-        self.combo_list.append("Add New PLC...")
+        #self.combo_list.append("Add New PLC...")
 
         # Set the selected option for the OptionMenu
         self.option.set(self.name_entry_variable.get())
 
         # Setup the Option Menu again with new list
         self.option_menu.set_menu(self.option.get(), *self.combo_list)
+
+    def selection_to_trigger_type_enum(self):
+
+        selected_trigger_type = self.trigger_type_entry_variable.get()
+
+        if selected_trigger_type == "PLC Trigger":
+            trigger_type = TriggerType.PLC_TRIGGER
+        elif selected_trigger_type == "Specified Time":
+            trigger_type = TriggerType.TIME
+        else:
+            trigger_type = TriggerType.INTERVAL
+
+        return  trigger_type
+
+    def trigger_type_enum_to_selection_string(self, trigger_type):
+
+        return self.trigger_type_strings[trigger_type]
 
     def ok(self):
 
@@ -471,6 +531,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
                 self.name_entry_variable.set(self.connections[option.get()].plc.name)
                 self.ip_address_entry_variable.set(self.connections[option.get()].plc.ip_address)
+                self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(self.connections[option.get()].plc.trigger_type))
                 self.trigger_tag_entry_variable.set(self.connections[option.get()].plc.trigger_tag)
                 self.ack_tag_entry_variable.set(self.connections[option.get()].plc.ack_tag)
                 # Converts tag list into string, and take out white space
@@ -484,6 +545,7 @@ class ManageConnectionsFrame(ttk.Frame):
         else:
             self.name_entry_variable.set('')
             self.ip_address_entry_variable.set('')
+            self.trigger_tag_entry_variable.set('PLC Trigger')
             self.trigger_tag_entry_variable.set('')
             self.ack_tag_entry_variable.set('')
             self.tag_list_entry_variable.set('')

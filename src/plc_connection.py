@@ -1,8 +1,7 @@
 import pylogix as logix
-from datetime import datetime
 import time
+from datetime import datetime
 from enum import StrEnum, auto
-
 
 import src.file_management as fm
 import src.ticketing_system as ts
@@ -116,6 +115,16 @@ class TriggerType(StrEnum):
     TIME = "time"
     INTERVAL = "interval"
 
+class IntervalUnit(StrEnum):
+    MS = "ms"
+    SEC = "secs"
+    MIN = "mins"
+
+
+class SpecificTime:
+    def __init__(self, hour=0, minute=0):
+        self.hour = hour
+        self.minute = minute
 
 # PLC object for setting up PlcConnection object
 class Plc:
@@ -123,6 +132,9 @@ class Plc:
                  ip_address='',
                  trigger_type= TriggerType.PLC_TRIGGER,
                  trigger_tag='',
+                 specific_time=SpecificTime(),
+                 interval=0,
+                 interval_unit = IntervalUnit.MS,
                  ack_tag='',
                  tags=[],
                  excel_file_name='',
@@ -134,9 +146,13 @@ class Plc:
         self.ip_address = ip_address
         self.trigger_type = trigger_type
         self.trigger_tag = trigger_tag
+        self.specific_time = specific_time
+        self.interval = interval
+        self.interval_unit = interval_unit
         self.ack_tag = ack_tag
         self.tags = tags
         self.excel_file_name = excel_file_name
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
         self.write_type = write_type
+

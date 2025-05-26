@@ -95,7 +95,6 @@ class MainMenu(ttk.Menu):
 
         open_file_thread.start()
 
-
     def create_save_file_thread(self):
 
         save_file_thread = threading.Thread(daemon=True, target=self.save_file)
@@ -105,7 +104,6 @@ class MainMenu(ttk.Menu):
 
         save_file_as_thread = threading.Thread(daemon=True, target=self.save_file_as)
         save_file_as_thread.start()
-
 
     def open_file(self,file_path="", booting=False):
 

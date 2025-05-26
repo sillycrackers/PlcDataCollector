@@ -16,8 +16,7 @@ class TriggerSelectEntry:
         self.data_entry_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) , pady=(20,0))
 
         self.option_menu = ttk.OptionMenu(self.parent,self.text_variable,
-                                          self.text_variable.get(),*self.option_items,
-                                          command=lambda _: command())
+                                          self.text_variable.get(),*self.option_items)
         self.option_menu.configure(width=18)
 
         self.option_menu.grid(row=self.row, column=1, sticky='e', padx=(0,5), pady=(20,0))

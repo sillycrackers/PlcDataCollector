@@ -12,6 +12,7 @@ from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect
 from src.gui.delete_prompt import DeletePrompt
 from src.gui.trigger_select_entry import TriggerSelectEntry
+from src.gui.specific_time_entry import SpecificTimeEntry
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -44,6 +45,9 @@ class ManageConnectionsFrame(ttk.Frame):
         self.name_entry_variable = ttk.StringVar()
         self.ip_address_entry_variable = ttk.StringVar()
         self.trigger_type_entry_variable = ttk.StringVar()
+        self.specific_time_hour_entry_variable = ttk.StringVar()
+        self.specific_time_minute_entry_variable = ttk.StringVar()
+        self.interval_entry_variable = ttk.StringVar()
         self.trigger_tag_entry_variable = ttk.StringVar()
         self.ack_tag_entry_variable = ttk.StringVar()
         self.tag_list_entry_variable = ttk.StringVar()
@@ -126,8 +130,14 @@ class ManageConnectionsFrame(ttk.Frame):
         self.row_index += 1
 
         #TODO ------ Specified Time Data Entry if time trigger type selected
+        #Hour, min selection
 
-
+        self.specific_time_entry = SpecificTimeEntry(parent=self.data_entries_frame,
+                                                     hour_text_variable=self.specific_time_hour_entry_variable,
+                                                     minute_text_variable=self.specific_time_minute_entry_variable,
+                                                     row=self.row_index
+                                                     )
+        self.row_index += 1
         #TODO --------Interval Data entry if interval tirgger type selected
 
 
@@ -219,7 +229,10 @@ class ManageConnectionsFrame(ttk.Frame):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
         self.ip_address_entry_variable.trace_add("write", self.callback)
-        self.trigger_tag_entry_variable.trace_add("write", self.callback)
+        self.trigger_type_entry_variable.trace_add("write", self.callback)
+        self.specific_time_hour_entry_variable.trace_add("write", self.callback)
+        self.specific_time_minute_entry_variable.trace_add("write", self.callback)
+        self.interval_entry_variable.trace_add("write", self.callback)
         self.trigger_tag_entry_variable.trace_add("write", self.callback)
         self.ack_tag_entry_variable.trace_add("write", self.callback)
         self.tag_list_entry_variable.trace_add("write", self.callback)
@@ -535,19 +548,26 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def update_entries(self, option):
 
+        selected_plc = self.connections[option.get()].plc
+
         if not option.get() == "Add New PLC...":
             try:
+                 #specific_time
+                 #interval
 
-                self.name_entry_variable.set(self.connections[option.get()].plc.name)
-                self.ip_address_entry_variable.set(self.connections[option.get()].plc.ip_address)
-                self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(self.connections[option.get()].plc.trigger_type))
-                self.trigger_tag_entry_variable.set(self.connections[option.get()].plc.trigger_tag)
-                self.ack_tag_entry_variable.set(self.connections[option.get()].plc.ack_tag)
+                self.name_entry_variable.set(selected_plc.name)
+                self.ip_address_entry_variable.set(selected_plc.ip_address)
+                self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(selected_plc.trigger_type))
+                self.specific_time_hour_entry_variable.set(selected_plc.specific_time.hour)
+                self.specific_time_minute_entry_variable.set(selected_plc.specific_time.minute)
+                self.interval_entry_variable.set(selected_plc.interval)
+                self.trigger_tag_entry_variable.set(selected_plc.trigger_tag)
+                self.ack_tag_entry_variable.set(selected_plc.ack_tag)
                 # Converts tag list into string, and take out white space
-                self.tag_list_entry_variable.set(','.join(self.connections[option.get()].plc.tags).strip())
-                self.excel_file_name_entry_variable.set(self.connections[option.get()].plc.excel_file_name)
-                self.excel_file_location_entry_variable.set(self.connections[option.get()].plc.excel_file_location)
-                self.write_type_selected_variable.set(self.connections[option.get()].plc.write_type)
+                self.tag_list_entry_variable.set(','.join(selected_plc.tags).strip())
+                self.excel_file_name_entry_variable.set(selected_plc.excel_file_name)
+                self.excel_file_location_entry_variable.set(selected_plc.excel_file_location)
+                self.write_type_selected_variable.set(selected_plc.write_type)
 
             except KeyError:
                 print("Key Error")
@@ -555,6 +575,9 @@ class ManageConnectionsFrame(ttk.Frame):
             self.name_entry_variable.set('')
             self.ip_address_entry_variable.set('')
             self.trigger_tag_entry_variable.set('PLC Trigger')
+            self.specific_time_hour_entry_variable.set('0')
+            self.specific_time_minute_entry_variable.set('0')
+            self.interval_entry_variable.set('0')
             self.trigger_tag_entry_variable.set('')
             self.ack_tag_entry_variable.set('')
             self.tag_list_entry_variable.set('')

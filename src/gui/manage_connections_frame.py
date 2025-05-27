@@ -30,10 +30,16 @@ class ManageConnectionsFrame(ttk.Frame):
         #Variables
         self.applied = False
         self.data_did_not_change = True
-        self.trigger_type_strings = {
+
+        self.trigger_type_enum_to_string = {
             TriggerType.PLC_TRIGGER: "PLC Trigger",
             TriggerType.TIME: "Specific Time",
             TriggerType.INTERVAL: "Time Interval"
+        }
+        self.trigger_type_string_to_enum = {
+            "PLC Trigger": TriggerType.PLC_TRIGGER,
+            "Specific Time": TriggerType.TIME,
+            "Time Interval": TriggerType.INTERVAL
         }
 
         # True = yes, False = no
@@ -229,6 +235,19 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # ========================================#
 
+        #Add tracebacks if value changes
+        self.add_tracebacks()
+
+        # hide validation labels initially
+        self.hide_validation_labels()
+
+        # Populate entries as soon as window opens with first selected option in list
+        self.update_entries(self.option)
+
+        self.data_did_not_change = True
+
+
+    def add_tracebacks(self):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
         self.ip_address_entry_variable.trace_add("write", self.callback)
@@ -241,15 +260,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.tag_list_entry_variable.trace_add("write", self.callback)
         self.excel_file_name_entry_variable.trace_add("write", self.callback)
         self.excel_file_location_entry_variable.trace_add("write", self.callback)
-
-
-        # hide validation labels initially
-        self.hide_validation_labels()
-
-        # Populate entries as soon as window opens with first selected option in list
-        self.update_entries(self.option)
-
-        self.data_did_not_change = True
 
     def on_mouse_click(self, var):
         pass
@@ -334,12 +344,13 @@ class ManageConnectionsFrame(ttk.Frame):
         else:
             self.validation_labels['ip'].config(text="")
 
-        # Validate Specific Time Entry
-        if not entry_validation.check_valid_specific_time(hour=self.specific_time_hour_entry_variable.get(), minute=self.specific_time_minute_entry_variable.get()):
-            self.validation_labels['specific_time'].config(text="hour 0-23             minute 0-59")
-            flag=False
-        else:
-            self.validation_labels['specific_time'].config(text="")
+        if self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()] == TriggerType.TIME:
+            # Validate Specific Time Entry
+            if not entry_validation.check_valid_specific_time(hour=self.specific_time_hour_entry_variable.get(), minute=self.specific_time_minute_entry_variable.get()):
+                self.validation_labels['specific_time'].config(text="hour 0-23             minute 0-59")
+                flag=False
+            else:
+                self.validation_labels['specific_time'].config(text="")
 
         # Validate trigger tag entry
         if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):
@@ -539,7 +550,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def trigger_type_enum_to_selection_string(self, trigger_type):
 
-        return self.trigger_type_strings[trigger_type]
+        return self.trigger_type_enum_to_string[trigger_type]
 
     def ok(self):
 

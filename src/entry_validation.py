@@ -1,6 +1,8 @@
 import re
 import os
 
+
+
 def check_valid_ip(ip):
 
     ipv4_pattern = r'^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$'
@@ -15,6 +17,21 @@ def check_valid_tag_list(tag_list):
     for tag in tag_list:
         if not check_valid_tag(tag):
             return False
+
+    return True
+
+def check_valid_specific_time(hour, minute):
+
+    if not hour.isdigit():
+        return False
+    if not minute.isdigit():
+        return False
+
+    if int(hour) > 23 or int(hour) < 0:
+        return False
+
+    if int(minute) > 59 or int(minute) < 0:
+        return False
 
     return True
 

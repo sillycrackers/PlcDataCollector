@@ -10,10 +10,10 @@ class SpecificTimeEntry:
         self.minute_text_variable = minute_text_variable
 
         self.data_entry_label = ttk.Label(master=self.parent, text="Specific Time:")
-        self.data_entry_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) , pady=(20,0))
+        self.data_entry_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) )
 
         self.frame = ttk.Frame(master= self.parent)
-        self.frame.grid(row=self.row, column = 1, sticky="ew", pady=(20,0))
+        self.frame.grid(row=self.row, column = 1, sticky="ew")
 
         self.hour_label = ttk.Label(master=self.frame, text="Hour:")
         self.hour_label.pack(side="left", fill="both", expand=True)
@@ -26,7 +26,7 @@ class SpecificTimeEntry:
         self.minute_label.pack(side="left", expand=True)
 
         self.minute_spinbox = ttk.Spinbox(master=self.frame,width=2,font="calibri 12", increment=1,
-                                          from_=0, to=60, textvariable=self.minute_text_variable)
+                                          from_=0, to=59, textvariable=self.minute_text_variable)
         self.minute_spinbox.pack(side="left")
 
     def get_selected_time(self):

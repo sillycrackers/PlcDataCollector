@@ -128,7 +128,10 @@ class ManageConnectionsFrame(ttk.Frame):
                                                      text_variable=self.trigger_type_entry_variable,
                                                      row=self.row_index, command= self.data_changed)
         self.row_index += 1
-
+        # Specific Time Validation
+        self.specific_time_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
+        self.specific_time_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+        self.row_index += 1
         #TODO ------ Specified Time Data Entry if time trigger type selected
         #Hour, min selection
 
@@ -202,6 +205,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.validation_labels = {
             "name": self.name_validation_label,
             "ip": self.ip_validation_label,
+            "specific_time": self.specific_time_validation_label,
             "trigger": self.trigger_validation_label,
             "ack": self.ack_validation_label,
             "tag_list": self.tag_list_validation_label,
@@ -329,6 +333,13 @@ class ManageConnectionsFrame(ttk.Frame):
             flag = False
         else:
             self.validation_labels['ip'].config(text="")
+
+        # Validate Specific Time Entry
+        if not entry_validation.check_valid_specific_time(hour=self.specific_time_hour_entry_variable.get(), minute=self.specific_time_minute_entry_variable.get()):
+            self.validation_labels['specific_time'].config(text="hour 0-23             minute 0-59")
+            flag=False
+        else:
+            self.validation_labels['specific_time'].config(text="")
 
         # Validate trigger tag entry
         if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):

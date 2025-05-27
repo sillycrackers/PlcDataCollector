@@ -140,7 +140,6 @@ class ManageConnectionsFrame(ttk.Frame):
         self.row_index += 1
         #TODO --------Interval Data entry if interval tirgger type selected
 
-
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
         # Trigger Tag Validation
@@ -548,9 +547,13 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def update_entries(self, option):
 
-        selected_plc = self.connections[option.get()].plc
+
 
         if not option.get() == "Add New PLC...":
+
+            if len(self.connections) > 0:
+                selected_plc = self.connections[option.get()].plc
+
             try:
                  #specific_time
                  #interval

@@ -129,15 +129,18 @@ class ManageConnectionsFrame(ttk.Frame):
         #TODO ---------Trigger type selection option menu
 
         self.trigger_type_entry_variable.set("PLC Trigger")
-
         self.trigger_type_entry = TriggerSelectEntry(parent=self.data_entries_frame,
                                                      text_variable=self.trigger_type_entry_variable,
                                                      row=self.row_index, command= self.data_changed)
         self.row_index += 1
+
+
         # Specific Time Validation
         self.specific_time_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
         self.specific_time_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
         self.row_index += 1
+
+
         #TODO ------ Specified Time Data Entry if time trigger type selected
         #Hour, min selection
 

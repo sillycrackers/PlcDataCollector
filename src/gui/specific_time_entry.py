@@ -1,6 +1,9 @@
 import ttkbootstrap as ttk
 import datetime
 
+
+
+
 class SpecificTimeEntry:
     def __init__(self, parent, hour_text_variable,minute_text_variable, row):
 
@@ -9,14 +12,13 @@ class SpecificTimeEntry:
         self.hour_text_variable = hour_text_variable
         self.minute_text_variable = minute_text_variable
 
-        self.data_entry_label = ttk.Label(master=self.parent, text="Specific Time:")
-        self.data_entry_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) )
+
+        ttk.Label(master=self.parent, text="Specific Time:").grid(row=self.row, column=0, sticky='w', padx=(0,10) )
 
         self.frame = ttk.Frame(master= self.parent)
         self.frame.grid(row=self.row, column = 1, sticky="ew")
 
-        self.hour_label = ttk.Label(master=self.frame, text="Hour:")
-        self.hour_label.pack(side="left", fill="both", expand=True)
+        ttk.Label(master=self.frame, text="Hour:").pack(side="left", fill="both", expand=True)
 
         self.hour_spinbox = ttk.Spinbox(master=self.frame,width=2,font="calibri 12",
                                         increment=1, from_=0, to=23, textvariable=self.hour_text_variable)

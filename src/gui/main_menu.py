@@ -73,6 +73,7 @@ class MainMenu(ttk.Menu):
             newPlc.name = plc['name']
             newPlc.ip_address = plc['ip_address']
             newPlc.trigger_type = plc['trigger_type']
+            newPlc.specific_time.hour = plc['']
             newPlc.trigger_tag = plc['trigger_tag']
             newPlc.ack_tag = plc['ack_tag']
             newPlc.tags = plc['tags']

@@ -40,8 +40,7 @@ class IntervalEntry:
 
         #---------------------------------------#
 
-        #------------ Interval Time Entry (Next row) -------------#
-
+        # -------------- Interval Time Entry (Next row) ------------- #
 
         self.interval_label = ttk.Label(master=self.parent, text="Interval:")
         self.interval_label.grid(row=self.row + 1, column=0, sticky="w", padx=(0,10))

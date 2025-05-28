@@ -610,34 +610,39 @@ class ManageConnectionsFrame(ttk.Frame):
 
             if len(self.connections) > 0:
                 selected_plc = self.connections[option.get()].plc
+                try:
+                     #specific_time
+                     #interval
 
-            try:
-                 #specific_time
-                 #interval
+                    self.name_entry_variable.set(selected_plc.name)
+                    self.ip_address_entry_variable.set(selected_plc.ip_address)
+                    self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(selected_plc.trigger_type))
+                    self.specific_time_hour_entry_variable.set(selected_plc.specific_time.hour)
+                    self.specific_time_minute_entry_variable.set(selected_plc.specific_time.minute)
+                    self.interval_entry_variable.set(selected_plc.interval.interval)
+                    self.interval_start_time_hour_variable.set(selected_plc.interval.start_hour)
+                    self.interval_start_time_minute_variable.set(selected_plc.interval.start_minute)
+                    self.interval_unit_entry_variable.set(selected_plc.interval.unit)
+                    self.trigger_tag_entry_variable.set(selected_plc.trigger_tag)
+                    self.ack_tag_entry_variable.set(selected_plc.ack_tag)
+                    # Converts tag list into string, and take out white space
+                    self.tag_list_entry_variable.set(','.join(selected_plc.tags).strip())
+                    self.excel_file_name_entry_variable.set(selected_plc.excel_file_name)
+                    self.excel_file_location_entry_variable.set(selected_plc.excel_file_location)
+                    self.write_type_selected_variable.set(selected_plc.write_type)
 
-                self.name_entry_variable.set(selected_plc.name)
-                self.ip_address_entry_variable.set(selected_plc.ip_address)
-                self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(selected_plc.trigger_type))
-                self.specific_time_hour_entry_variable.set(selected_plc.specific_time.hour)
-                self.specific_time_minute_entry_variable.set(selected_plc.specific_time.minute)
-                self.interval_entry_variable.set(selected_plc.interval)
-                self.trigger_tag_entry_variable.set(selected_plc.trigger_tag)
-                self.ack_tag_entry_variable.set(selected_plc.ack_tag)
-                # Converts tag list into string, and take out white space
-                self.tag_list_entry_variable.set(','.join(selected_plc.tags).strip())
-                self.excel_file_name_entry_variable.set(selected_plc.excel_file_name)
-                self.excel_file_location_entry_variable.set(selected_plc.excel_file_location)
-                self.write_type_selected_variable.set(selected_plc.write_type)
-
-            except KeyError:
-                print("Key Error")
+                except KeyError:
+                    print("Key Error")
         else:
             self.name_entry_variable.set('')
             self.ip_address_entry_variable.set('')
             self.trigger_tag_entry_variable.set('PLC Trigger')
             self.specific_time_hour_entry_variable.set('0')
             self.specific_time_minute_entry_variable.set('0')
-            self.interval_entry_variable.set('0')
+            self.interval_start_time_hour_variable.set('0')
+            self.interval_start_time_minute_variable.set('0')
+            self.interval_entry_variable.set('1')
+            self.interval_unit_entry_variable.set(IntervalUnit.MS)
             self.trigger_tag_entry_variable.set('')
             self.ack_tag_entry_variable.set('')
             self.tag_list_entry_variable.set('')

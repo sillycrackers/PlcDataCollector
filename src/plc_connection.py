@@ -126,6 +126,14 @@ class SpecificTime:
         self.hour = hour
         self.minute = minute
 
+class Interval:
+    def __init__(self, start_hour=0, start_minute : int = 0, unit : IntervalUnit = IntervalUnit.MS, interval : int = 0):
+        self.start_hour = start_hour
+        self.start_minute = start_minute
+        self.unit = unit
+        self.interval = interval
+
+
 # PLC object for setting up PlcConnection object
 class Plc:
     def __init__(self, name='',
@@ -133,10 +141,8 @@ class Plc:
                  trigger_type= TriggerType.PLC_TRIGGER,
                  trigger_tag='',
                  specific_time=SpecificTime(),
-                 interval=0,
-                 interval_unit = IntervalUnit.MS,
                  ack_tag='',
-                 tags=[],
+                 tags = [],
                  excel_file_name='',
                  excel_file_location='',
                  write_type=WriteType.APPEND
@@ -147,12 +153,11 @@ class Plc:
         self.trigger_type = trigger_type
         self.trigger_tag = trigger_tag
         self.specific_time = specific_time
-        self.interval = interval
-        self.interval_unit = interval_unit
         self.ack_tag = ack_tag
         self.tags = tags
         self.excel_file_name = excel_file_name
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
         self.write_type = write_type
+        self.interval = Interval()
 

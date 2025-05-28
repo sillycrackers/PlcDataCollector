@@ -31,8 +31,3 @@ class SpecificTimeEntry:
                                           from_=0, to=59, textvariable=self.minute_text_variable)
         self.minute_spinbox.pack(side="left")
 
-    def get_selected_time(self):
-
-        return datetime.time(hour=int(self.hour_spinbox.get()),minute=int(self.minute_spinbox.get()))
-
-

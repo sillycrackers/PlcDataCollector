@@ -35,6 +35,21 @@ def check_valid_specific_time(hour, minute):
 
     return True
 
+def check_valid_interval_start_time(hour, minute):
+
+    if not hour.isdigit():
+        return False
+    if not minute.isdigit():
+        return False
+
+    if int(hour) > 23 or int(hour) < 0:
+        return False
+
+    if int(minute) > 59 or int(minute) < 0:
+        return False
+
+    return True
+
 def check_valid_tag(tag):
 
     if len(tag) == 0:

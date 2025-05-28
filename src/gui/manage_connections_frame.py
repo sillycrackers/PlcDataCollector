@@ -3,6 +3,7 @@ import time
 import tkinter as tk
 import ttkbootstrap as ttk
 
+from plc_connection import IntervalUnit
 from src import entry_validation
 from src.gui.data_entry import DataEntry
 from src.plc_connection import PlcConnection, Plc, WriteType, TriggerType
@@ -13,6 +14,7 @@ from src.gui.write_type_selection import WriteTypeSelect
 from src.gui.delete_prompt import DeletePrompt
 from src.gui.trigger_select_entry import TriggerSelectEntry
 from src.gui.specific_time_entry import SpecificTimeEntry
+from src.gui.interval_entry import IntervalEntry
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -54,6 +56,9 @@ class ManageConnectionsFrame(ttk.Frame):
         self.specific_time_hour_entry_variable = ttk.StringVar()
         self.specific_time_minute_entry_variable = ttk.StringVar()
         self.interval_entry_variable = ttk.StringVar()
+        self.interval_start_time_hour_variable = ttk.StringVar()
+        self.interval_start_time_minute_variable = ttk.StringVar()
+        self.interval_unit_entry_variable = ttk.StringVar()
         self.trigger_tag_entry_variable = ttk.StringVar()
         self.ack_tag_entry_variable = ttk.StringVar()
         self.tag_list_entry_variable = ttk.StringVar()
@@ -147,10 +152,26 @@ class ManageConnectionsFrame(ttk.Frame):
         self.specific_time_entry = SpecificTimeEntry(parent=self.data_entries_frame,
                                                      hour_text_variable=self.specific_time_hour_entry_variable,
                                                      minute_text_variable=self.specific_time_minute_entry_variable,
-                                                     row=self.row_index
-                                                     )
+                                                     row=self.row_index)
         self.row_index += 1
+
+        # Interval Start Time Validation
+        self.interval_start_time_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
+        self.interval_start_time_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
+
+        self.row_index += 2
+
         #TODO --------Interval Data entry if interval tirgger type selected
+
+        self.interval_unit_entry_variable.set(IntervalUnit.MS)
+
+        self.interval_entry = IntervalEntry(parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
+                                            interval_start_time_hour=self.interval_start_time_hour_variable,
+                                            interval_start_time_minute=self.interval_start_time_minute_variable,
+                                            interval_unit_entry_variable=self.interval_unit_entry_variable,
+                                            row=self.row_index)
+
+        self.row_index += 1
 
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
@@ -215,6 +236,7 @@ class ManageConnectionsFrame(ttk.Frame):
             "name": self.name_validation_label,
             "ip": self.ip_validation_label,
             "specific_time": self.specific_time_validation_label,
+            "interval_start_time": self.interval_start_time_validation_label,
             "trigger": self.trigger_validation_label,
             "ack": self.ack_validation_label,
             "tag_list": self.tag_list_validation_label,
@@ -258,6 +280,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.specific_time_hour_entry_variable.trace_add("write", self.callback)
         self.specific_time_minute_entry_variable.trace_add("write", self.callback)
         self.interval_entry_variable.trace_add("write", self.callback)
+        self.interval_start_time_hour_variable.trace_add("write", self.callback)
+        self.interval_start_time_minute_variable.trace_add("write", self.callback)
         self.trigger_tag_entry_variable.trace_add("write", self.callback)
         self.ack_tag_entry_variable.trace_add("write", self.callback)
         self.tag_list_entry_variable.trace_add("write", self.callback)
@@ -354,6 +378,14 @@ class ManageConnectionsFrame(ttk.Frame):
                 flag=False
             else:
                 self.validation_labels['specific_time'].config(text="")
+
+        if self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()] == TriggerType.INTERVAL:
+            # Validate Interval Start Time Entry
+            if not entry_validation.check_valid_interval_start_time(hour=self.interval_start_time_hour_variable.get(), minute=self.interval_start_time_minute_variable.get()):
+                self.validation_labels['interval_start_time'].config(text="hour 0-23             minute 0-59")
+                flag=False
+            else:
+                self.validation_labels['interval_start_time'].config(text="")
 
         # Validate trigger tag entry
         if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):

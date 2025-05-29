@@ -140,7 +140,8 @@ class Plc:
                  ip_address='',
                  trigger_type= TriggerType.PLC_TRIGGER,
                  trigger_tag='',
-                 specific_time=SpecificTime(),
+                 specific_time : SpecificTime = None,
+                 interval : Interval = None,
                  ack_tag='',
                  tags = [],
                  excel_file_name='',
@@ -153,11 +154,12 @@ class Plc:
         self.trigger_type = trigger_type
         self.trigger_tag = trigger_tag
         self.specific_time = specific_time
+        self.interval = interval
         self.ack_tag = ack_tag
         self.tags = tags
         self.excel_file_name = excel_file_name
         self.excel_file_location = excel_file_location
         self.file_path = f"{excel_file_location}\\{excel_file_name}.xlsx"
         self.write_type = write_type
-        self.interval = Interval()
+
 

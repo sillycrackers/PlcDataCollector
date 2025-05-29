@@ -3,7 +3,7 @@ import time
 import tkinter as tk
 import ttkbootstrap as ttk
 
-from plc_connection import IntervalUnit
+from plc_connection import IntervalUnit, Interval, SpecificTime
 from src import entry_validation
 from src.gui.data_entry import DataEntry
 from src.plc_connection import PlcConnection, Plc, WriteType, TriggerType
@@ -42,6 +42,16 @@ class ManageConnectionsFrame(ttk.Frame):
             "PLC Trigger": TriggerType.PLC_TRIGGER,
             "Specific Time": TriggerType.TIME,
             "Time Interval": TriggerType.INTERVAL
+        }
+        self.interval_unit_string_to_enum = {
+            "ms": IntervalUnit.MS,
+            "sec": IntervalUnit.SEC,
+            "min": IntervalUnit.MIN
+        }
+        self.interval_unit_enum_to_string = {
+            IntervalUnit.MS: "ms",
+            IntervalUnit.SEC: "sec",
+            IntervalUnit.MIN: "min"
         }
 
         # True = yes, False = no
@@ -489,22 +499,24 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def add_new_connection(self):
 
+        #TODO
+
+        specific_time = SpecificTime(hour=int(self.specific_time_hour_entry_variable.get()),
+                                     minute=int(self.specific_time_minute_entry_variable.get()))
+
+        interval = Interval(start_hour=self.interval_start_time_hour_variable.get(),
+                            start_minute=int(self.interval_start_time_minute_variable.get()),
+                            unit= self.interval_unit_string_to_enum[self.interval_unit_entry_variable.get()],
+                            interval=int(self.interval_entry_variable.get()))
         try:
-            selected_trigger_type = self.trigger_type_entry_variable.get()
-
-            if selected_trigger_type == "PLC Trigger":
-                trigger_type = TriggerType.PLC_TRIGGER
-            elif selected_trigger_type == "Specified Time":
-                trigger_type = TriggerType.TIME
-            else:
-                trigger_type = TriggerType.INTERVAL
-
 
             new_plc = Plc(
                 name=self.name_entry_variable.get(),
                 ip_address=self.ip_address_entry_variable.get(),
-                trigger_type=trigger_type,
+                trigger_type=self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()],
                 trigger_tag=self.trigger_tag_entry_variable.get(),
+                specific_time= specific_time,
+                interval=interval,
                 ack_tag=self.ack_tag_entry_variable.get(),
                 tags=self.tag_list_entry_variable.get().strip().split(','),
                 excel_file_name=self.excel_file_name_entry_variable.get(),
@@ -529,17 +541,25 @@ class ManageConnectionsFrame(ttk.Frame):
         self.option_menu.set_menu(new_plc.name, *self.combo_list)
 
     def edit_existing_connection(self):
+
         old_plc_name = self.option.get()
 
-        # ["PLC Trigger", "Specified Time", "Time Interval"]
+        specific_time = SpecificTime(hour=int(self.specific_time_hour_entry_variable.get()),
+                                     minute=int(self.specific_time_minute_entry_variable.get()))
 
+        interval = Interval(start_hour=self.interval_start_time_hour_variable.get(),
+                            start_minute=int(self.interval_start_time_minute_variable.get()),
+                            unit=self.interval_unit_string_to_enum[self.interval_unit_entry_variable.get()],
+                            interval=int(self.interval_entry_variable.get()))
         try:
 
             edit_plc = Plc(
                 name=self.name_entry_variable.get(),
                 ip_address=self.ip_address_entry_variable.get(),
-                trigger_type=self.selection_to_trigger_type_enum(),
+                trigger_type=self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()],
                 trigger_tag=self.trigger_tag_entry_variable.get(),
+                specific_time= specific_time,
+                interval=interval,
                 ack_tag=self.ack_tag_entry_variable.get(),
                 tags=self.tag_list_entry_variable.get().strip().split(','),
                 excel_file_name=self.excel_file_name_entry_variable.get(),
@@ -570,22 +590,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Setup the Option Menu again with new list
         self.option_menu.set_menu(self.option.get(), *self.combo_list)
 
-    def selection_to_trigger_type_enum(self):
 
-        selected_trigger_type = self.trigger_type_entry_variable.get()
-
-        if selected_trigger_type == "PLC Trigger":
-            trigger_type = TriggerType.PLC_TRIGGER
-        elif selected_trigger_type == "Specified Time":
-            trigger_type = TriggerType.TIME
-        else:
-            trigger_type = TriggerType.INTERVAL
-
-        return  trigger_type
-
-    def trigger_type_enum_to_selection_string(self, trigger_type):
-
-        return self.trigger_type_enum_to_string[trigger_type]
 
     def ok(self):
 

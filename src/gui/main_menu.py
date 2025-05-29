@@ -7,6 +7,8 @@ import threading
 import subprocess
 import os
 
+from astroid import Raise
+
 from src.gui.about_window import AboutWindow
 from src.plc_connection import PlcConnection, Plc, WriteType
 from src import utils
@@ -70,24 +72,26 @@ class MainMenu(ttk.Menu):
         for plc in json_dict:
             newPlc = Plc()
 
-            newPlc.name = plc['name']
-            newPlc.ip_address = plc['ip_address']
-            newPlc.trigger_type = plc['trigger_type']
-            newPlc.specific_time.hour = plc['']
-            newPlc.trigger_tag = plc['trigger_tag']
-            newPlc.ack_tag = plc['ack_tag']
-            newPlc.tags = plc['tags']
-            newPlc.excel_file_name = plc['excel_file_name']
-            newPlc.excel_file_location = plc['excel_file_location']
-            newPlc.file_path = plc['file_path']
-
             try:
+                newPlc.name = plc['name']
+                newPlc.ip_address = plc['ip_address']
+                newPlc.trigger_type = plc['trigger_type']
+                newPlc.specific_time.hour = plc['']
+                newPlc.trigger_tag = plc['trigger_tag']
+                newPlc.ack_tag = plc['ack_tag']
+                newPlc.tags = plc['tags']
+                newPlc.excel_file_name = plc['excel_file_name']
+                newPlc.excel_file_location = plc['excel_file_location']
                 newPlc.write_type = plc['write_type']
-            except KeyError:
-                print(f"File being loaded is missing 'write_type' for {plc['name']}, may be an old version")
-                newPlc.write_type = WriteType.APPEND
+                newPlc.file_path = plc['file_path']
 
-            plcs.append(newPlc)
+                plcs.append(newPlc)
+
+            except KeyError:
+                print(f"Error Decoding Json File")
+                return False
+
+
 
         return plcs
 
@@ -125,8 +129,13 @@ class MainMenu(ttk.Menu):
 
                     self.main_frame.plc_data_connections.clear()
 
-                    for plc in self.decode_json_to_plc_objects(file_content):
-                        self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
+                    loaded_plcs = self.decode_json_to_plc_objects(file_content)
+
+                    if loaded_plcs:
+                        for plc in loaded_plcs:
+                            self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
+                    else:
+                        raise Exception
 
                     self.release_data_control()
 

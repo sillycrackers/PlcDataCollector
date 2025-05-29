@@ -81,9 +81,8 @@ def save_data_to_excel(headers, data_row, file_path, sheet_name, write_type):
         wb = Workbook()
         ws = wb.active
         ws.title = sheet_name
-        first_header = "Timestamp"
 
-        ws.append([first_header] + headers)  # Create Header row
+    overwrite_row(ws,1, ["Timestamp"] + headers)
 
     if write_type==pc.WriteType.APPEND:
         # Add plc tag data as the next row in the sheet

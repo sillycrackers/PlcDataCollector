@@ -6,14 +6,16 @@ import json
 import threading
 import subprocess
 import os
+import traceback
 
 from astroid import Raise
 
 from src.gui.about_window import AboutWindow
-from src.plc_connection import PlcConnection, Plc, WriteType
+from src.plc_connection import PlcConnection, Plc, WriteType, IntervalUnit
 from src import utils
 import src.file_management as fm
 import src.ticketing_system as ts
+
 
 
 class PlcObjectEncoder(JSONEncoder):
@@ -28,6 +30,12 @@ class MainMenu(ttk.Menu):
         self.main_frame = main_frame
         self.thread_manager = main_frame.thread_manager
         self.file_path = ''
+
+        self.interval_unit_string_to_enum = {
+            "ms": IntervalUnit.MS,
+            "sec": IntervalUnit.SEC,
+            "min": IntervalUnit.MIN
+        }
 
         #File Menu
         self.file_menu = ttk.Menu(self,font="calibri 12")
@@ -76,8 +84,13 @@ class MainMenu(ttk.Menu):
                 newPlc.name = plc['name']
                 newPlc.ip_address = plc['ip_address']
                 newPlc.trigger_type = plc['trigger_type']
-                newPlc.specific_time.hour = plc['']
                 newPlc.trigger_tag = plc['trigger_tag']
+                newPlc.specific_time.hour = plc['specific_time']['hour']
+                newPlc.specific_time.minute = plc['specific_time']['minute']
+                newPlc.interval.start_hour = plc['interval']['start_hour']
+                newPlc.interval.start_minute = plc['interval']['start_minute']
+                newPlc.interval.unit = plc['interval']['unit']
+                newPlc.interval.interval = plc['interval']['interval']
                 newPlc.ack_tag = plc['ack_tag']
                 newPlc.tags = plc['tags']
                 newPlc.excel_file_name = plc['excel_file_name']
@@ -149,6 +162,7 @@ class MainMenu(ttk.Menu):
 
                 except Exception:
                     print("Error trying to open file")
+                    print(traceback.print_exc())
 
                     self.release_data_control()
 

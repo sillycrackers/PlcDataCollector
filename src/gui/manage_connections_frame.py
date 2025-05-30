@@ -590,8 +590,6 @@ class ManageConnectionsFrame(ttk.Frame):
         # Setup the Option Menu again with new list
         self.option_menu.set_menu(self.option.get(), *self.combo_list)
 
-
-
     def ok(self):
 
         if self.applied or self.data_did_not_change:
@@ -621,7 +619,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
                     self.name_entry_variable.set(selected_plc.name)
                     self.ip_address_entry_variable.set(selected_plc.ip_address)
-                    self.trigger_type_entry_variable.set(self.trigger_type_enum_to_selection_string(selected_plc.trigger_type))
+                    self.trigger_type_entry_variable.set(self.trigger_type_enum_to_string[selected_plc.trigger_type])
                     self.specific_time_hour_entry_variable.set(selected_plc.specific_time.hour)
                     self.specific_time_minute_entry_variable.set(selected_plc.specific_time.minute)
                     self.interval_entry_variable.set(selected_plc.interval.interval)

@@ -117,8 +117,8 @@ class TriggerType(StrEnum):
 
 class IntervalUnit(StrEnum):
     MS = "ms"
-    SEC = "secs"
-    MIN = "mins"
+    SEC = "sec"
+    MIN = "min"
 
 
 class SpecificTime:
@@ -133,15 +133,14 @@ class Interval:
         self.unit = unit
         self.interval = interval
 
-
 # PLC object for setting up PlcConnection object
 class Plc:
     def __init__(self, name='',
                  ip_address='',
                  trigger_type= TriggerType.PLC_TRIGGER,
                  trigger_tag='',
-                 specific_time : SpecificTime = None,
-                 interval : Interval = None,
+                 specific_time : SpecificTime = SpecificTime(),
+                 interval : Interval = Interval(),
                  ack_tag='',
                  tags = [],
                  excel_file_name='',

@@ -147,18 +147,18 @@ class MainMenu(ttk.Menu):
                     if loaded_plcs:
                         for plc in loaded_plcs:
                             self.main_frame.add_plc_connection(PlcConnection(plc, self.main_frame))
+
+                        self.main_frame.file_loaded = True
+                        booting = False
+
+                        fm.set_reg(file_path)
+                        self.file_path = file_path
+
+                        self.parent_window.title(f"PLC Data Collector {self.main_frame.version}      File Loaded:   {file_path}")
                     else:
-                        raise Exception
+                        print("Problem decoding Json file")
 
                     self.release_data_control()
-
-                    self.main_frame.file_loaded = True
-                    booting = False
-
-                    fm.set_reg(file_path)
-                    self.file_path = file_path
-
-                    self.parent_window.title(f"PLC Data Collector {self.main_frame.version}      File Loaded:   {file_path}")
 
                 except Exception:
                     print("Error trying to open file")

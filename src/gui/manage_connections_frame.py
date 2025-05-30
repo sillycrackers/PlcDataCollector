@@ -556,7 +556,7 @@ class ManageConnectionsFrame(ttk.Frame):
             edit_plc = Plc(
                 name=self.name_entry_variable.get(),
                 ip_address=self.ip_address_entry_variable.get(),
-                trigger_type=self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()],
+                trigger_type=self.trigger_type_entry_variable.get(),
                 trigger_tag=self.trigger_tag_entry_variable.get(),
                 specific_time= specific_time,
                 interval=interval,

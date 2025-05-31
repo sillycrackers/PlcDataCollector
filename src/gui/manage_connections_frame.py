@@ -117,71 +117,59 @@ class ManageConnectionsFrame(ttk.Frame):
         self.data_entries_frame = ttk.Frame(self.base_frame)
         self.data_entries_frame.pack(padx=20, pady=20)
 
-
-
-
         #===========Data Entries=============#
 
         #startrow used to locate data entries on grid relative to the first one placed
         self.row_index = 0
 
-        # Name Validation
-        self.name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.name_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-        # PLC Name
-        self.name_entry = DataEntry(self, self.data_entries_frame, "Plc Name:", self.name_entry_variable,
-                                    self.row_index)
-        self.row_index += 1
-        # Ip Address Validation
-        self.ip_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.ip_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-        # PLC IP Address
-        self.ip_address_entry = DataEntry(self, self.data_entries_frame, "IP Address:", self.ip_address_entry_variable,
-                                          self.row_index)
-        self.row_index += 1
-        #TODO ---------Trigger type selection option menu
+        # Module Name
+        self.name_entry = DataEntry(parent_window=self.parent_window,
+                                    parent=self.data_entries_frame,
+                                    label_text="Plc Name:",
+                                    text_variable=self.name_entry_variable,
+                                    has_validation=True,
+                                    validation_message="Invalid name, char limit is 30, cannot be empty"
+                                    )
+        self.name_entry.pack(expand=True, fill="both")
 
+
+        # PLC IP Address
+        self.ip_address_entry = DataEntry(parent_window=self.parent_window,
+                                          parent=self.data_entries_frame,
+                                          label_text= "IP Address:",
+                                          text_variable=self.ip_address_entry_variable,
+                                          has_validation=True,
+                                          validation_message="Invalid IP Address"
+                                        )
+        self.ip_address_entry.pack(expand=True, fill="both")
+
+        # Trigger Type Selection
         self.trigger_type_entry_variable.set("PLC Trigger")
         self.trigger_type_entry = TriggerSelectEntry(parent=self.data_entries_frame,
                                                      text_variable=self.trigger_type_entry_variable,
                                                      row=self.row_index, command= self.data_changed)
-        self.row_index += 1
+        self.trigger_type_entry.pack(expand=True, fill="both")
 
-
-        # Specific Time Validation
-        self.specific_time_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.specific_time_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-
-
-        #TODO ------ Specified Time Data Entry if time trigger type selected
-        #Hour, min selection
-
+        # Specific Time Entry
         self.specific_time_entry = SpecificTimeEntry(parent=self.data_entries_frame,
                                                      hour_text_variable=self.specific_time_hour_entry_variable,
                                                      minute_text_variable=self.specific_time_minute_entry_variable,
-                                                     row=self.row_index)
-        self.row_index += 1
+                                                     has_validation=True,
+                                                     validation_message="hour 0-23             minute 0-59"
+                                                     )
+        self.specific_time_entry.pack(expand=True, fill="both")
 
-        # Interval Start Time Validation
-        self.interval_start_time_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.interval_start_time_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
 
-        self.row_index += 2
-
-        #TODO --------Interval Data entry if interval tirgger type selected
 
         self.interval_unit_entry_variable.set(IntervalUnit.MS)
 
-        self.interval_entry = IntervalEntry(parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
+        self.interval_entry = IntervalEntry("hour 0-23             minute 0-59",parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
                                             interval_start_time_hour=self.interval_start_time_hour_variable,
                                             interval_start_time_minute=self.interval_start_time_minute_variable,
                                             interval_unit_entry_variable=self.interval_unit_entry_variable,
-                                            row=self.row_index)
+                                            has_validation=True
+                                            )
 
-        self.row_index += 1
 
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
@@ -369,10 +357,10 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # Validate name entry
         if not entry_validation.check_valid_name(self.name_entry_variable.get()):
-            self.validation_labels['name'].config(text="Invalid name, char limit is 30, cannot be empty")
+            self.show_validation_label['name']
             flag = False
         else:
-            self.validation_labels['name'].config(text="")
+            self.hide_validation_label['name']
 
         # Validate IP address entry
         if not entry_validation.check_valid_ip(self.ip_address_entry_variable.get()):

@@ -4,25 +4,31 @@ import ttkbootstrap as ttk
 from src.plc_connection import IntervalUnit
 
 
-class IntervalEntry:
-    def __init__(self, parent, interval_text_variable, interval_start_time_hour,
-                 interval_start_time_minute, interval_unit_entry_variable, row):
+class IntervalEntry(ttk.Frame):
+    def __init__(self, *validation_messages, parent, interval_text_variable, interval_start_time_hour, interval_start_time_minute,
+                 interval_unit_entry_variable, has_validation=False):
 
+        super().__init__()
         self.parent = parent
-        self.row = row
         self.interval_text_variable = interval_text_variable
         self.interval_start_time_hour = interval_start_time_hour
         self.interval_start_time_minute = interval_start_time_minute
         self.interval_unit_entry_variable = interval_unit_entry_variable
+        self.has_validation = has_validation
+        self.validation_messages = validation_messages
 
 
         #---------- Interval Start Time Entry -----------#
 
-        self.start_time_label = ttk.Label(master=self.parent, text="Interval Start Time:")
-        self.start_time_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) )
+        # Validation
+        self.validation_label = ttk.Label(self, text="", foreground="red", justify='right')
+        self.validation_label.pack(fill="both", expand=True)
 
-        self.start_time_frame = ttk.Frame(master= self.parent)
-        self.start_time_frame.grid(row=self.row, column = 1, sticky="ew")
+        self.start_time_label = ttk.Label(master=self, text="Interval Start Time:")
+        self.start_time_label.pack(side="left", expand=True, fill="both", padx=(0,10) )
+
+        self.start_time_frame = ttk.Frame(master= self)
+        self.start_time_frame.pack(side="right", expand=True, fill="both")
 
         self.hour_label = ttk.Label(master=self.start_time_frame, text="Hour:")
         self.hour_label.pack(side="left", fill="both", expand=True)
@@ -42,11 +48,11 @@ class IntervalEntry:
 
         # -------------- Interval Time Entry (Next row) ------------- #
 
-        self.interval_label = ttk.Label(master=self.parent, text="Interval:")
-        self.interval_label.grid(row=self.row + 1, column=0, sticky="w", padx=(0,10))
+        self.interval_label = ttk.Label(master=self, text="Interval:")
+        self.interval_label.pack(side = "left",fill="both", expand=True, padx=(0,10))
 
-        self.interval_frame = ttk.Frame(master=self.parent)
-        self.interval_frame.grid(row=self.row + 1, column = 1, sticky="nsew")
+        self.interval_frame = ttk.Frame(master=self)
+        self.interval_frame.pack(side = "right",fill="both", expand=True)
 
         self.interval_entry = ttk.Entry(self.interval_frame, width=10, textvariable=self.interval_text_variable)
         self.interval_entry.pack(side="left", padx=5, fill="both", expand=True)
@@ -59,3 +65,9 @@ class IntervalEntry:
 
         self.option_menu.pack(side="left", padx=5, fill="both", expand=True)
 
+
+    def show_validation_message(self):
+        self.validation_label.config(text=self.validation_messages[0])
+
+    def hide_validation_message(self):
+        self.validation_label.config(text="")

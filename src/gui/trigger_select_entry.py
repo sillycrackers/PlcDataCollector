@@ -3,20 +3,22 @@ import ttkbootstrap as ttk
 from src.plc_connection import TriggerType
 
 
-class TriggerSelectEntry:
+class TriggerSelectEntry(ttk.Frame):
     def __init__(self, parent, text_variable, row, command):
 
+        super().__init__()
         self.parent = parent
         self.row = row
         self.text_variable = text_variable
 
+
         self.option_items = ["PLC Trigger", "Specific Time", "Time Interval"]
 
-        self.data_entry_label = ttk.Label(master=self.parent, text="Trigger Type:")
-        self.data_entry_label.grid(row=self.row, column=0, sticky='w', padx=(0,10) , pady=(20,0))
+        self.data_entry_label = ttk.Label(master=self, text="Trigger Type:")
+        self.data_entry_label.pack(master=self, side="left", expand=True, fill="both", padx=(0,10) , pady=(20,0))
 
-        self.option_menu = ttk.OptionMenu(self.parent,self.text_variable,
+        self.option_menu = ttk.OptionMenu(self,self.text_variable,
                                           self.text_variable.get(),*self.option_items)
         self.option_menu.configure(width=18)
 
-        self.option_menu.grid(row=self.row, column=1, sticky='e', padx=(0,5), pady=(20,0))
+        self.option_menu.pack(side="right", expand=True, fill="both", padx=(0,5), pady=(20,0))

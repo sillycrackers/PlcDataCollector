@@ -5,17 +5,17 @@ from src.plc_connection import IntervalUnit
 
 
 class IntervalEntry(ttk.Frame):
-    def __init__(self, *validation_messages, parent, interval_text_variable, interval_start_time_hour, interval_start_time_minute,
-                 interval_unit_entry_variable, has_validation=False):
+    def __init__(self, parent, interval_text_variable, interval_start_time_hour, interval_start_time_minute,
+                 interval_unit_entry_variable, has_validation=False, validation_message=""):
 
-        super().__init__()
+        super().__init__(master=parent)
         self.parent = parent
         self.interval_text_variable = interval_text_variable
         self.interval_start_time_hour = interval_start_time_hour
         self.interval_start_time_minute = interval_start_time_minute
         self.interval_unit_entry_variable = interval_unit_entry_variable
         self.has_validation = has_validation
-        self.validation_messages = validation_messages
+        self.validation_message = validation_message
 
 
         #---------- Interval Start Time Entry -----------#
@@ -67,7 +67,7 @@ class IntervalEntry(ttk.Frame):
 
 
     def show_validation_message(self):
-        self.validation_label.config(text=self.validation_messages[0])
+        self.validation_label.config(text=self.validation_message)
 
     def hide_validation_message(self):
         self.validation_label.config(text="")

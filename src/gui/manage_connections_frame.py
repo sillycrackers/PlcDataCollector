@@ -1,6 +1,8 @@
 import threading
 import time
 import tkinter as tk
+from enum import StrEnum
+
 import ttkbootstrap as ttk
 
 from plc_connection import IntervalUnit, Interval, SpecificTime
@@ -15,6 +17,19 @@ from src.gui.delete_prompt import DeletePrompt
 from src.gui.trigger_select_entry import TriggerSelectEntry
 from src.gui.specific_time_entry import SpecificTimeEntry
 from src.gui.interval_entry import IntervalEntry
+
+
+class Validations(StrEnum):
+    NAME = "name"
+    IP = "ip"
+    SPECIFIC_TIME = "specific_time"
+    INTERVAL_START_TIME = "interval_start_time"
+    TRIGGER = "trigger"
+    ACK = "ack"
+    TAG_LIST = "tag_list"
+    EXCEL_FILE_NAME = "excel_file_name"
+    EXCEL_FILE_LOCATION = "excel_file_location"
+
 
 class ManageConnectionsFrame(ttk.Frame):
 
@@ -161,85 +176,107 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.interval_unit_entry_variable.set(IntervalUnit.MS)
 
-        self.interval_entry = IntervalEntry("hour 0-23             minute 0-59",parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
+        # Interval Entry
+        self.interval_entry = IntervalEntry(parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
                                             interval_start_time_hour=self.interval_start_time_hour_variable,
                                             interval_start_time_minute=self.interval_start_time_minute_variable,
                                             interval_unit_entry_variable=self.interval_unit_entry_variable,
-                                            has_validation=True
+                                            has_validation=True,
+                                            validation_message="hour 0-23             minute 0-59"
                                             )
         self.interval_entry.pack(expand=True, fill="both")
 
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
 
-        # Trigger Tag
+        # Trigger Tag Entry
         self.trigger_tag_entry = DataEntry(parent_window=self.parent_window,
-                                          parent=self.data_entries_frame,
-                                          label_text= "IP Address:",
-                                          text_variable=self.trigger_tag_entry_variable,
-                                          has_validation=True,
-                                          validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
+                                           parent=self.data_entries_frame,
+                                           label_text= "IP Address:",
+                                           text_variable=self.trigger_tag_entry_variable,
+                                           has_validation=True,
+                                           validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
                                            )
         self.trigger_tag_entry.pack(expand=True, fill="both")
 
-        # Acknowledge Tag Validation
-        self.ack_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.ack_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-        # Acknowledge Tag
-        self.ack_tag_entry = DataEntry(self, self.data_entries_frame, "Acknowledge Tag:", self.ack_tag_entry_variable,
-                                       self.row_index)
-        self.row_index += 1
+        # Acknowledge Tag Entry
+        self.ack_tag_entry = DataEntry(parent_window=self.parent_window,
+                                       parent=self.data_entries_frame,
+                                       label_text= "Acknowledge Tag:",
+                                       text_variable=self.ack_tag_entry_variable,
+                                       has_validation=True,
+                                       validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
+                                       )
+        self.ack_tag_entry.pack(expand=True, fill="both")
 
-        # Tag List Validation
-        self.tag_list_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.tag_list_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-        # Tag List
-        self.tag_list_entry = DataEntry(self.parent_window, self.data_entries_frame, "Tag List:", self.tag_list_entry_variable,
-                                        self.row_index, True, "tag_entry")
-        self.row_index += 1
-        # Excel File Name Validation
-        self.excel_file_name_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.excel_file_name_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
-        # Excel File Name
-        self.excel_file_name_entry = DataEntry(self, self.data_entries_frame, "Excel File Name:",
-                                               self.excel_file_name_entry_variable, self.row_index)
-        self.row_index += 1
+        # Tag List Entry
+        self.tag_list_entry = DataEntry(parent_window=self.parent_window,
+                                        parent=self.data_entries_frame,
+                                        label_text= "Tag List:",
+                                        text_variable=self.tag_list_entry_variable,
+                                        has_popup=True,
+                                        popup_type="tag_entry",
+                                        has_validation=True,
+                                        validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
+                                        )
+        self.tag_list_entry.pack(expand=True, fill="both")
 
-        # Excel File Location Validation
-        self.excel_file_location_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red",
-                                                              justify='right')
-        self.excel_file_location_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
+        # Excel File Name Entry
+        self.excel_file_name_entry = DataEntry(parent_window=self.parent_window,
+                                               parent=self.data_entries_frame,
+                                               label_text= "Excel File Name:",
+                                               text_variable=self.excel_file_name_entry_variable,
+                                               has_validation=True,
+                                               validation_message=r"Invalid File Name, cannot contain [\w\-.]+$"
+                                               )
+        self.excel_file_name_entry.pack(expand=True, fill="both")
+
         # Excel File Location
-        self.excel_file_location_entry = DataEntry(self, self.data_entries_frame, "File Save Location:",
-                                                   self.excel_file_location_entry_variable, self.row_index, True,
-                                                   "file_dir")
-        self.row_index += 1
+        self.excel_file_location_entry =  DataEntry(parent_window=self.parent_window,
+                                                    parent=self.data_entries_frame,
+                                                    label_text= "File Save Location:",
+                                                    text_variable=self.excel_file_location_entry_variable,
+                                                    has_popup=True,
+                                                    popup_type="file_dir",
+                                                    has_validation=True,
+                                                    validation_message=r"Invalid directory, directory doesn't exist"
+                                                    )
+        self.excel_file_location_entry.pack(expand=True, fill="both")
 
         # Write Type Selection
-        self.write_type_frame = tk.Frame(self.data_entries_frame, background="Pink")
+        self.write_type_frame = ttk.Frame(self.data_entries_frame)
         self.write_type_selection = WriteTypeSelect(self.write_type_frame, self.write_type_selected_variable)
         self.write_type_selection.pack(fill="both", expand=True, pady=16)
-        self.write_type_frame.grid(row=self.row_index, column=0, columnspan=2, sticky="w")
-        self.row_index += 1
+        self.write_type_frame.pack(expand=True, fill="both")
+
 
         # Select default radiobutton
         self.write_type_selected_variable.set(WriteType.APPEND)
 
         # Populate validation label dictionary used for hiding/showing red validation labels
-        self.validation_labels = {
-            "name": self.name_validation_label,
-            "ip": self.ip_validation_label,
-            "specific_time": self.specific_time_validation_label,
-            "interval_start_time": self.interval_start_time_validation_label,
-            "trigger": self.trigger_validation_label,
-            "ack": self.ack_validation_label,
-            "tag_list": self.tag_list_validation_label,
-            "excel_file_name": self.excel_file_name_validation_label,
-            "excel_file_location": self.excel_file_location_validation_label
+        self.show_validation_label = {
+            Validations.NAME: self.name_entry.show_validation_message,
+            Validations.IP: self.ip_address_entry.show_validation_message,
+            Validations.SPECIFIC_TIME: self.specific_time_entry.show_validation_message,
+            Validations.INTERVAL_START_TIME: self.interval_entry.show_validation_message,
+            Validations.TRIGGER: self.trigger_tag_entry.show_validation_message,
+            Validations.ACK: self.ack_tag_entry.show_validation_message,
+            Validations.TAG_LIST: self.tag_list_entry.show_validation_message,
+            Validations.EXCEL_FILE_NAME: self.excel_file_name_entry.show_validation_message,
+            Validations.EXCEL_FILE_LOCATION: self.excel_file_location_entry.show_validation_message
+
+        }
+
+        self.hide_validation_label = {
+            Validations.NAME: self.name_entry.hide_validation_message,
+            Validations.IP: self.ip_address_entry.hide_validation_message,
+            Validations.SPECIFIC_TIME: self.specific_time_entry.hide_validation_message,
+            Validations.INTERVAL_START_TIME: self.interval_entry.hide_validation_message,
+            Validations.TRIGGER: self.trigger_tag_entry.hide_validation_message,
+            Validations.ACK: self.ack_tag_entry.hide_validation_message,
+            Validations.TAG_LIST: self.tag_list_entry.hide_validation_message,
+            Validations.EXCEL_FILE_NAME: self.excel_file_name_entry.hide_validation_message,
+            Validations.EXCEL_FILE_LOCATION: self.excel_file_location_entry.hide_validation_message
         }
 
         # ================Buttons================#
@@ -339,8 +376,8 @@ class ManageConnectionsFrame(ttk.Frame):
         self.delete_response = False
 
     def hide_validation_labels(self):
-        for label in self.validation_labels:
-            self.validation_labels[label].config(text="")
+        for val in Validations:
+            self.hide_validation_label[val]()
 
     def populate_combo_list(self):
 
@@ -357,50 +394,50 @@ class ManageConnectionsFrame(ttk.Frame):
 
         # Validate name entry
         if not entry_validation.check_valid_name(self.name_entry_variable.get()):
-            self.show_validation_label['name']
+            self.show_validation_label[Validations.NAME]()
             flag = False
         else:
-            self.hide_validation_label['name']
+            self.hide_validation_label[Validations.NAME]()
 
         # Validate IP address entry
         if not entry_validation.check_valid_ip(self.ip_address_entry_variable.get()):
-            self.validation_labels['ip'].config(text="Invalid IP Address")
+            self.show_validation_label[Validations.IP]()
             flag = False
         else:
-            self.validation_labels['ip'].config(text="")
+            self.hide_validation_label[Validations.IP]()
 
         if self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()] == TriggerType.TIME:
             # Validate Specific Time Entry
-            if not entry_validation.check_valid_specific_time(hour=self.specific_time_hour_entry_variable.get(), minute=self.specific_time_minute_entry_variable.get()):
-                self.validation_labels['specific_time'].config(text="hour 0-23             minute 0-59")
-                flag=False
+            if not entry_validation.check_valid_specific_time(hour=self.specific_time_hour_entry_variable.get(),
+                                                              minute=self.specific_time_minute_entry_variable.get()):
+                self.show_validation_label[Validations.SPECIFIC_TIME]()
+                flag = False
             else:
-                self.validation_labels['specific_time'].config(text="")
+                self.hide_validation_label[Validations.SPECIFIC_TIME]()
 
         if self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()] == TriggerType.INTERVAL:
             # Validate Interval Start Time Entry
-            if not entry_validation.check_valid_interval_start_time(hour=self.interval_start_time_hour_variable.get(), minute=self.interval_start_time_minute_variable.get()):
-                self.validation_labels['interval_start_time'].config(text="hour 0-23             minute 0-59")
-                flag=False
+            if not entry_validation.check_valid_interval_start_time(hour=self.interval_start_time_hour_variable.get(),
+                                                                    minute=self.interval_start_time_minute_variable.get()):
+                self.show_validation_label[Validations.INTERVAL_START_TIME]()
+                flag = False
             else:
-                self.validation_labels['interval_start_time'].config(text="")
+                self.hide_validation_label[Validations.INTERVAL_START_TIME]()
 
         # Validate trigger tag entry
         if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):
 
-            self.validation_labels['trigger'].config(
-                text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
+            self.show_validation_label[Validations.TRIGGER]()
             flag = False
         else:
-            self.validation_labels['trigger'].config(text="")
+            self.hide_validation_label[Validations.TRIGGER]()
 
         # Validate ack tag entry
         if not entry_validation.check_valid_tag(self.ack_tag_entry_variable.get().strip()):
-            self.validation_labels['ack'].config(
-                text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
+            self.show_validation_label[Validations.ACK]()
             flag = False
         else:
-            self.validation_labels['ack'].config(text="")
+            self.hide_validation_label[Validations.ACK]()
 
         # Validate tag list
 
@@ -411,27 +448,23 @@ class ManageConnectionsFrame(ttk.Frame):
             output_string_list.append(string.strip())
 
         if not entry_validation.check_valid_tag_list(output_string_list):
-            self.validation_labels['tag_list'].config(
-                text="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row")
+            self.show_validation_label[Validations.TAG_LIST]()
             flag = False
         else:
-            self.validation_labels['tag_list'].config(text="")
-
+            self.hide_validation_label[Validations.TAG_LIST]()
         # Validate excel file name  entry
         if not entry_validation.check_valid_file_name(self.excel_file_name_entry_variable.get()):
-            self.validation_labels['excel_file_name'].config(
-                text=r"Invalid File Name, cannot contain [\w\-.]+$")
+            self.show_validation_label[Validations.EXCEL_FILE_NAME]()
             flag = False
         else:
-            self.validation_labels['excel_file_name'].config(text="")
+            self.hide_validation_label[Validations.EXCEL_FILE_NAME]()
 
         # Validate excel file location entry
         if not entry_validation.check_valid_file_location(self.excel_file_location_entry_variable.get()):
-            self.validation_labels['excel_file_location'].config(
-                text=r"Invalid directory, directory doesn't exist")
+            self.show_validation_label[Validations.EXCEL_FILE_LOCATION]()
             flag = False
         else:
-            self.validation_labels['excel_file_location'].config(text="")
+            self.hide_validation_label[Validations.EXCEL_FILE_LOCATION]()
 
         if flag == False:
             return False

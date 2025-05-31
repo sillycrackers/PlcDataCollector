@@ -4,13 +4,11 @@ from src.plc_connection import TriggerType
 
 
 class TriggerSelectEntry(ttk.Frame):
-    def __init__(self, parent, text_variable, row, command):
+    def __init__(self, parent, text_variable, command):
 
         super().__init__()
         self.parent = parent
-        self.row = row
         self.text_variable = text_variable
-
 
         self.option_items = ["PLC Trigger", "Specific Time", "Time Interval"]
 

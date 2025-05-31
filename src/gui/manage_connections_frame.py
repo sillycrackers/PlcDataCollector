@@ -113,14 +113,12 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.combo_frame.pack(pady=(20,0), padx=(20, 20), expand=True, fill="both")
 
-        # Inner Frame used for data entries
-        self.data_entries_frame = ttk.Frame(self.base_frame)
-        self.data_entries_frame.pack(padx=20, pady=20)
 
         #===========Data Entries=============#
 
-        #startrow used to locate data entries on grid relative to the first one placed
-        self.row_index = 0
+        # Inner Frame used for data entries
+        self.data_entries_frame = ttk.Frame(self.base_frame)
+        self.data_entries_frame.pack(padx=20, pady=20)
 
         # Module Name
         self.name_entry = DataEntry(parent_window=self.parent_window,
@@ -147,7 +145,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.trigger_type_entry_variable.set("PLC Trigger")
         self.trigger_type_entry = TriggerSelectEntry(parent=self.data_entries_frame,
                                                      text_variable=self.trigger_type_entry_variable,
-                                                     row=self.row_index, command= self.data_changed)
+                                                     command= self.data_changed)
         self.trigger_type_entry.pack(expand=True, fill="both")
 
         # Specific Time Entry
@@ -169,18 +167,20 @@ class ManageConnectionsFrame(ttk.Frame):
                                             interval_unit_entry_variable=self.interval_unit_entry_variable,
                                             has_validation=True
                                             )
-
+        self.interval_entry.pack(expand=True, fill="both")
 
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
-        # Trigger Tag Validation
-        self.trigger_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')
-        self.trigger_validation_label.grid(row=self.row_index, column=0, columnspan=2, sticky='e')
-        self.row_index += 1
+
         # Trigger Tag
-        self.trigger_tag_entry = DataEntry(self, self.data_entries_frame, "Trigger Tag:", self.trigger_tag_entry_variable,
-                                           self.row_index)
-        self.row_index += 1
+        self.trigger_tag_entry = DataEntry(parent_window=self.parent_window,
+                                          parent=self.data_entries_frame,
+                                          label_text= "IP Address:",
+                                          text_variable=self.trigger_tag_entry_variable,
+                                          has_validation=True,
+                                          validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
+                                           )
+        self.trigger_tag_entry.pack(expand=True, fill="both")
 
         # Acknowledge Tag Validation
         self.ack_validation_label = ttk.Label(self.data_entries_frame, text="", foreground="red", justify='right')

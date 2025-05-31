@@ -281,7 +281,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.data_did_not_change = True
 
-
     def add_tracebacks(self):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
@@ -541,6 +540,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.option_menu.set_menu(new_plc.name, *self.combo_list)
 
     def edit_existing_connection(self):
+
 
         old_plc_name = self.option.get()
 

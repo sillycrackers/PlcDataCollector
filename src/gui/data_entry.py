@@ -22,19 +22,23 @@ class DataEntry(ttk.Frame):
         self.validation_message = validation_message
 
         # Name Validation
-        self.validation_label = ttk.Label(self, text="", foreground="red", justify='right')
-        self.validation_label.pack(fill="both", expand=True)
+
+        self.validation_frame = ttk.Frame(self)
+        self.validation_frame.pack(expand=True, fill="both")
+
+        self.validation_label = ttk.Label(self.validation_frame, text="", foreground="red", justify='right')
+        self.validation_label.pack(fill="both", side="right")
 
         self.data_entry_label = ttk.Label(self, text=self.label_text)
         self.data_entry_label.pack(side="left", fill="both", expand=True, padx=(0,10))
 
-        self.data_entry = ttk.Entry(self, width=30, textvariable=self.text_variable)
-        self.data_entry.pack(side="right", fill="both", expand=True, padx=5)
-
-
         if self.has_popup:
-            self.popup_button = ttk.Button(self.parent, text="···", command= self.open_popup)
+            self.popup_button = ttk.Button(self, text="···", command= self.open_popup)
             self.popup_button.pack(side="right")
+
+        self.data_entry = ttk.Entry(self, width=30, textvariable=self.text_variable)
+        self.data_entry.pack(side="right")
+
 
     def open_popup(self):
 

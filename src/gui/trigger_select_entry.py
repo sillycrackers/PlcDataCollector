@@ -15,8 +15,7 @@ class TriggerSelectEntry(ttk.Frame):
         self.data_entry_label = ttk.Label(master=self, text="Trigger Type:")
         self.data_entry_label.pack(side="left", expand=True, fill="both", padx=(0,10) , pady=(20,0))
 
-        self.option_menu = ttk.OptionMenu(self,self.text_variable,
-                                          self.text_variable.get(),*self.option_items)
+        self.option_menu = ttk.OptionMenu(self,self.text_variable, self.text_variable.get(),*self.option_items)
         self.option_menu.configure(width=18)
 
-        self.option_menu.pack(side="right", expand=True, fill="both", padx=(0,5), pady=(20,0))
+        self.option_menu.pack(side="right",  padx=(0,5), pady=(20,0))

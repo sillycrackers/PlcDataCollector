@@ -173,16 +173,13 @@ class ManageConnectionsFrame(ttk.Frame):
         self.specific_time_entry.pack(expand=True, fill="both")
 
 
-
         self.interval_unit_entry_variable.set(IntervalUnit.MS)
 
         # Interval Entry
         self.interval_entry = IntervalEntry(parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
                                             interval_start_time_hour=self.interval_start_time_hour_variable,
                                             interval_start_time_minute=self.interval_start_time_minute_variable,
-                                            interval_unit_entry_variable=self.interval_unit_entry_variable,
-                                            has_validation=True,
-                                            validation_message="hour 0-23             minute 0-59"
+                                            interval_unit_entry_variable=self.interval_unit_entry_variable
                                             )
         self.interval_entry.pack(expand=True, fill="both")
 
@@ -192,7 +189,7 @@ class ManageConnectionsFrame(ttk.Frame):
         # Trigger Tag Entry
         self.trigger_tag_entry = DataEntry(parent_window=self.parent_window,
                                            parent=self.data_entries_frame,
-                                           label_text= "IP Address:",
+                                           label_text= "Trigger Tag:",
                                            text_variable=self.trigger_tag_entry_variable,
                                            has_validation=True,
                                            validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"

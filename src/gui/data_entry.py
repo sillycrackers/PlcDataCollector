@@ -4,35 +4,41 @@ from tkinter import filedialog
 from src.gui.text_entry_window import TextEntryWindow
 
 
-class DataEntry:
-    def __init__(self, parent_window,
-                 parent,
-                 label_text,
-                 text_variable,
-                 row,
-                 has_popup=False,
-                 popup_type=""):
+class DataEntry(ttk.Frame):
+
+    def __init__(self, parent_window, parent, label_text, text_variable, has_popup=False, popup_type="",
+                 has_validation=False, validation_message=""):
+
+        super().__init__(master=parent)
 
         self.parent = parent
         self.label_text = label_text
         self.text_variable = text_variable
-        self.row = row
         self.has_popup = has_popup
         #popup types include: "tag_entry", "file_dir"
         self.popup_type = popup_type
         self.parent_window = parent_window
+        self.has_validation = has_validation
+        self.validation_message = validation_message
 
+        # Name Validation
 
-        self.data_entry_label = ttk.Label(self.parent, text=self.label_text)
-        self.data_entry_label.grid(row=self.row,column=0, sticky='w', padx=(0,10))
+        self.validation_frame = ttk.Frame(self)
+        self.validation_frame.pack(expand=True, fill="both")
 
-        self.data_entry = ttk.Entry(self.parent, width=30, textvariable=self.text_variable)
-        self.data_entry.grid(row=self.row,column=1, sticky='e', padx=5)
+        self.validation_label = ttk.Label(self.validation_frame, text="", foreground="red", justify='right')
+        self.validation_label.pack(fill="both", side="right")
 
+        self.data_entry_label = ttk.Label(self, text=self.label_text)
+        self.data_entry_label.pack(side="left", fill="both", expand=True, padx=(0,10))
 
         if self.has_popup:
-            self.popup_button = ttk.Button(self.parent, text="···", command= self.open_popup)
-            self.popup_button.grid(row=self.row, column=2, sticky='ew')
+            self.popup_button = ttk.Button(self, text="···", command= self.open_popup)
+            self.popup_button.pack(side="right", padx=(10,0))
+
+        self.data_entry = ttk.Entry(self, width=30, textvariable=self.text_variable)
+        self.data_entry.pack(side="right")
+
 
     def open_popup(self):
 
@@ -44,3 +50,9 @@ class DataEntry:
             if file_dir:
                 self.text_variable.set(file_dir)
 
+
+    def show_validation_message(self):
+        self.validation_label.config(text=self.validation_message)
+
+    def hide_validation_message(self):
+        self.validation_label.config(text="")

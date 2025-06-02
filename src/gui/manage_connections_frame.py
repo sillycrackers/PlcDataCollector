@@ -9,7 +9,6 @@ from plc_connection import IntervalUnit, Interval, SpecificTime
 from src import entry_validation
 from src.gui.data_entry import DataEntry
 from src.plc_connection import PlcConnection, Plc, WriteType, TriggerType
-from src import utils
 from src.gui.animated_label import AnimatedLabel
 from src.ticketing_system import Ticket, TicketPurpose, transmit
 from src.gui.write_type_selection import WriteTypeSelect
@@ -29,7 +28,6 @@ class Validations(StrEnum):
     TAG_LIST = "tag_list"
     EXCEL_FILE_NAME = "excel_file_name"
     EXCEL_FILE_LOCATION = "excel_file_location"
-
 
 class ManageConnectionsFrame(ttk.Frame):
 

@@ -26,7 +26,7 @@ class IntervalEntry(ttk.Frame):
 
         # Validation message
         self.start_validation_label = ttk.Label(self.validation_frame, text="", foreground="red", justify='right')
-        self.start_validation_label.pack(fill="both", expand=True, side="right")
+        self.start_validation_label.pack(fill="both", side="right")
 
         # Top Frame
         self.top_frame = ttk.Frame(master=self)
@@ -55,8 +55,12 @@ class IntervalEntry(ttk.Frame):
         # -------------- Interval Time Entry (Bottom row) ------------- #
 
         #Validation Message
-        self.interval_validation_frame = ttk.Frame(self)
-        self.interval_validation_frame.pack(expand=True, fill="both")
+
+        self.bottom_validation_frame = ttk.Frame(self)
+        self.bottom_validation_frame.pack(expand=True, fill="both")
+
+        self.interval_validation_frame = ttk.Frame(self.bottom_validation_frame)
+        self.interval_validation_frame.pack(fill="both", side="right")
 
         self.interval_validation_label = ttk.Label(self.interval_validation_frame, text="", foreground="red", justify='right')
         self.interval_validation_label.pack(fill="both", expand=True, side="right")
@@ -76,7 +80,7 @@ class IntervalEntry(ttk.Frame):
         self.option_menu.pack(side="right")
 
         self.interval_entry = ttk.Entry(self.bottom_frame, width=10, textvariable=self.interval_text_variable)
-        self.interval_entry.pack(side="right")
+        self.interval_entry.pack(side="right", padx=(0,10))
 
 
 

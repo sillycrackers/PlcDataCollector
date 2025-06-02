@@ -34,7 +34,7 @@ class DataEntry(ttk.Frame):
 
         if self.has_popup:
             self.popup_button = ttk.Button(self, text="···", command= self.open_popup)
-            self.popup_button.pack(side="right")
+            self.popup_button.pack(side="right", padx=(10,0))
 
         self.data_entry = ttk.Entry(self, width=30, textvariable=self.text_variable)
         self.data_entry.pack(side="right")

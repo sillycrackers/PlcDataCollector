@@ -119,7 +119,7 @@ class ManageConnectionsFrame(ttk.Frame):
         self.combo_frame = ttk.Frame(self.base_frame)
         #Option Menu
         self.option_menu = ttk.OptionMenu(self.combo_frame, self.option, self.option.get(), *self.combo_list,
-                                          command=lambda _: self.update_entries(self.option))
+                                          command=lambda _: self.update_entries(self.option), style="Module_Select.TMenubutton")
         self.option_menu.configure(width=20)
         self.option_menu.pack(side="right")
         #Delete Button
@@ -163,48 +163,49 @@ class ManageConnectionsFrame(ttk.Frame):
                                                      command= self.data_changed)
         self.trigger_type_entry.pack(expand=True, fill="both")
 
+        # Trigger frame, used as container for showing/hiding selected trigger type
+        self.triggers_container = ttk.Frame(self.data_entries_frame)
+        self.triggers_container.pack(expand=True, fill="both")
+
+
         # Specific Time Entry
-        self.specific_time_entry = SpecificTimeEntry(parent=self.data_entries_frame,
+        self.specific_time_entry = SpecificTimeEntry(parent=self.triggers_container,
                                                      hour_text_variable=self.specific_time_hour_entry_variable,
                                                      minute_text_variable=self.specific_time_minute_entry_variable,
                                                      has_validation=True,
                                                      validation_message="hour 0-23             minute 0-59"
                                                      )
-        self.specific_time_entry.pack(expand=True, fill="both")
 
 
         self.interval_unit_entry_variable.set(IntervalUnit.MS)
 
         # Interval Entry
-        self.interval_entry = IntervalEntry(parent=self.data_entries_frame, interval_text_variable=self.interval_entry_variable,
+        self.interval_entry = IntervalEntry(parent=self.triggers_container, interval_text_variable=self.interval_entry_variable,
                                             interval_start_time_hour=self.interval_start_time_hour_variable,
                                             interval_start_time_minute=self.interval_start_time_minute_variable,
                                             interval_unit_entry_variable=self.interval_unit_entry_variable
                                             )
-        self.interval_entry.pack(expand=True, fill="both")
 
         #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
 
 
         # Trigger Tag Entry
         self.trigger_tag_entry = DataEntry(parent_window=self.parent_window,
-                                           parent=self.data_entries_frame,
+                                           parent=self.triggers_container,
                                            label_text= "Trigger Tag:",
                                            text_variable=self.trigger_tag_entry_variable,
                                            has_validation=True,
                                            validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
                                            )
-        self.trigger_tag_entry.pack(expand=True, fill="both")
 
         # Acknowledge Tag Entry
         self.ack_tag_entry = DataEntry(parent_window=self.parent_window,
-                                       parent=self.data_entries_frame,
+                                       parent=self.triggers_container,
                                        label_text= "Acknowledge Tag:",
                                        text_variable=self.ack_tag_entry_variable,
                                        has_validation=True,
                                        validation_message="Invalid Tag Name, can only be numbers, letters and _\nBut first char can't be number and cannot have two or more _ in a row"
                                        )
-        self.ack_tag_entry.pack(expand=True, fill="both")
 
         # Tag List Entry
         self.tag_list_entry = DataEntry(parent_window=self.parent_window,
@@ -303,12 +304,42 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.data_did_not_change = True
 
+    def show_trigger_type_frame(self, var, index, mode):
+
+        trigger_type = self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()]
+
+        print("Hellooo")
+
+        if trigger_type == TriggerType.PLC_TRIGGER:
+            #Show Trigger Tag and Acknowledge Tag entries only
+            self.specific_time_entry.pack_forget()
+            self.interval_entry.pack_forget()
+            self.trigger_tag_entry.pack(expand=True, fill="both")
+            self.ack_tag_entry.pack(expand=True, fill="both")
+
+
+        elif trigger_type == TriggerType.TIME:
+            #Show Specific Time entry only
+            self.specific_time_entry.pack(expand=True, fill="both")
+            self.interval_entry.pack_forget()
+            self.trigger_tag_entry.pack_forget()
+            self.ack_tag_entry.pack_forget()
+
+        elif trigger_type == TriggerType.INTERVAL:
+            #Show Interval Entry only
+            self.interval_entry.pack(expand=True, fill="both")
+            self.trigger_tag_entry.pack_forget()
+            self.ack_tag_entry.pack_forget()
+            self.specific_time_entry.pack_forget()
+        else:
+            print("Invalid Trigger Type")
+
 
     def add_tracebacks(self):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
         self.ip_address_entry_variable.trace_add("write", self.callback)
-        self.trigger_type_entry_variable.trace_add("write", self.callback)
+        self.trigger_type_entry_variable.trace_add("write", self.show_trigger_type_frame)
         self.specific_time_hour_entry_variable.trace_add("write", self.callback)
         self.specific_time_minute_entry_variable.trace_add("write", self.callback)
         self.interval_entry_variable.trace_add("write", self.callback)
@@ -625,8 +656,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
     def update_entries(self, option):
 
-
-
         if not option.get() == "Add New PLC...":
 
             if len(self.connections) > 0:
@@ -673,6 +702,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.apply_button.config(state="disabled")
 
+        self.show_trigger_type_frame("","","")
         self.data_did_not_change = True
 
     def replace_plc_connection(self, new_plc_connection, old_plc_connection):

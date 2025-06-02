@@ -27,4 +27,4 @@ def config_styles(style_object):
     style_object.configure('custom.TButton', font=('Calibri', 12,))
     style_object.configure(style='alarm.Treeview', font=('Calibri', 12,), foreground="red", rowheight=20)
     style_object.configure(style='TFrame', bordercolor="#737373")
-    style_object.configure(style="TMenubutton", font=('Calibri', 12,))
+    style_object.configure(style="Module_Select.TMenubutton", font=('Calibri', 12,))

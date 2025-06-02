@@ -75,7 +75,7 @@ class IntervalEntry(ttk.Frame):
 
         self.option_menu = ttk.OptionMenu(self.bottom_frame,self.interval_unit_entry_variable,
                                           self.interval_unit_entry_variable.get(),*self.option_items)
-        self.option_menu.configure(width=3)
+        self.option_menu.configure(width=4)
 
         self.option_menu.pack(side="right")
 

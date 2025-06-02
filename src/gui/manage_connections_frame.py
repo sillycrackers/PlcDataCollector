@@ -304,7 +304,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.data_did_not_change = True
 
-    def show_trigger_type_frame(self, var, index, mode):
+    def show_trigger_type_frame(self):
 
         trigger_type = self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()]
 
@@ -334,12 +334,14 @@ class ManageConnectionsFrame(ttk.Frame):
         else:
             print("Invalid Trigger Type")
 
+    def trigger_type_callback(self, var, index, mode):
+        self.show_trigger_type_frame()
 
     def add_tracebacks(self):
         # Add Tracebacks to detect variable changed
         self.name_entry_variable.trace_add("write", self.callback)
         self.ip_address_entry_variable.trace_add("write", self.callback)
-        self.trigger_type_entry_variable.trace_add("write", self.show_trigger_type_frame)
+        self.trigger_type_entry_variable.trace_add("write", self.trigger_type_callback)
         self.specific_time_hour_entry_variable.trace_add("write", self.callback)
         self.specific_time_minute_entry_variable.trace_add("write", self.callback)
         self.interval_entry_variable.trace_add("write", self.callback)
@@ -702,7 +704,7 @@ class ManageConnectionsFrame(ttk.Frame):
 
         self.apply_button.config(state="disabled")
 
-        self.show_trigger_type_frame("","","")
+        self.show_trigger_type_frame()
         self.data_did_not_change = True
 
     def replace_plc_connection(self, new_plc_connection, old_plc_connection):

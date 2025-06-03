@@ -150,6 +150,9 @@ class PlcConnection:
         self.specific_time_last_trigger = self.specific_time_trigger
         return None
 
+    def _read_tags_at_interval(self):
+
+        return 1,2,3,4
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):
@@ -168,7 +171,6 @@ class PlcConnection:
         else:
             time.sleep(0.5)
 
-
     # Verify connected to PLC
     def check_plc_connection(self):
 
@@ -183,7 +185,6 @@ class PlcConnection:
             else:
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc.name}", False)))
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc.name)))
-
 
 
 

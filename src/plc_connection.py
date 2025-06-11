@@ -152,6 +152,12 @@ class PlcConnection:
 
     def _read_tags_at_interval(self):
 
+        #Compare current hour and minute with saved interval start time, if equal flag trigger
+        if datetime.now().hour == self.plc.interval.start_hour and datetime.now().minute == self.plc.interval.start_minute:
+            self.interval_trigger = True
+        else:
+            self.interval_trigger = False
+
         return 1,2,3,4
 
     # Read the tags from the PLC and store in excel file

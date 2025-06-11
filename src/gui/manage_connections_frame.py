@@ -29,6 +29,7 @@ class Validations(StrEnum):
     EXCEL_FILE_NAME = "excel_file_name"
     EXCEL_FILE_LOCATION = "excel_file_location"
 
+
 class ManageConnectionsFrame(ttk.Frame):
 
     def __init__(self, parent_window, main_frame):

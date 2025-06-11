@@ -185,8 +185,6 @@ class ManageConnectionsFrame(ttk.Frame):
                                             interval_unit_entry_variable=self.interval_unit_entry_variable
                                             )
 
-        #TODO --------Trigger, and acknowledge tag frame, show / hide depending on if PLC trigger type is selected
-
 
         # Trigger Tag Entry
         self.trigger_tag_entry = DataEntry(parent_window=self.parent_window,
@@ -307,7 +305,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         trigger_type = self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()]
 
-        print("Hellooo")
 
         if trigger_type == TriggerType.PLC_TRIGGER:
             #Show Trigger Tag and Acknowledge Tag entries only
@@ -453,20 +450,21 @@ class ManageConnectionsFrame(ttk.Frame):
             else:
                 self.hide_validation_label[Validations.INTERVAL_START_TIME]()
 
-        # Validate trigger tag entry
-        if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):
+        if self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()] == TriggerType.PLC_TRIGGER:
+            # Validate trigger tag entry
+            if not entry_validation.check_valid_tag(self.trigger_tag_entry_variable.get().strip()):
 
-            self.show_validation_label[Validations.TRIGGER]()
-            flag = False
-        else:
-            self.hide_validation_label[Validations.TRIGGER]()
+                self.show_validation_label[Validations.TRIGGER]()
+                flag = False
+            else:
+                self.hide_validation_label[Validations.TRIGGER]()
 
-        # Validate ack tag entry
-        if not entry_validation.check_valid_tag(self.ack_tag_entry_variable.get().strip()):
-            self.show_validation_label[Validations.ACK]()
-            flag = False
-        else:
-            self.hide_validation_label[Validations.ACK]()
+            # Validate ack tag entry
+            if not entry_validation.check_valid_tag(self.ack_tag_entry_variable.get().strip()):
+                self.show_validation_label[Validations.ACK]()
+                flag = False
+            else:
+                self.hide_validation_label[Validations.ACK]()
 
         # Validate tag list
 
@@ -514,7 +512,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         while self.thread_manager.all_threads_done() != True:
             time.sleep(.1)
-            print(f"waiting for threads done")
 
     def release_data_control(self):
 
@@ -547,14 +544,16 @@ class ManageConnectionsFrame(ttk.Frame):
             if ok_button_pressed:
                 self.parent_window.close(not self.data_did_not_change)
 
+        else:
+            print("Validation Failed")
+
     def add_new_connection(self):
 
-        #TODO
 
         specific_time = SpecificTime(hour=int(self.specific_time_hour_entry_variable.get()),
                                      minute=int(self.specific_time_minute_entry_variable.get()))
 
-        interval = Interval(start_hour=self.interval_start_time_hour_variable.get(),
+        interval = Interval(start_hour=int(self.interval_start_time_hour_variable.get()),
                             start_minute=int(self.interval_start_time_minute_variable.get()),
                             unit= self.interval_unit_string_to_enum[self.interval_unit_entry_variable.get()],
                             interval=int(self.interval_entry_variable.get()))
@@ -597,7 +596,7 @@ class ManageConnectionsFrame(ttk.Frame):
         specific_time = SpecificTime(hour=int(self.specific_time_hour_entry_variable.get()),
                                      minute=int(self.specific_time_minute_entry_variable.get()))
 
-        interval = Interval(start_hour=self.interval_start_time_hour_variable.get(),
+        interval = Interval(start_hour=int(self.interval_start_time_hour_variable.get()),
                             start_minute=int(self.interval_start_time_minute_variable.get()),
                             unit=self.interval_unit_string_to_enum[self.interval_unit_entry_variable.get()],
                             interval=int(self.interval_entry_variable.get()))
@@ -606,7 +605,7 @@ class ManageConnectionsFrame(ttk.Frame):
             edit_plc = Plc(
                 name=self.name_entry_variable.get(),
                 ip_address=self.ip_address_entry_variable.get(),
-                trigger_type=self.trigger_type_entry_variable.get(),
+                trigger_type=self.trigger_type_string_to_enum[self.trigger_type_entry_variable.get()],
                 trigger_tag=self.trigger_tag_entry_variable.get(),
                 specific_time= specific_time,
                 interval=interval,
@@ -616,6 +615,7 @@ class ManageConnectionsFrame(ttk.Frame):
                 excel_file_location=self.excel_file_location_entry_variable.get(),
                 write_type=self.write_type_selected_variable.get()
             )
+
         except Exception:
             print("Error applying settings")
 

@@ -66,7 +66,7 @@ def check_valid_tag(tag):
                 return False
 
             elif not tag[i].isalnum():
-                if tag[i] != '_' and tag[i] != '.':
+                if tag[i] != '_' and tag[i] != '.' and tag[i] != "[" and tag[i] != "]":
                     return False
         else:
             break

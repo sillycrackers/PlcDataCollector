@@ -163,13 +163,11 @@ class PlcConnection:
             data = self._read_tags_at_specific_time()
         else:
             data = self._read_tags_at_interval()
-
-
         if data:
             self._send_acknowledgment()
             fm.save_tag_data_to_excel(plc= self.plc, data_row= data,main_frame=self.main_frame, write_type= self.plc.write_type)
         else:
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     # Verify connected to PLC
     def check_plc_connection(self):
@@ -185,7 +183,6 @@ class PlcConnection:
             else:
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.UPDATE_ALARMS, value=(f"Lost Connection to {self.plc.name}", False)))
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.TOGGLE_INDICATOR, value=(True, self.plc.name)))
-
 
 
 # PLC object for setting up PlcConnection object

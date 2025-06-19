@@ -40,12 +40,12 @@ class PlcConnection:
         self.main_frame = main_frame
         self.last_plc_trigger = False
         self.specific_time_last_trigger = False
+        self.interval_trigger = False
         self.interval_last_trigger = False
         self.interval_running = False
         self.interval_timer_started_time = None
         self.last_archive_save_date = datetime.now()
         self.data_to_archive = []
-
 
     def _archive_data(self):
 
@@ -64,7 +64,6 @@ class PlcConnection:
                 self.data_to_archive.clear()
                 ts.transmit(self.main_frame, ts.Ticket(purpose=ts.TicketPurpose.OUTPUT_MESSAGE,
                                                        value=f"Archive file saved to: {file_location}\\{file_name}"))
-
     # Function to read PLC tags
     def _read_tags_with_trigger(self):
 
@@ -103,7 +102,6 @@ class PlcConnection:
 
             self.last_plc_trigger = trigger_response.Value
             return None
-
     # Function to send acknowledgment to PLC
     def _send_acknowledgment(self):
         with logix.PLC() as comm:
@@ -154,36 +152,81 @@ class PlcConnection:
 
     def _read_tags_at_interval(self):
 
-        #Compare current hour and minute with saved interval start time, if equal flag trigger
+        first_scan = False
+
+        #Check if reached start time for interval
         if datetime.now().hour == self.plc.interval.start_hour and datetime.now().minute == self.plc.interval.start_minute and not self.interval_running:
             self.interval_trigger = True
             self.interval_running = True
             self.interval_timer_started_time = time.time()
-        else:
-            self.interval_trigger = False
+            first_scan = True
+            print("Time reached!")
 
+
+        #Upon reaching the start time for interval
+        #Start calculating elapsed time in ms and sec
         if self.interval_running:
-            current_time_ms = (time.time() - self.interval_timer_started_time) * 1000
-            current_time_sec = time.time() - self.interval_timer_started_time
 
-            if self.plc.interval.unit == IntervalUnit.MS:
-                if current_time_ms >= self.plc.interval.interval:
-                    self.interval_trigger = True
-            elif self.plc.interval.unit == IntervalUnit.SEC:
-                if current_time_sec >= self.plc.interval.interval:
-                    self.interval_trigger = True
-            else:
-                if (current_time_sec / 60) >= self.plc.interval.interval:
-                    self.interval_trigger = True
+            elapsed_time_ms = (time.time() - self.interval_timer_started_time) * 1000
+            elapsed_time_sec = time.time() - self.interval_timer_started_time
+
+            print(f"Elapsed time in ms: {elapsed_time_ms}, in sec {elapsed_time_sec}, interval: {self.plc.interval.interval}")
+
+            if not first_scan:
+                if self.plc.interval.unit == IntervalUnit.MS:
+                    if elapsed_time_ms >= self.plc.interval.interval:
+                        self.interval_trigger = True
+                    else:
+                        self.interval_trigger = False
+                elif self.plc.interval.unit == IntervalUnit.SEC:
+                    if elapsed_time_sec >= self.plc.interval.interval:
+                        self.interval_trigger = True
+                    else:
+                        self.interval_trigger = False
+                else:
+                    if (elapsed_time_sec / 60) >= self.plc.interval.interval:
+                        self.interval_trigger = True
+                    else:
+                        self.interval_trigger = False
 
         #TODO continue...
 
-        if self.interval_trigger and not self.interval_last_trigger:
+        if self.interval_trigger:
 
+            first_scan = False
 
+            if not self.interval_running or not self.interval_last_trigger:
 
+                with logix.PLC(timeout=3) as comm:
 
-        return 1,2,3,4
+                    comm.IPAddress = self.plc.ip_address
+
+                    # Timestamp
+                    data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
+
+                    # Read each tag in list
+                    for tag in self.plc.tags:
+                        response = comm.Read(tag)
+                        if response.Status == "Success":
+                            data_row.append(response.Value)
+                        else:
+                            data_row.append("Error")
+
+                        if self.main_frame.thread_manager.halt_threads:
+                            print(f"I got here! {self.plc.name} ")
+                            return False
+
+                    # Save state of last time trigger value, used for Oneshot
+                    self.interval_last_trigger = self.interval_trigger
+                    self.interval_timer_started_time = time.time()
+                    self.data_to_archive.append(data_row)
+                    self._archive_data()
+                    return data_row
+
+            # Save state of last time trigger value, used for Oneshot
+        self.interval_last_trigger = self.interval_trigger
+        return None
+
 
     # Read the tags from the PLC and store in excel file
     def collect_data(self):
@@ -195,11 +238,11 @@ class PlcConnection:
         else:
             data = self._read_tags_at_interval()
         if data:
-            self._send_acknowledgment()
+            if self.plc.trigger_type == TriggerType.PLC_TRIGGER:
+                self._send_acknowledgment()
             fm.save_tag_data_to_excel(plc= self.plc, data_row= data,main_frame=self.main_frame, write_type= self.plc.write_type)
         else:
             time.sleep(0.1)
-
     # Verify connected to PLC
     def check_plc_connection(self):
 

@@ -54,7 +54,6 @@ class ExitPrompt(ttk.Toplevel):
         self.position_center()
 
     def close(self):
-        print("I'm trying")
         self.parent.destroy()
         sys.exit("Application closed")
 

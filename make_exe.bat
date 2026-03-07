@@ -1,4 +1,4 @@
-pyinstaller --onefile ^
+pyinstaller --onedir ^
 --add-data=".\src\gui\imgs:.\src\gui\imgs" ^
 --add-data=".\src\PLC Data Collector Manual.pdf:.\src" ^
 --paths .\src:.\src\gui:.\src\gui\imgs ^

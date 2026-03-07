@@ -53,7 +53,6 @@ class MainFrame(ttk.Frame):
 
         self.root_window.bind("<<CheckQueue>>", self.process_queue)
         self.root_window.bind("<Button>", self.on_mouse_click)
-        self.root_window.bind("<Control-e>", self.on_key_press)
 
         #===============Widgets================#
 
@@ -171,14 +170,6 @@ class MainFrame(ttk.Frame):
                 print(f"Unhandled ticket purpose: {msg.purpose}")
 
         self.q.task_done()
-
-    def on_key_press(self, event):
-
-        self.root_window.destroy()
-
-        #"Application closed with Ctrl-e"
-
-        sys.exit("Application closed with Ctrl-e")
 
     def label_animation(self, label):
 

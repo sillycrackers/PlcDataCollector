@@ -8,7 +8,9 @@ import src.file_management as fm
 
 class ExitPrompt(ttk.Toplevel):
     def __init__(self, parent):
+
         super().__init__(master=parent)
+        self.withdraw()
         self.parent = parent
         self.logo_image = tk.PhotoImage(file=fm.resource_path("src\\gui\\imgs\\data_icon.png"))
         self.iconphoto(False, self.logo_image)
@@ -52,6 +54,8 @@ class ExitPrompt(ttk.Toplevel):
         self.parent.attributes('-disabled', 1)
 
         self.position_center()
+
+        self.deiconify()
 
     def close(self):
         self.parent.destroy()

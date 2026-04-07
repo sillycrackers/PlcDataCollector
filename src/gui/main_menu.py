@@ -175,12 +175,14 @@ class MainMenu(ttk.Menu):
 
         try:
 
-            self.file_path = filedialog.asksaveasfilename(filetypes=files)
+            file_path = filedialog.asksaveasfilename(filetypes=files)
 
-            if not self.file_path.endswith(".pdc"):
-                self.file_path += ".pdc"
+            if file_path:
+                if not self.file_path.endswith(".pdc"):
+                    self.file_path += ".pdc"
 
-            self.save_file()
+                self.save_file()
+                self.file_path = file_path
 
         except Exception:
 

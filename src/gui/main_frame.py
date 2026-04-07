@@ -79,6 +79,7 @@ class MainFrame(ttk.Frame):
         #==== Pack to Inner Top Frame ====#
         self.collecting_data_frame.pack(side="left")
         self.loading_label_frame.pack(side="left")
+        self.loading_label.pack_forget()
 
         #==== Pack frames into Top Frame Wrapper ====#
         self.title_frame.pack()

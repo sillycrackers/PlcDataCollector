@@ -346,7 +346,6 @@ class ManageConnectionsFrame(ttk.Frame):
 
         while self.thread_manager.all_threads_done() != True:
             time.sleep(.1)
-            print("waiting")
 
     def release_data_control(self):
 

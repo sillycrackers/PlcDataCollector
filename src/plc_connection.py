@@ -43,7 +43,6 @@ class PlcConnection:
                         data_row.append("Error")
 
                     if self.main_frame.thread_manager.halt_threads:
-                        print(f"I got here! {self.plc.name} ")
                         return False
 
                 #Used for a Oneshot to only log data once per trigger

@@ -105,8 +105,8 @@ def archive(data_list : [[]], archive_file_location : str, archive_file_name : s
 
     try:
         os.makedirs(archive_file_location)
-    except FileExistsError:
-        print(f"Archive folder already exists: {archive_file_location}")
+    except Exception:
+        print(f"Error creating archive folder: {archive_file_location}")
 
     try:
         # Create excel workbook, take active sheet and name it PLC Data

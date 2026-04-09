@@ -1,2 +1,2 @@
-powershell -Command "& {Compress-Archive -Path .\\dist\\PlcDataCollector -DestinationPath .\\dist\\PlcDataCollector.zip}"
+powershell -Command "& {Compress-Archive -Force -Path .\\dist\\PlcDataCollector -DestinationPath .\\dist\\PlcDataCollector.zip}"
 

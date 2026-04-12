@@ -3,13 +3,13 @@
 
 Plc Data Collector
 
-Plc Data Collector is a GUI interface/software that allows multiple connections to Allen Bradley Plcs.
+Plc Data Collector is a GUI interface/software that allows you to collect tag data from Allen Bradley PLCs.
 
-Multithreaded reading of multiple PLC connections, to ensure fast performance. 
+Incorporates multithreaded reading of multiple PLC connections, to ensure fast performance. 
 
 <img src=".//src//gui//imgs//parallel.png">
 
-This software incorporates Pylogix communication driver (https://github.com/dmroeder/pylogix) to connect and extract tag data from the Plcs. 
+This software uses Pylogix communication driver (https://github.com/dmroeder/pylogix) to connect and extract tag data from the Plcs. 
 
 Download exe here: \
 [PlcDataCollector.exe](https://github.com/sillycrackers/PlcDataCollector/raw/refs/heads/master/dist/PlcDataCollector.zip)

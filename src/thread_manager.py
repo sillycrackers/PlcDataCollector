@@ -15,8 +15,8 @@ class ThreadManager:
         self.stop = False
 
         self.supervisors = []
-        self.supervisors.append(ThreadSupervisor(plc_connections=self.plc_connections,run_method_type=RunMethodType.COLLECT_DATA))
-        self.supervisors.append(ThreadSupervisor(plc_connections=self.plc_connections,run_method_type=RunMethodType.CHECK_PLC_CONN))
+        self.supervisors.append(ThreadSupervisor(plc_connections=self.plc_connections, run_method_type=RunMethodType.COLLECT_DATA))
+        self.supervisors.append(ThreadSupervisor(plc_connections=self.plc_connections, run_method_type=RunMethodType.CHECK_PLC_CONN))
 
     def start(self):
         t = threading.Thread(target=self.run, daemon=True)

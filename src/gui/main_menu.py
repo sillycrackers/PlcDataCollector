@@ -105,7 +105,6 @@ class MainMenu(ttk.Menu):
         save_file_as_thread = threading.Thread(daemon=True, target=self.save_file_as)
         save_file_as_thread.start()
 
-
     def open_file(self,file_path="", booting=False):
 
         if not booting:
@@ -178,11 +177,12 @@ class MainMenu(ttk.Menu):
             file_path = filedialog.asksaveasfilename(filetypes=files)
 
             if file_path:
-                if not self.file_path.endswith(".pdc"):
-                    self.file_path += ".pdc"
+                if not file_path.endswith(".pdc"):
+                    file_path += ".pdc"
 
-                self.save_file()
                 self.file_path = file_path
+                self.save_file()
+
 
         except Exception:
 
